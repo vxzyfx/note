@@ -2,7 +2,6 @@
 title: shug的笔记集合
 description: 记录着shug学习中的笔记
 template: splash
-
 ---
 
 1. [前端](1-frontend)
@@ -28,3 +27,5 @@ template: splash
 21. [Android](21-android)
 22. [Spring](22-spring)
 23. [加密](23-encryption)
+24. [容器技术](24-container)
+25. [kubernetes合集](25-k8s)
