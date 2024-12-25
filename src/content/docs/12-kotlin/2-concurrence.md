@@ -255,10 +255,10 @@ Kotlin 的协程是一种轻量级的并发框架，能够简化异步编程。�
 
 ### 基本使用
 
-要使用 Kotlin 协程，需要在项目中添加协程库依赖。对于 Gradle 项目，可以在 `build.gradle` 文件中添加以下内容：
+要使用 Kotlin 协程，需要在项目中添加协程库依赖。对于 Gradle 项目，可以在 `build.gradle.kts` 文件中添加以下内容：
 
 ```groovy
-implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
+implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.0")
 ```
 
 ### 创建协程
