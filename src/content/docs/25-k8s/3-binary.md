@@ -31,6 +31,7 @@ ip_vs_rr
 ip_vs_wrr
 ip_vs_sh
 nf_conntrack
+br_netfilter
 ip_tables
 ip_set
 xt_set
@@ -60,7 +61,8 @@ systemctl restart systemd-modules-load.service
 
 ```bash
 cat <<EOF > /etc/sysctl.d/k8s.conf
-net.ipv4.ip_forward = 1
+net.ipv4.ip_forward=1
+net.bridge.bridge-nf-call-iptables=1
 vm.overcommit_memory=1
 vm.panic_on_oom=0
 fs.inotify.max_user_watches=89100
@@ -196,6 +198,12 @@ systemctl daemon-reload
 systemctl enable --now containerd
 ```
 
+安装ipvsadm
+
+```bash
+apt install ipvsadm ipset sysstat conntrack -y
+```
+
 ## 主节点安装
 
 以`k8s-master01`为例, apiserver的统一入口设置为`k8s-apiserver`
@@ -307,9 +315,11 @@ openssl req -x509 -new -nodes -key ca.key -sha256 -days 3650 -out ca.crt -subj "
 
 生成apiserver证书用于apiserver服务端
 
+> 将`service_cluster_ip_range`的ip段的第一个ip加入证书中，如`10.10.0.1`.
+
 ```bash
 openssl ecparam -genkey -name prime256v1 -noout -out apiserver.key
-openssl req -x509 -new -nodes -key apiserver.key -sha256 -days 3650 -out apiserver.crt -CA ca.crt -CAkey ca.key -subj  "/CN=kube-apiserver" -addext "subjectAltName=DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local,DNS:localhost,DNS:k8s-apiserver,IP:127.0.0.1,DNS:k8s-master01,IP:192.168.1.31" -addext "extendedKeyUsage=serverAuth"  -addext "basicConstraints=critical,CA:FALSE" -addext "keyUsage=critical,digitalSignature,keyEncipherment"
+openssl req -x509 -new -nodes -key apiserver.key -sha256 -days 3650 -out apiserver.crt -CA ca.crt -CAkey ca.key -subj  "/CN=kube-apiserver" -addext "subjectAltName=DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local,DNS:localhost,DNS:k8s-apiserver,IP:10.10.0.1,IP:127.0.0.1,DNS:k8s-master01,IP:192.168.1.31" -addext "extendedKeyUsage=serverAuth"  -addext "basicConstraints=critical,CA:FALSE" -addext "keyUsage=critical,digitalSignature,keyEncipherment"
 
 # 验证证书
 openssl verify -CAfile ca.crt apiserver.crt
@@ -954,6 +964,72 @@ kubectl apply -f bootstrapping.yaml
 ```bash
 systemctl enable --now kubelet.service
 ```
+
+### 配置节点
+
+复制admin.config
+
+```bash
+mkdir ~/.kube
+cp /etc/kubernetes/admin.conf ~/.kube/config
+```
+
+查看证书kubelet证书申请
+
+```bash
+kubectl get csr
+```
+
+同意其中的证书申请
+
+```bash
+kubectl certificate approve <name>
+```
+
+### 安装CoreDNS
+
+安装helm
+
+```bash
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+```
+
+安装CoreDNS的helm仓库
+
+```bash
+helm repo add coredns https://coredns.github.io/helm
+```
+
+```bash
+cat <<EOF > coredns-values.yaml
+service:
+  clusterIP: "10.10.0.10"
+```
+
+安装coredns
+
+```bash
+helm -n kube-system install coredns coredns/coredns -f coredns-values.yaml
+```
+
+### 安装网络插件
+
+#### flannel
+
+[flannel](https://github.com/flannel-io/flannel)
+
+```bash
+wget https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+
+curl -sSL -O https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+```
+
+修改`Network`为podCIDR，如`10.11.0.0`, 安装flannel
+
+```bash
+kubectl apply -f kube-flannel.yml 
+```
+
 
 ## 工作节点安装
 
