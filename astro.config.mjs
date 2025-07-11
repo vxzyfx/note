@@ -7,9 +7,9 @@ export default defineConfig({
     starlight({
       title: "shug的笔记集合",
       lastUpdated: true,
-      social: {
-        github: "https://github.com/vxzyfx/note",
-      },
+      social: [
+        { icon: 'github', label: 'GitHub', href: "https://github.com/vxzyfx/note" },
+      ],
       sidebar: [
         {
           label: "前端",
