@@ -10,3 +10,4 @@ title: linux 目录
 6. [shell](6-shell)
 7. [linux 工具](7-tools)
 8. [配置QEMU开发环境](8-qemu)
+9. [neovim 笔记](9-neovim)
