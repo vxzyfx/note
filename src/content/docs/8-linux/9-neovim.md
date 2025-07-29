@@ -2,6 +2,24 @@
 title: neovim 笔记
 ---
 
+## 官方文档链接
+
+1. [Nvim API via RPC](https://neovim.io/doc/user/api.html)
+2. [Nvim UI protocol](https://neovim.io/doc/user/api-ui-events.html)
+3. [Nvim Lua guide](https://neovim.io/doc/user/lua-guide.html)
+4. [Lua API](https://neovim.io/doc/user/lua.html)
+5. [Lua reference manual](https://neovim.io/doc/user/luaref.html)
+6. [Luv reference manual](https://neovim.io/doc/user/luvref.html)
+7. [Event handlers](https://neovim.io/doc/user/autocmd.html)
+8. [Spawn and control multiple processes](https://neovim.io/doc/user/job_control.html)
+9. [Nvim asynchronous IO](https://neovim.io/doc/user/channel.html)
+10. [Vimscript reference](https://neovim.io/doc/user/vimeval.html)
+11. [Vimscript functions](https://neovim.io/doc/user/vimfn.html)
+12. [Nvim remote plugins](https://neovim.io/doc/user/remote_plugin.html)
+13. [Health checking](https://neovim.io/doc/user/health.html)
+14. [Language Server Protocol](https://neovim.io/doc/user/lsp.html)
+15. [Diagnostic framework](https://neovim.io/doc/user/diagnostic.html)
+
 ## 界面和内容管理
 
 1.tab
@@ -37,7 +55,7 @@ Neovim 中最基本的内容单元，它代表文件的内存副本. 实际上�
 
 ## 选项
 
-[Neovim 官方文档](https://neovim.io/doc/user/options.html)
+[Neovim Options 官方文档](https://neovim.io/doc/user/options.html)
 
 | 选项                                                | 作用域           | 值类型  | 默认值                                                                                | 介绍                                                                                                                        |
 | :-------------------------------------------------- | :--------------- | :------ | :------------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------------- |
