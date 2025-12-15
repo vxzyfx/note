@@ -180,7 +180,7 @@ printf "%-10s %-8s %-4.2f\n" 李四 男 55.412312
 
 ```bash
 # 显示所有包含整型属性的变量和值。
-declare -i
+declare -p
 
 # 定义变量b并赋值为5，具有整型属性。
 declare -i b=5
