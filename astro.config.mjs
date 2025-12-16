@@ -82,9 +82,9 @@ export default defineConfig({
           autogenerate: { directory: "14-python" },
         },
         {
-          label: "工具语言",
+          label: "其他语言",
           collapsed: true,
-          autogenerate: { directory: "15-utils-language" },
+          autogenerate: { directory: "15-other-language" },
         },
         {
           label: "汇编",

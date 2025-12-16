@@ -18,7 +18,7 @@ template: splash
 12. [Kotlin](12-kotlin)
 13. [Java](13-java)
 14. [Python](14-python)
-15. [工具语言](15-utils-language)
+15. [其他语言](15-other-language)
 16. [汇编](16-asm)
 17. [PHP](17-php)
 18. [C#](18-csharp)
