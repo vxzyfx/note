@@ -6,3 +6,4 @@ title: 其他语言目录
 2. [Zig语言](2-zig)
 3. [Groovy语言](3-groovy)
 4. [Nix语言](4-nix)
+5. [erlang语言](5-erlang)

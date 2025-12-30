@@ -1,0 +1,1575 @@
+---
+title: erlang语言
+---
+
+## 1. 介绍
+
+Erlang 是一门为高并发、分布式、强可靠系统而设计的函数式编程语言，同时也是一个完整的平台（Erlang/OTP）。
+
+Erlang的目标
+
+> 系统要长期运行、不中断、可自我修复
+
+## 2. 注释与语法
+
+Erlang 只有行注释, 以`%`开始到本行结束，全是注释。
+
+```erlang
+X = 10.   % 这也是注释
+```
+
+erlang的末尾符号
+
+`.` 结束符
+
+- 结束函数定义
+- 结束 shell 输入的一条表达式
+
+```erlang
+foo() ->
+    ok.
+```
+
+`,` 顺序执行
+
+> 先执行左边，再执行右边，返回右边的值
+
+```erlang
+foo() ->
+    io:format("hello~n"),
+    io:format("world~n"),
+    ok.
+```
+
+`;`或者/下一个分支
+
+> 如果前一个分支匹配失败，尝试下一个
+
+在`case`中使用
+
+```erlang
+case X of
+    1 -> one;
+    2 -> two;
+    _ -> other
+end
+```
+
+在`在函数多子句中`
+
+```erlang
+abs(X) when X >= 0 ->
+    X;
+abs(X) ->
+    -X.
+```
+
+在 `if` 中
+
+```erlang
+if
+    X > 0 -> positive;
+    X < 0 -> negative;
+    true  -> zero
+end
+```
+
+在 `receive` 中
+
+```erlang
+receive
+    {ok, V} -> V;
+    error   -> 0
+end
+```
+
+## 3. 数据类型
+
+### Term
+
+任意类型的数据
+
+### Number
+
+数字有两种类型： 整数和浮点数
+
+```erlang
+X1 = 123. % 123
+
+X2 = -1_234_567_890 % -1234567890
+
+X3 = 2.0e3. % 2000.0
+
+X4 = $a % 97, 字符的 ASCII 值或 Unicode 码点
+
+X5 = 16#ff % 255, base#digits base必须是范围 2 到 36 的整数，digits为 0-9 加上字母 A-Z（大写或小写）
+
+X6 = 16#ff.fe#e+2. % 65534.0, base#digits.digits#eexponent, digits.digits*(base*exponent)
+```
+
+数值比较
+
+> `0.0 =:= -0.0` 结果为`false`
+
+| 符号 | 介绍     | 示例        | 结果  |
+| ---- | -------- | ----------- | ----- |
+| ==   | 等于     | `1 == 1.0`  | true  |
+| =:=  | 完全等于 | `1 =:= 1.0` | false |
+| /=   | 不等     | `1 /= 1.0`  | false |
+| =/=  | 完全不等 | `1 =/= 1.0` | true  |
+| \>   | 大于     | `2 > 1`     | true  |
+| \>=  | 大于等于 | `2 >= 1`    | true  |
+| \<   | 小于     | `2 < 1`     | true  |
+| \<=  | 小于等于 | `2 <= 1`    | true  |
+
+### Atom
+
+Atom 是一个字面量, Atom可以是任意字符，但是如果包含字母数字字符、下划线 ( \_ ) 或 @ 以外的字符，则应将其用单引号括起来。
+
+```erlang
+hello
+phone_number
+name@node
+'Monday'
+'phone number'
+```
+
+### Bit Strings and Binaries
+
+位串用于存储未类型化的内存区域。
+
+由能被 8 整除的比特数组成的`Bit strings`称为`binaries` 。
+
+`is_bitstring/1` 测试一个`term`是否为`bit string`，而 `is_binary/1` 测试一个`term`是否为`binary`。
+
+```erlang
+is_bitstring(<<1:1>>). % true
+
+is_binary(<<1:1>>). % false
+```
+
+### Reference
+
+一个在连接的节点之间独特的`term`，通过`make_ref/0`创建, `is_reference/1`判断`term`是否为`Reference`.
+
+```erlang
+Ref = make_ref().
+is_reference(Ref). % true
+```
+
+### Fun
+
+`Fun` 是一种函数式对象. 可以通过`is_function/1` 和 `is_function/2`判断`term`是否为函数.
+
+```erlang
+Fun1 = fun (X) -> X+1 end.
+is_function(F). % true,
+is_function(F, 0). % false
+is_function(F, 1). % true
+```
+
+### Port Identifier
+
+端口标识符用于标识 Erlang 端口。
+
+`open_port/2` 返回一个端口标识符。 `is_port/1` 测试一个`term`是否为`Port Identifier`。
+
+### Pid
+
+PID 是进程标识符（Process Identifier）的缩写。每个进程都有一个 PID 来标识该进程。
+在连接的节点上，存活的进程的 PID 是唯一的。但是，已终止进程的 PID 可能会在一段时间后被新进程重新使用。
+
+`self/0` 返回调用进程的 PID, `is_pid/1` 测试一个`term`是否为 PID。
+
+### Tuple
+
+元组是一种复合数据类型，包含固定数量的元素. `is_tuple/1` 判断一个`term`是否为`tuple`.
+
+```erlang
+{Term1,...,TermN}
+```
+
+```erlang
+P = {1,2,3,4,5, {id, 2}}. % Tuple 可以存不同类型的数据
+
+element(1,P). % 1, element/2 返回指定位置的元素
+
+P2 = setelement(2,P,25). % setelement/3 设置Tuple对应位置的元素,返回新的Tuple
+
+tuple_size(P). % 6
+
+is_tuple(P). % true
+```
+
+### Map
+
+`Map`是一种具有可变数量键值关联的复合数据类型
+
+```erlang
+#{Key1 => Value1, ..., KeyN => ValueN}
+```
+
+```erlang
+M1 = #{name => shug, age => 18}.
+
+maps:get(name, M1). % shug 获取map的元素
+
+M2 = maps:update(age, 20, M1). % 更新Map并返回新Map
+
+map_size(M1). % 2
+```
+
+### List
+
+`List`是一种具有可变数量的复合数据类型。
+
+```erlang
+[Term1,...,TermN]
+```
+
+```erlang
+L1 = [shug,18,end].
+
+[H|T] = L1. % H = shug, T = [ 18, end ]
+
+length(L1). % 3
+
+L2 = [d|T]. % [ d, 18, end ]
+```
+
+### String
+
+字符串被双引号（"）包围，但在 Erlang 中不是数据类型。
+字符串 "hello" 是列表 `[$h，$e，$l，$l，$o]`` 的简写，即`[104,101,108,108,111]`,
+字符串也可以写成三引号字符串 ，可以跨行缩进 ，以跟随周围代码的缩进,
+通过使用更多双引号字符作为分隔符，可以在内容行开头连续写出双引号字符。
+
+```erlang
+S1 = """
+  Line "1"
+  Line "2"
+  """.
+
+S2 = """""
+    """"
+  """"".
+```
+
+### Sigil
+
+`Sigil`是字符串字面上的前缀。它不是 Erlang 中的一种数据类型，而是一种简写符号，用于指示如何解释字符串的文字。
+`Sigil`主要提供两个功能：
+
+- 简洁的方式来创建 UTF-8 编码的二进制字符串
+- 编写逐字字符串（无需转义 \字符）， 例如正则表达式。
+
+`Sigil`以“波浪号”（~）开头，后跟定义符文类型的名称。
+紧接着是`Sigil`内容;一个角色序列 内容分隔符。允许的分隔符是以下起始-端分隔符对: `() [] {} <>`，
+或这些既是起始分隔符又是结尾分隔符的字符： `/ | ' " #`。也可以使用三引号字符串分隔符。
+
+- `~` 默认`Sigil` UTF-8 编码`binary/0`的简写, 该符号不影响字符转义序列，
+  因此三引号字符串分隔符与 `~B` 相同，其他字符串分隔符与 `~b` 相同.
+- `~b` 二进制`Sigil`, UTF-8 编码`binary/0`的简写,类似于调用`unicode:characters_to_binary/1`,
+  转义序列与 `~s` 相同.
+- `~B` 逐字二进制`Sigil`。与 `~b` 相比，但符文内容是逐字解释的。
+- `~s` 字符串`Sigil`, `string()`的简写, 字符转义序列和普通`string/0` 是一样的
+- `~S` 逐字字符串`Sigil`。相比 `~s`，但`Sigil`内容是逐字的,在三引号字符串上使用这个符号实际上没有任何作用.
+
+### Record
+
+`Record`是一种用于存储固定数量元素的数据结构。它有命名字段，类似于 C 语言中的结构体。
+然而，`Record`并不是真正的数据类型。相反，`Record`表达式在编译过程中会被翻译成元组表达式
+
+```erlang title=person.erl
+-module(person).
+-export([new/2]).
+
+-record(person, {name, age}).
+
+new(Name, Age) ->
+    #person{name=Name, age=Age}.
+```
+
+```erlang
+person:new(shug, 18). % 使用Record
+```
+
+### Boolean
+
+Erlang 中没有布尔数据类型。取而代之的是`Atom`的`true`和`false` 用于表示布尔值
+`is_boolean/1` 测试一个`term`是否是布尔值
+
+```erlang
+true or false. % true
+
+is_boolean(true). % true
+```
+
+### 转义序列
+
+| 序列                  | 介绍                                                  |
+| --------------------- | ----------------------------------------------------- |
+| `\b`                  | 退格(ASCII 代码 8)                                    |
+| `\d`                  | 删除(ASCII 代码 127)                                  |
+| `\e`                  | ESC(ASCII 代码 27)                                    |
+| `\f`                  | 换页(ASCII 代码 12)                                   |
+| `\n`                  | 换行(ASCII 代码 10)                                   |
+| `\r`                  | 回车(ASCII 代码 13)                                   |
+| `\s`                  | 空格(ASCII 代码 32)                                   |
+| `\t`                  | 水平Tab(ASCII 代码 9)                                 |
+| `\v`                  | 垂直Tab(ASCII 代码 11)                                |
+| `\ABC`                | 带有八进制表示的字符A,B,C的范围是0-7                  |
+| `\xABC`               | 带有十六进制表示的字符A,B,C的范围是0-f                |
+| `\x{X...}`            | 带有十六进制表示的字符,`X...`是一个或多个十六进制字符 |
+| `\^a...\^z \^A...\^Z` | 控制字符形式                                          |
+| `\^@`                 | NUL (ASCII 代码 0)                                    |
+| `\^[`                 | ESC (ASCII 代码 27)                                   |
+| `\^\`                 | 文件分隔符 (ASCII 代码 28)                            |
+| `\^]`                 | 组分隔符 (ASCII 代码 29)                              |
+| `\^^`                 | 记录分隔符 (ASCII 代码 30)                            |
+| `\^_`                 | 单元分隔符 (ASCII 代码 31)                            |
+| `\^?`                 | 删除 (ASCII 代码 127)                                 |
+| `\‘`                  | 单引号                                                |
+| `\"`                  | 双引号                                                |
+| `\\`                  | 反斜线                                                |
+
+### 类型转换
+
+```erlang
+atom_to_list(hello). % "hello"
+
+list_to_atom("hello"). % hello
+
+binary_to_list(<<"hello">>). % "hello"
+
+binary_to_list(<<104,101,108,108,111>>). % "hello"
+
+list_to_binary("hello"). % <<104,101,108,108,111>>
+
+float_to_list(7.0). % "7.00000000000000000000e+00"
+
+list_to_float("7.000e+00"). % 7.0
+
+integer_to_list(77). % "77"
+
+list_to_integer("77"). % 77
+
+tuple_to_list({a,b,c}). % [a,b,c]
+
+list_to_tuple([a,b,c]). % {a,b,c}
+
+term_to_binary({a,b,c}). % <<131,104,3,100,0,1,97,100,0,1,98,100,0,1,99>>
+
+binary_to_term(<<131,104,3,100,0,1,97,100,0,1,98,100,0,1,99>>). % {a,b,c}
+
+binary_to_integer(<<"77">>). % 77
+
+integer_to_binary(77). % <<"77">>
+
+float_to_binary(7.0). % <<"7.00000000000000000000e+00">>
+
+binary_to_float(<<"7.000e+00">>). % 7.0
+```
+
+## 模式匹配
+
+变量通过模式匹配机制绑定到数值。模式匹配发生在评估 `case`、`receive`、`try` 和匹配算子`=`表达式时。
+
+在模式匹配中，左侧模式与右侧项进行匹配。
+如果匹配成功，模式中所有未绑定的变量都将被绑定。
+如果匹配失败，则会提出异常。
+
+```erlang
+X = 1.
+X = 2. % 将报错, 因为X已经是1, 1和2不匹配
+
+{X, Y} = {1, 2}. % X的值是1,匹配的,Y没有绑定值,Y将绑定值2
+```
+
+## 模块
+
+一个模块由一系列属性和函数声明组成，每个声明以一个句号（.）结束。
+
+一个示例模块
+
+```erlang
+-module(m).          % 模块属性 模块名称, 与文件名称一致,文件名称应该为`m.erl`
+-export([fact/1]).   % 模块属性 导出函数, 使函数模块外部可见
+
+fact(N) when N>0 ->  % 函数定义
+    N * fact(N-1);
+fact(0) ->
+    1.
+```
+
+### 模块属性
+
+模块属性由一个标签和一个值组成：
+
+```erlang
+-Tag(Value).
+```
+
+`Tag`必须是一个原子, `Value`必须是一个字面意义上的`term`.
+如果字面意义上的 `Value` 具有语法 `Name/Arity` （其中 `Name` 是一个原子，`Arity` 是正整数），
+则 `Name/Arity`。 翻译为 `{Name， Arity}`。
+
+任何模块属性都可以被指定。属性存储在编译后的代码中，
+可以通过调用 `Module:module_info(attributes)` 或使用 `STDLIB` 中的模块`beam_lib` 来检索。
+
+### 预定义模块属性
+
+> 预定义的模块属性应置在任何函数声明之前
+
+- `-module(Module).` 模块声明，定义模块名称。`Module` 这个原子名应与文件名相同，但去除扩展名 `.erl`
+- `-export(Functions).` 导出函数。指定模块内定义的函数中，哪些从模块外部可见。
+  `Functions`是一个列表 `[Name1/Arity1, ..., NameN/ArityN]`
+- `-import(Module, Functions).` 导入函数。可以与局部函数一样称为，即不包含任何模前缀
+- `-moduledoc(Documentation).` 或 `-moduledoc Documentation.` 该模块的用户文档。
+  文档的允许值与 `-doc` 相同。
+- `-compile(Options).` 编译器选项。 选项是一个选项，也可以是选项列表。该属性在编译模块时被添加到选项列表中。
+- `-vsn(Vsn).` 模块版本。Vsn 是任何字面意义上的`term`.
+- `-on_load(Function).` 该属性指定将要运行的函数 模块加载时自动触发。
+- `-nifs(Functions).` 指定(Native Implemented Functions)，在模块内定义，并且需要添加到`-export`导出.
+  在`-on_load`中使用 `erlang:load_nif/2` 模块加载.
+
+### Behaviour模块属性
+
+可以指定该模块是某个函数的回调模块
+
+```erlang
+-behaviour(Behaviour).
+```
+
+原子 `Behaviour` 给出了行为的名称，它可以是用户定义的行为，也可以是以下 OTP 标准行为
+
+模块的回调函数可以直接通过导出的函数 `behaviour_info/1` 来指定：
+
+```erlang
+behaviour_info(callbacks) -> Callbacks.
+```
+
+也可以使用`-callback`属性
+
+```erlang
+-callback Name(Arguments) -> Result.
+```
+
+`Arguments` 是一个包含零个或多个参数的列表。建议使用 `-callback` 属性，因为额外的类型信息可供工具用于生成文档或查找差异。
+
+### 其他属性
+
+记录定义
+
+```erlang
+-record(Record, Fields).
+```
+
+预处理器
+
+```erlang
+-include("SomeFile.hrl").
+-define(Macro, Replacement).
+```
+
+修改预定义宏 `?FILE` 和 `?LINE`
+
+```erlang
+-file(File, Line).
+```
+
+指定类型和函数规范
+
+```erlang
+-type my_type() :: atom() | integer().
+-spec my_function(integer()) -> integer().
+```
+
+文档属性
+
+```erlang
+-doc("Example documentation").
+example() -> ok.
+```
+
+特性指令
+
+```erlang
+-feature(FeatureName, enable | disable).
+```
+
+模块编译时会生成两个导出函数
+
+- Module:module_info/0
+- Module:module_info/1
+
+用于返回模块信息
+
+## 函数
+
+函数声明是由分号分隔的函数子句序列，以句点（ . ）结尾。
+函数体由一系列用逗号（ , ）分隔的表达式组成
+
+参数个数 N 称为函数的元数 。一个函数由模块名、函数名和元数唯一确定。也就是说，即使两个函数名称相同且位于同一模块中，但元数不同，它们也是两个不同的函数。
+
+```erlang
+Name(Pattern11,...,Pattern1N) [when GuardSeq1] ->
+    Body1;
+...;
+Name(PatternK1,...,PatternKN) [when GuardSeqK] ->
+    BodyK.
+```
+
+如果函数体的最后一个表达式是函数调用，则 执行尾递归调用。这样做是为了确保不会消耗系统资源，
+例如调用栈。这意味着使用尾递归调用的无限循环不会耗尽调用栈，并且（理论上）可以无限运行下去。
+
+## 类型与函数规范
+
+> 类型和函数规范不是给编译器用的，是给“人 + Dialyzer + 工具链”用的
+
+```erlang
+Type :: any()      %% 任意类型
+      | none()     %% 不包含任何类型
+      | dynamic()  %% 静态未知的类型
+      | pid()
+      | port()
+      | reference()
+      | []                    %% nil
+      | Atom
+      | Bitstring
+      | float()
+      | Fun
+      | Integer
+      | List
+      | Map
+      | Tuple
+      | Union
+      | UserDefined           %% 用户自定义类型
+
+Atom :: atom()                %% 所有原子类型
+      | Erlang_Atom           %% 'foo', 'bar', ...
+
+Bitstring :: <<>>
+           | <<_:M>>          %% M 是一个 Integer_Value 计算结果是一个正整数
+           | <<_:_*N>>        %% N 是一个 Integer_Value 计算结果是一个正整数
+           | <<_:M, _:_*N>>
+
+Fun :: fun()                  %% 任意函数
+     | fun((...) -> Type)     %% 任意元数, 返回值要匹配
+     | fun(() -> Type)
+     | fun((TList) -> Type)
+
+Integer :: integer()          %% 任意整数
+         | Integer_Value
+         | Integer_Value..Integer_Value      %% 整数的范围, 包括边界
+
+Integer_Value :: Erlang_Integer              %% ..., -1, 0, 1, ... 42 ...
+               | Erlang_Character            %% $a, $b ...
+               | Integer_Value BinaryOp Integer_Value %% 1 + 1
+               | UnaryOp Integer_Value       %% -1
+
+BinaryOp :: '*' | 'div' | 'rem' | 'band' | '+' | '-' | 'bor' | 'bxor' | 'bsl' | 'bsr'
+
+UnaryOp :: '+' | '-' | 'bnot'
+
+List :: list(Type)                           %% 元素是Type类型的列表
+      | maybe_improper_list(Type1, Type2)    %% Type1=内容，Type2=终止
+      | nonempty_improper_list(Type1, Type2) %% Type1=内容，Type2=终止
+      | nonempty_list(Type)                  %% 元素是Type类型的非空列表
+
+Map :: map()                                 %% 任意Map
+     | #{}                                   %% 表示空Map
+     | #{AssociationList}
+
+Tuple :: tuple()                             %% 任意Tuple
+       | {}                                  %% 表示空的Tuple
+       | {TList}
+
+AssociationList :: Association
+                 | Association, AssociationList
+
+Association :: Type := Type                  %% 表示强制关联
+             | Type => Type                  %% 表示可选关联
+
+TList :: Type
+       | Type, TList
+
+Union :: Type1 | Type2
+```
+
+### 预定义别名
+
+| 内置类型                | 预定义别名                                                            |
+| ----------------------- | --------------------------------------------------------------------- |
+| `term/0`                | `any/0`                                                               |
+| `binary/0`              | `<<_:_*8>>`                                                           |
+| `nonempty_binary/0`     | `<<_:8, _:_*8>>`                                                      |
+| `bitstring/0`           | `<<_:_*1>>`                                                           |
+| `nonempty_bitstring/0`  | `<<_:1, _:_*1>>`                                                      |
+| `boolean/0`             | `'false' \| 'true'`                                                   |
+| `byte/0`                | `0..255`                                                              |
+| `char/0`                | `0..16#10ffff`                                                        |
+| `nil/0`                 | `[]`                                                                  |
+| `number/0`              | `integer/0 \| float/0`                                                |
+| `list/0`                | `[any()]`                                                             |
+| `maybe_improper_list/0` | `maybe_improper_list(any(), any())`                                   |
+| `nonempty_list/0`       | `nonempty_list(any())`                                                |
+| `string/0`              | `[char()]`                                                            |
+| `nonempty_string/0`     | `[char(), ...]`                                                       |
+| `iodata/0`              | `iolist() \| binary()`                                                |
+| `iolist/0`              | `maybe_improper_list(byte() \| binary() \| iolist(), binary() \| [])` |
+| `map/0`                 | `#{any() => any()}`                                                   |
+| `function/0`            | `fun()`                                                               |
+| `module/0`              | `atom/0`                                                              |
+| `mfa/0`                 | `{module(),atom(),arity()}`                                           |
+| `arity/0`               | `0..255`                                                              |
+| `identifier/0`          | `pid() \| port() \| reference()`                                      |
+| `node/0`                | `atom/0`                                                              |
+| `timeout/0`             | `'infinity' \| non_neg_integer()`                                     |
+| `no_return/0`           | `none/0`                                                              |
+| `non_neg_integer/0`     | `0..`                                                                 |
+| `pos_integer/0`         | `1..`                                                                 |
+| `neg_integer/0`         | `..-1`                                                                |
+
+### 用户自定义类型的类型声明
+
+```erlang
+-type my_struct_type() :: Type.
+-opaque my_opaq_type() :: Type.
+-nominal my_nominal_type() :: Type.
+```
+
+- `type` 根据结构进行类型检查, `-type t1() :: integer()`和`-type t1() :: integer()`是一种类型
+- `nominal` 根据用户定义的名称进行类型检查, `-nominal t1() :: integer()`和`-nominal t1() :: integer()`不是一种类型
+- `opaque` 其结构不应从定义它们的模块外部可见
+
+类型声明也可以通过在括号内包含类型变量来进行参数化。类型变量的语法与 Erlang 变量相同，即以大写字母开头。
+
+```erlang
+-type orddict(Key, Val) :: [{Key, Val}].
+```
+
+模块可以导出某些类型，以声明其他模块可以将其作为远程类型引用。
+
+```erlang
+-export_type([T1/A1, ..., Tk/Ak]).
+```
+
+这里 `Ti` 是类型名称， `Ai` 是类型的参数数量。
+
+可以在记录的声明中指定记录字段的类型
+
+```erlang
+-record(rec, {field1 :: Type1, field2, field3 :: Type3}). %% field2 有默认类型 any()
+-record(rec, {field1 = [] :: Type1, field2, field3 = 42 :: Type3}). %% 如果字段存在初始值，则必须在初始化之后声明类型
+```
+
+### 函数规范
+
+使用 `-spec` 参数可以给出函数的规范
+
+```erlang
+-spec Function(ArgType1, ..., ArgTypeN) -> ReturnType.
+```
+
+函数规范可以重载
+
+```erlang
+-spec foo(T1, T2) -> T3;
+         (T4, T5) -> T6.
+```
+
+函数规范类似守卫的子类型约束进行约束
+
+```erlang
+-spec id(X) -> X when X :: tuple().
+```
+
+## 表达式
+
+### 表达式评估
+
+除非另有明确说明，否则所有子表达式都会在表达式本身求值之前进行求值。
+
+`Expr1` 和 `Expr2` 也是表达式，它们会先被求值（顺序不限），然后再执行加法运算。
+
+最简单的表达形式是`term`, 即其中之一 `integer/0` ， `float/0` ，
+`atom/0` ， `string/0` ， `list/0` ， `map/0` 或 `tuple/0` 。返回值是`term`本身。
+
+### 变量
+
+变量是一种表达式。如果变量绑定到一个值，则返回值就是该值。未绑定的变量仅允许用于模式中。
+
+变量以大写字母或下划线（ \_ ）开头。变量可以包含字母数字字符、下划线和 @ 。
+
+匿名变量用下划线 (\_) 表示，当需要变量但其值可以忽略时可以使用匿名变量。
+
+变量名示例
+
+```erlang
+X
+Name1
+PhoneNumber
+Phone_number
+_
+_Height
+name@node
+```
+
+### 模式
+
+模式与`term`具有相同的结构，但可以包含未绑定变量。
+
+如果 `Pattern1` 和 `Pattern2` 是有效模式
+
+```erlang
+Pattern1 = Pattern2
+```
+
+模式在函数参数中的使用
+
+```erlang
+f({connect,_,To,_,_} = Signal, To) ->
+    ...;
+f(Signal, To) ->
+    ignore.
+```
+
+模式中的字符串前缀
+
+```erlang
+f("prefix" ++ Str) -> ...
+%% 两种方式作用一样
+f([$p,$r,$e,$f,$i,$x | Str]) -> ...
+```
+
+如果算术表达式满足以下两个条件，则可以在模式中使用
+
+- 仅使用数值运算符或位运算符。
+- 经过验证后，其值可以评估为一个常数
+
+```erlang
+case {Value, Result} of
+    {?THRESHOLD+1, ok} -> ...
+```
+
+匹配操作符(=)
+
+```erlang
+Pattern = Expr
+```
+
+如果匹配成功，则模式中任何未绑定的变量都会被绑定，并返回 `Expr` 的值。
+
+```erlang
+{A, B} = T = {answer, 42}.
+A. %% answer
+B. %% 42
+T. %% {answer,42}
+```
+
+复合模式运算符(=)
+
+`=`具体指哪个运算符取决于上下文.
+
+复合模式运算符用于从两个模式构造复合模式。复合模式在所有接受模式的地方都适用。
+如果复合模式的所有组成模式都匹配，则该复合模式匹配。
+
+复合模式中的某个模式不能使用同一复合模式的其他子模式中绑定的变量（例如映射模式中的键或二进制模式中的大小）
+
+```erlang
+fun(#{Key := Value} = #{key := Key}) -> Value end. %% 复用了Key, 运行失败
+
+F = fun({A, B} = E) -> {E, A + B} end, F({1,2}). %% {{1,2},3}
+G = fun(<<A:8,B:8>> = <<C:16>>) -> {A, B, C} end, G(<<42,43>>). %% {42,43,10795}
+```
+
+匹配运算符可以在任何允许使用表达式的地方使用。它用于将表达式的值与模式进行匹配。
+如果按顺序应用多个匹配运算符，它们将从右到左依次进行计算。
+
+```erlang
+M = #{key => key2, key2 => value}.
+
+f(Key), #{Key := Value} = #{key := Key} = M, Value. %% value, 从右到左匹配
+```
+
+### 函数调用
+
+```erlang
+ExprF(Expr1,...,ExprN) %% ExprF 必须是一个原子或求值为一个函数
+ExprM:ExprF(Expr1,...,ExprN) %% 远程函数调用或外部函数调用
+```
+
+`ExprF`是一个原子
+
+```erlang
+handle(Msg, State)
+spawn(m, init, [])
+```
+
+`ExprF`是一个函数
+
+```erlang
+Fun1 = fun(X) -> X+1 end, Fun1(3). %% 4
+
+fun lists:append/2([1,2], [3,4]). %% [1,2,3,4],
+%% fun lists:append/2 先获取函数lists:append/2, 再调用
+```
+
+本地函数名称与自动导入的 BIF 冲突
+
+在 Erlang/OTP R14A（ERTS 版本 5.8）之前，如果隐式限定函数调用的函数名与自动导入的 BIF 同名，则总是调用该 BIF。
+在较新版本的编译器中，则会调用本地函数。
+
+```erlang
+-export([length/1,f/1]).
+
+-compile({no_auto_import,[length/1]}). % erlang:length/1 不再自动导入
+
+length([]) ->
+    0;
+length([H|T]) ->
+    1 + length(T). %% 调用本地函数 length/1
+
+f(X) when erlang:length(X) > 3 -> %% 调用 erlang:length/1,
+    long.
+```
+
+### If
+
+```erlang
+if
+    GuardSeq1 ->
+        Body1;
+    ...;
+    GuardSeqN ->
+        BodyN
+end
+```
+
+`if` 表达式的各个分支会按顺序扫描，直到找到一个计算结果为真的守卫序列 `GuardSeq` 。然后执行相应的操作。
+对 Body （由 , 分隔的表达式序列）进行求值。
+
+```erlang
+is_greater_than(X, Y) ->
+    if
+        X > Y ->
+            true;
+        true -> % 'else' 分支
+            false
+    end
+```
+
+### Case
+
+```erlang
+case Expr of
+    Pattern1 [when GuardSeq1] ->
+        Body1;
+    ...;
+    PatternN [when GuardSeqN] ->
+        BodyN
+end
+```
+
+表达式 `Expr` 被求值，模式 `Pattern` 被依次处理。 与结果进行匹配。
+如果匹配成功，并且满足可选的保护序列。 如果 `GuardSeq` 为真，则对相应的 Body 进行评估。
+
+```erlang
+is_valid_signal(Signal) ->
+    case Signal of
+        {signal, _What, _From, _To} ->
+            true;
+        {signal, _What, _To} ->
+            true;
+        _Else ->
+            false
+    end.
+```
+
+### Maybe
+
+`maybe` 代码块中的表达式按顺序求值。如果所有表达式都成功求值，则 `maybe` 代码块的返回值为 0。
+
+```erlang
+maybe
+    Expr1,
+    ...,
+    ExprN
+end
+```
+
+`maybe` 可以通过条件匹配表达式来中断执行
+
+```erlang
+Expr1 ?= Expr2
+```
+
+如果`Expr1` 和 `Expr2` 不匹配, `maybe` 将返回`Expr2`的值
+
+`maybe` 代码块可以添加 `else` 子句, 如果条件匹配运算符失败,则将失败的表达式与 `else` 和 `end` 关键字之间所有子句中的模式进行匹配。
+如果匹配成功且可选的保护序列 `GuardSeq` 为真，则执行相应的操作。 对响应 `Body` 进行求值。响应体返回的值即为返回值。
+
+```erlang
+maybe
+    Expr1,
+    ...,
+    ExprN
+else
+    Pattern1 [when GuardSeq1] ->
+        Body1;
+    ...;
+    PatternN [when GuardSeqN] ->
+        BodyN
+end
+```
+
+### Send
+
+```erlang
+Expr1 ! Expr2
+```
+
+将 `Expr2` 的值作为消息发送给 `Expr1` 指定的进程。`Expr2` 的值也是该 `Expr2` 的返回值。
+
+`Expr1`必须解析为进程 ID、别名（引用）、端口、已注册名称（原子）或元组 `{Name,Node}` 。
+Name 是一个原子 ， Node 是节点名称，也是一个原子。
+
+- 如果 `Expr1` 计算结果是一个名称，但该名称尚未注册，则为 badarg 运行时发生错误。
+- 向引用发送消息永远不会失败，即使该引用不再是（或从来都不是）别名。
+- 即使 pid 指向一个不存在的进程，向 pid 发送消息也永远不会失败。
+- 分布式消息发送，也就是说，如果 Expr1 计算结果为元组 `{Name,Node}` （或位于另一个节点的 pid），也永远不会失败。
+
+### Receive
+
+```erlang
+receive
+    Pattern1 [when GuardSeq1] ->
+        Body1;
+    ...;
+    PatternN [when GuardSeqN] ->
+        BodyN
+end
+```
+
+`receive` 表达式会在消息队列中查找与 `receive` 表达式子句中某个模式匹配的消息。这些模式在 这些子句会从上到下与消息进行匹配。
+
+> receive 永远不会失败。执行过程会被暂停，可能无限期暂停，直到收到符合某种模式且包含正确保护序列的消息为止。
+
+receive 表达式添加超时设置
+
+```erlang
+receive
+    Pattern1 [when GuardSeq1] ->
+        Body1;
+    ...;
+    PatternN [when GuardSeqN] ->
+        BodyN
+after
+    ExprT ->
+        BodyT
+end
+```
+
+表达式 `ExprT` 值应为整数，或原子 `infinity`.
+
+`ExprT`毫秒内没有匹配的消息到达，则会计算 `BodyT`, `BodyT` 的返回值随后成为 `receive...after` 的返回值
+
+使用不带分支的 `receive...after` 表达式是合法的
+
+```erlang
+receive
+after
+    ExprT ->
+        BodyT
+end
+```
+
+这种构造方式不会消耗任何消息，只会暂停进程执行 `ExprT` 毫秒
+
+### Comparisons
+
+```erlang
+Expr1 op Expr2
+```
+
+| op  | 描述     |
+| --- | -------- |
+| ==  | 等于     |
+| /=  | 不等     |
+| =<  | 小于等于 |
+| <   | 小于     |
+| >=  | 大于等于 |
+| >   | 大于     |
+| =:= | 完全等于 |
+| =/= | 完全不等 |
+
+参数顺序
+
+```erlang
+number < atom < reference < fun < port < pid < tuple < map < nil < list < bit string
+```
+
+### 算术表达式
+
+```erlang
+op Expr
+Expr1 op Expr2
+```
+
+| op   | 描述       | 参数类型 |
+| ---- | ---------- | -------- |
+| +    | 一元 +     | Number   |
+| -    | 一元 -     | Number   |
+| +    | 加         | Number   |
+| -    | 减         | Number   |
+| \*   | 乘         | Number   |
+| /    | 除         | Number   |
+| bnot | 一元按位非 | Integer  |
+| div  | 整数除法   | Integer  |
+| rem  | 整数余数   | Integer  |
+| band | 按位与     | Integer  |
+| bor  | 按位或     | Integer  |
+| bxor | 按位异或   | Integer  |
+| bsl  | 左移位     | Integer  |
+| bsr  | 算术右移   | Integer  |
+
+### 布尔表达式
+
+```erlang
+op Expr
+Expr1 op Expr2
+```
+
+| op  | 描述 |
+| --- | ---- |
+| not | 非   |
+| and | 与   |
+| or  | 或   |
+| xor | 异或 |
+
+### 短路表达式
+
+```erlang
+Expr1 orelse Expr2 %% Expr1 值为 false, 才会对 Expr2 进行求值
+Expr1 andalso Expr2 %% Expr1 值为 true, 才会对 Expr2 进行求值
+```
+
+```erlang
+(3 > 2) orelse (1 / 0). %% 不会报错
+```
+
+### 列表操作
+
+```erlang
+Expr1 ++ Expr2 %% 将其第二个参数附加到第一个参数，并返回结果列表
+Expr1 -- Expr2 %% 删除第二个参数中的每个元素, 首次出现的位置（如果有）
+```
+
+```erlang
+[1,2,3] ++ [4,5] %% [1,2,3,4,5
+
+[1,2,3,2,1,2] -- [2,1,2]. %% [3,1,2]
+```
+
+### 映射表达式
+
+#### 创建映射
+
+将表达式 K 与另一个表达式 V 关联起来
+
+```erlang
+#{K => V}
+
+#{K1 => V1, ..., Kn => Vn} %% 包含多个关联关系
+
+#{} %% 空的Map
+
+#{{"w", 1} => f()} %% 复杂键
+```
+
+#### 更新映射
+
+```erlang
+M#{K => V}
+```
+
+```erlang
+M = #{1 => a}.
+M#{1.0 => b}. %% #{1 => a, 1.0 => b}. => 如果键不存在将新添加
+M#{1.0 := b}. %% 将报错 := 只能更新
+```
+
+#### 映射模式匹配
+
+```erlang
+M = #{"tuple" => {1,2}}.
+#{"tuple" := {1,B}} = M.
+B. %% 2
+
+#{} = M %% #{} 匹配任何映射
+```
+
+### 位语法表达式
+
+```erlang
+<<>>  % 空的位字符串
+<<E1>>
+<<E1,...,En>>
+```
+
+每个元素 `Ei` 指定比特串的一个片段 。这些片段从左到右按比特串的最高有效位到最低有效位的顺序排列。
+
+```erlang
+Ei = Value |
+     Value:Size |
+     Value/TypeSpecifierList |
+     Value:Size/TypeSpecifierList
+
+TypeSpecifierList :: Type
+                    | Signedness
+                    | Endianness
+                    | Unit
+
+Type :: integer | float | binary | bytes | bitstring | bits | utf8 | utf16 | utf32
+Signedness :: signed | unsigned
+Endianness :: big | little | native
+Unit :: unit:IntegerLiteral
+```
+
+`IntegerLiteral` 默认值
+
+- `integer`, `float`和`bitstring` 为1.
+- `binary`, 为8.
+- `bitstring` , `bits` 和 `bytes` 类型，不允许指定与默认值不同的单位值.
+- `utf8`, `utf16` 和 `utf32` 无需指定单位说明符.
+
+`Size` 是一个表达式，其计算结果应为整数。
+
+`Size`默认值取决于类型
+
+- `integer` 8
+- `float` 64
+- `binary`和`bitstring` 指的是整个二进制数据或比特串
+
+`Binaries` 长度为 8 位的倍数的比特串称为二进制数
+
+```erlang
+<<1, 2, 3, 4, 5, 6, 7, 8, 9, 10>>.
+
+<<A:3/binary, B/binary>> = <<"abcde">>.
+
+A. %% <<"abc">>
+B. %% <<"de">>
+```
+
+#### 整数段
+
+`Size` 值乘以单位即可得到段的大小（以比特为单位）。
+
+如果整数段的大小 `N` 太小而无法容纳给定的整数，则该整数的最高有效位将被默默丢弃，只有最低的 N 位才会被放入位串中。
+例如， `<<16#ff:4>>` 将生成位串 `<<15:4>>` 。
+
+#### 浮点段
+
+`Size` 值乘以单位即可得到段的大小（以位为单位）。
+浮点段的大小（以位为单位）必须是 16、32 或 64 位之一。
+
+#### 二进制段
+
+“二进制段”一词指的是 binary 、 bitstring 、 bytes 和 bits 这几种段类型中的任何一种。
+
+构造二进制数据时，如果未指定二进制段的大小，则会将整个二进制值插值到正在构造的二进制数据中。
+但是，被插值的二进制数据的大小（以位数为单位）必须能被该段的单位值整除；否则，将引发异常。
+
+```erlang
+<<(<<"abc">>)/bitstring>>. %% <<"abc">> 的长度为3*8, bitstring的单位值是1, 可以整除
+
+<<(<<1:1>>)/binary>>. %% <<1:1>> 的长度为 1*1, binary的单位值是1, 不能整除, 将引发异常
+
+<<_/binary-unit:16>> = <<"abc">>.
+%% <<"abc">> 的长度为 3*8, binary-unit:16 指定单位长度16, 不能整除
+```
+
+#### Unicode 段
+
+`utf8` , `utf16` 和 `utf32` 类型指定了编码/解码方式
+构造 `utf` 类型段时， `Value` 必须是 `0` 到 `16#D7FF` 或 `16#E000` 到 `16#10FFFF` 范围内的整数
+
+编码值的大小
+
+- `utf8` `Value`编码成1-4字节.
+- `utf16` `Value`编码成2-4字节.
+- `utf32` `Value`编码成4字节.
+
+可以给出一个字面字符串，后跟一个 `UTF` 类型，例如：
+`<<"abc"/utf8>>`这是 的语法糖。 `<<$a/utf8,$b/utf8,$c/utf8>>` .
+
+### 函数表达式
+
+```erlang
+fun
+    [Name](Pattern11,...,Pattern1N) [when GuardSeq1] ->
+              Body1;
+    ...;
+    [Name](PatternK1,...,PatternKN) [when GuardSeqK] ->
+              BodyK
+end
+```
+
+```erlang
+Fun1 = fun (X) -> X+1 end.
+Fun2 = fun (X) when X>=5 -> gt; (X) -> lt end.
+```
+
+### 捕获和抛出
+
+```erlang
+catch Expr
+```
+
+如果引发异常，则会捕获该异常。返回值取决于异常的类别：
+
+- `error` 运行时错误或名为 `error(Term)` 代码, 返回`{'EXIT',{Reason,Stack}}`.
+- `exit` 调用`exit(Term)` 的代码, 返回`{'EXIT',Term}`.
+- `throw` 调用`throw(Term)` 的代码, 返回`Term`.
+
+`Reason` 取决于发生的错误类型，而 `Stack` 是最近的函数调用堆栈
+
+`Reason`的错误类型
+
+- `badarg` 参数错误。参数的数据类型错误，或者格式不正确.
+- `badarith` 算术表达式的参数不是数值型的，或者该表达式的计算结果不是有限的.
+- `{badmatch,V}` 匹配表达式求值失败。值 V 不匹配.
+- `function_clause` 执行函数调用时未找到匹配的函数子句.
+- `{case_clause,V}` 计算 case 表达式时未找到匹配的分支。值 V 不匹配.
+- `if_clause` 执行 if 语句时未找到正确的分支 表达.
+- `{try_clause,V}` 计算 try 表达式的 of 部分时，未找到匹配的分支。值 V 不匹配.
+- `undef` 执行函数调用时找不到该函数
+- `{badfun,F}` F 原本应该是函数，但实际上并非如此.
+- `{badarity,{Fun,Args}}` 函数被应用于错误数量的参数.
+- `timeout_value` `receive...after` 表达式的计算结果不是整数，或者 infinity.
+- `noproc` 尝试创建链接或 监视不存在的进程或端口.
+- `noconnection` 与远程进程的链接或监视器断开，因为无法建立节点之间的连接或连接已断开.
+- `{nocatch,V}` 尝试评估在禁区外的 throw catch V 是抛出的术语.
+- `system_limit` 已达到系统限制.
+
+```erlang
+catch 1+2. %% 3
+
+catch 1+a. %% {'EXIT',{badarith,[...]}}
+
+catch throw(hello). %% hello
+```
+
+### Try
+
+```erlang
+try Exprs
+catch
+    Class1:ExceptionPattern1[:Stacktrace] [when ExceptionGuardSeq1] ->
+        ExceptionBody1;
+    ClassN:ExceptionPatternN[:Stacktrace] [when ExceptionGuardSeqN] ->
+        ExceptionBodyN
+end
+```
+
+对`catch`的增强,提供了以下可能性:
+
+- 区分不同的异常类型
+- 选择只处理你想要处理的对象
+- 将其他错误传递给外部的 `try` 或 `catch` 语句，或者传递给默认错误处理语句
+
+在`Exprs`求值过程中不发生异常返回`Exprs`的值, 如果发送异常,则捕获该异常,
+`Class`为异常类型`error`, `exit`, `throw`.
+`ExceptionPattern`异常模式匹配, 用于匹配到正确的`ExceptionBody`,
+`Stacktrace`可选的堆栈跟踪
+
+```erlang
+try throw(he)
+catch
+    throw:Value:S -> {Value,S}
+end.
+%% {he,[...]}
+```
+
+```erlang
+try Exprs of
+    Pattern1 [when GuardSeq1] ->
+        Body1;
+    ...;
+    PatternN [when GuardSeqN] ->
+        BodyN
+catch
+    Class1:ExceptionPattern1[:Stacktrace] [when ExceptionGuardSeq1] ->
+        ExceptionBody1;
+    ...;
+    ClassN:ExceptionPatternN[:Stacktrace] [when ExceptionGuardSeqN] ->
+        ExceptionBodyN
+after
+    AfterBody
+end
+```
+
+`of` 正常返回值的匹配分支
+`after` 一定会执行（类似 finally）
+
+### 块表达式
+
+```erlang
+begin
+   Expr1,
+   ...,
+   ExprN
+end
+```
+
+块表达式提供了一种将一系列表达式分组的方法，类似于子句主体。返回值是最后一个表达式 ExprN 的值。
+
+### 推导式
+
+列表推导式
+
+```erlang
+[Expr || Qualifier1, . . ., QualifierN]
+```
+
+`Expr` 是一个任意表达式，每个 `Qualifier` 是生成器或过滤器。
+
+列表生成器语法
+
+```erlang
+Pattern <- ListExpr %% 宽松模式
+Pattern <:- ListExpr %% 严格模式
+```
+
+```erlang
+[ X || X <:- [1,2] ]. %% [1,2]
+```
+
+位串推导式用于构造位串或二进制数
+
+```erlang
+<< BitStringExpr || Qualifier1, . . ., QualifierN >>
+```
+
+位串生成器语法
+
+```erlang
+BitstringPattern <= BitStringExpr %% 宽松模式
+BitstringPattern <:= BitStringExpr %% 严格模式
+```
+
+映射推导式用于构建映射
+
+```erlang
+#{KeyExpr => ValueExpr || Qualifier1, . . ., QualifierN}
+```
+
+映射生成器语法
+
+```erlang
+KeyPattern := ValuePattern <- MapExpression %% 宽松模式
+KeyPattern := ValuePattern <:- MapExpression %% 严格模式
+```
+
+`zip`生成器
+
+```erlang
+Generator_1 && ... && Generator_n
+```
+
+过滤器是一个计算结果为 true 或 false 表达式。
+
+```erlang
+[X*2 || X <:- [1,2,3]]. %% [2,4,6]
+
+[X*2 || <<X>> <:= <<1,2,3>>]. %% [2,4,6]
+
+#{X => X*X || X <:- [1,2,3]}. %% #{1 => 1,2 => 4,3 => 9}
+
+[X || X <:- [1,2,3,4,5], X rem 2 =:= 1]. %% [1,3,5]
+
+[X || {_,_}=X <- [{a,b}, [a], {x,y,z}, {1,2}]]. %% [{a,b},{1,2}]
+
+[X || X <- [1,2,3,5] && X <- [1,4,3,6]]. %% [1,3]
+```
+
+## 预处理器
+
+直接将文件内容插入当前位置
+
+```erlang
+-include(File).
+-include_lib(File). %% 假定路径的第一个组成部分是应用程序的名称
+```
+
+定义和使用宏
+
+```erlang
+-define(Const, Replacement).
+-define(Func(Var1,...,VarN), Replacement).
+```
+
+使用宏
+
+```erlang
+?Const
+?Func(Arg1,...,ArgN)
+```
+
+示例
+
+```erlang
+-define(TIMEOUT, 200).
+...
+call(Request) ->
+    server:call(refserver, Request, ?TIMEOUT).
+```
+
+预定义宏
+
+- `?MODULE` 当前模块的名称，以原子形式表示.
+- `?MODULE_STRING` 当前模块的名称，以字符串形式表示.
+- `?FILE` 当前模块的文件名，以字符串形式表示.
+- `?LINE` 当前行号，以整数形式表示.
+- `?MACHINE` 机器名称为 'BEAM'
+- `?FUNCTION_NAME` 当前函数的名称，以原子形式表示
+- `?FUNCTION_ARITY` 当前函数的参数个数（arity），以整数形式表示.
+- `?OTP_RELEASE` 运行时系统运行编译器的 OTP 版本，以整数形式返回.
+- `?FEATURE_AVAILABLE(Feature)` 该 Feature 可用返回 true。该功能可能已启用，也可能未启用.
+- `?FEATURE_ENABLED(Feature)` 为 true 时 Feature 启用.
+
+删除宏定义
+
+```erlang
+-undef(Macro).
+```
+
+条件编译的宏指令
+
+- `-ifdef(Macro).` 仅当 Macro 已定义时才执行以下代码行.
+- `-ifndef(Macro).`仅当 Macro 未定义时才执行以下代码行.
+- `-else.` 仅允许在 ifdef 、 ifndef 、 if 和 elif 之后使用。 指令。如果前面的指令结果为 false，则会执行 else 指令后面的指令.
+- `-if(Condition).` 仅当 Condition 时才执行以下代码行。 计算结果为真.
+- `-elif(Condition).` 仅允许在 if 或另一个 elif 之后使用。 指令。如果前面的 if 或 elif 指令的计算结果不为真，
+  而 Condition 计算结果为真，则执行 elif 指令后面的行.
+- `-endif.` 指定一系列控制流指令的结束.
+
+## 记录
+
+定义记录
+
+```erlang
+-record(Name, {Field1 [= Expr1],
+               ...
+               FieldN [= ExprN]}).
+```
+
+创建记录
+
+```erlang
+#Name{Field1=Expr1, ..., FieldK=ExprK}
+```
+
+访问记录的字段
+
+```erlang
+Expr#Name.Field
+```
+
+更新记录
+
+```erlang
+Expr#Name{Field1=Expr1, ..., FieldK=ExprK}
+```
+
+嵌套记录
+
+```erlang
+-record(nrec0, {name = "nested0"}).
+-record(nrec1, {name = "nested1", nrec0=#nrec0{}}).
+-record(nrec2, {name = "nested2", nrec1=#nrec1{}}).
+
+N2 = #nrec2{},
+```
+
+## 进程
+
+Erlang 专为大规模并发而设计。Erlang 进程轻量级（可动态增长和收缩），内存占用小，创建和终止速度快，调度开销低.
+
+### 进程创建
+
+调用 `spawn()` 函数即可创建一个进程
+
+```erlang
+spawn(Module, Name, Args) -> pid()
+  Module = Name = atom()
+  Args = [Arg1,...,ArgN]
+    ArgI = term()
+```
+
+`spawn(Fun)` 通过函数创建进程
+
+```erlang
+Pid = spawn(fun() ->
+    io:format("hello~n")
+end).
+```
+
+`spawn(Node, Fun)` 在指定节点 `Node` 上创建一个新进程，并在该进程里执行 `Fun`.
+
+```erlang
+Pid = spawn('b@yourhost', fun() ->
+    io:format("hello~n")
+end).
+```
+
+`spawn(Module, Function, Args)` 用模块函数.
+`spawn(Node, Module, Function, Args)` 在指定节点上用模块函数.
+
+`link` 子进程 `crash` 父进程也收到退出信号
+`monitor` 子进程退出, 父进程收到`{'DOWN', Ref, process, Pid, Reason}`
+
+| 函数          | 子进程崩溃的后果                     | 返回结果     |
+| ------------- | ------------------------------------ | ------------ |
+| spawn         | 调用者默认无感知                     | `Pid`        |
+| spawn_link    | 可能把调用者也带崩（除非 trap_exit） | `Pid`        |
+| spawn_monitor | 不会影响调用者，只通知               | `{Pid, Ref}` |
+
+`spawn_opt`是 `spawn` 的“可配置增强版”, 用来控制链接/监控、调度优先级、初始堆大小、消息队列行为等.
+
+`spawn_opt` 参数和`spawn`类似,只是最后多了一个`Options`参数
+
+`spawn_opt(Mod, Fun, [link])` 等价于 `spawn_link`
+`spawn_opt(Mod, Fun, [monitor])` 等价于 `spawn_monitor`, 返回值是 `{Pid, Ref}`
+`spawn_opt(Mod, Fun, [{priority, high}])` 调度优先级可选常见值：`low | normal | high | max`
+`spawn_opt(Mod, Fun, [{fullsweep_after, 10}])` 控制 GC 行为
+`spawn_opt(Mod, Fun, [{min_heap_size, 233}, {min_bin_vheap_size, 46422}])` 初始堆/二进制堆
+
+### 注册进程
+
+除了使用进程 ID (PID) 来寻址进程外，用名称注册进程。名称必须是一个原子，并且如果进程终止，则会自动注销
+
+```erlang
+register(Name, Pid) %% 注册进程
+registered/0 %% 返回使用注册的名称列表
+whereis(Name) %% 返回在 Name 下注册的进程 ID，如果名称未注册，则 undefined
+```
+
+### 进程别名
+
+进程别名是 PID 之外的一种“可失效的地址”，用于把消息精确路由到“当前有效实例”，并在进程生命周期变化时自动失效.
+
+```erlang
+Alias = erlang:alias(). %% 返回一个 alias reference, 绑定到当前进程
+```
+
+### 进程终止
+
+进程正常终止将返回原子`normal`.
+进程可以通过调用以下 BIF 之一来终止自身：
+
+- `exit(Reason)`
+- `error(Reason)`
+- `error(Reason, Args)`
