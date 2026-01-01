@@ -2,7 +2,7 @@
 title: erlang语言
 ---
 
-## 1. 介绍
+## 介绍
 
 Erlang 是一门为高并发、分布式、强可靠系统而设计的函数式编程语言，同时也是一个完整的平台（Erlang/OTP）。
 
@@ -10,7 +10,33 @@ Erlang的目标
 
 > 系统要长期运行、不中断、可自我修复
 
-## 2. 注释与语法
+`erl`是 Erlang/OTP 的 BEAM 虚拟机启动器 + 交互式 shell。它既能进入 REPL，也能在不进入 shell 的情况下运行一段代码并退出.
+
+进入交互式 shell
+
+```bash
+erl
+```
+
+常用 shell 命令
+
+- `h().` / `help().`: 显示帮助
+- `f()` / `f(X)`: 移除变量绑定
+- `q().`: 退出
+- `c(Mod).`: 编译 Mod.erl
+- `l(Mod).`: 加载/热加载模块
+- `code:which(Mod).`: 看模块从哪里加载
+- `code:get_path().`: 当前代码路径
+
+编译模块
+
+```bash
+erl -compile Mod
+
+erl -make # 类似make编译
+```
+
+## 注释与语法
 
 Erlang 只有行注释, 以`%`开始到本行结束，全是注释。
 
@@ -83,7 +109,7 @@ receive
 end
 ```
 
-## 3. 数据类型
+## 数据类型
 
 ### Term
 
@@ -1528,9 +1554,6 @@ end).
 `spawn(Module, Function, Args)` 用模块函数.
 `spawn(Node, Module, Function, Args)` 在指定节点上用模块函数.
 
-`link` 子进程 `crash` 父进程也收到退出信号
-`monitor` 子进程退出, 父进程收到`{'DOWN', Ref, process, Pid, Reason}`
-
 | 函数          | 子进程崩溃的后果                     | 返回结果     |
 | ------------- | ------------------------------------ | ------------ |
 | spawn         | 调用者默认无感知                     | `Pid`        |
@@ -1541,11 +1564,67 @@ end).
 
 `spawn_opt` 参数和`spawn`类似,只是最后多了一个`Options`参数
 
-`spawn_opt(Mod, Fun, [link])` 等价于 `spawn_link`
-`spawn_opt(Mod, Fun, [monitor])` 等价于 `spawn_monitor`, 返回值是 `{Pid, Ref}`
-`spawn_opt(Mod, Fun, [{priority, high}])` 调度优先级可选常见值：`low | normal | high | max`
-`spawn_opt(Mod, Fun, [{fullsweep_after, 10}])` 控制 GC 行为
-`spawn_opt(Mod, Fun, [{min_heap_size, 233}, {min_bin_vheap_size, 46422}])` 初始堆/二进制堆
+- `spawn_opt(Mod, Fun, [link])` 等价于 `spawn_link`
+- `spawn_opt(Mod, Fun, [monitor])` 等价于 `spawn_monitor`, 返回值是 `{Pid, Ref}`
+- `spawn_opt(Mod, Fun, [{priority, high}])` 调度优先级可选常见值：`low | normal | high | max`
+- `spawn_opt(Mod, Fun, [{fullsweep_after, 10}])` 控制 GC 行为
+- `spawn_opt(Mod, Fun, [{min_heap_size, 233}, {min_bin_vheap_size, 46422}])` 初始堆/二进制堆
+
+`spawn_request` 是 Erlang/OTP（自 OTP 23 起）引入的一组 "异步 spawn",先返回一个 请求标识 ReqId（reference）,
+随后由系统向调用者发送一条 `spawn_reply` 消息告知成功/失败。
+
+- `spawn_request(Fun)`
+- `spawn_request(FunOrNode, OptionsOrFun)`
+- `spawn_request(NodeOrModule, FunOrFunction, OptionsOrArgs)`
+- `spawn_request(NodeOrModule, ModuleOrFunction, FunctionOrArgs, ArgsOrOptions)`
+- `spawn_request(Node, Module, Function, Args, Options)`
+
+`Options`选项
+
+- `monitor`和`{monitor, MonitorOpts}`: 请求成功后建立监控
+- `link`: 请求成功后建立链接
+- `{reply_tag, ReplyTag}`: 自定义回复消息 tag
+- `{reply, ReplyMode}`: 控制是否发回复 `yes | no | error_only | success_only`
+- `spawn_opt`的选项集合（例如优先级、堆大小等）
+
+`spawn_request`调用成功后会向调用者发送一条格式为 `{ReplyTag, ReqId, ok, Pid}` 的消息,
+如果调用失败,调用者会收到一条格式为`{ReplyTag, ReqId, error, Reason}`的消息.
+
+`link/1` 连接到指定进程, `unlink/1`断开连接.
+
+```erlang
+-spec monitor(process, monitor_process_identifier()) -> MonitorRef when MonitorRef :: reference();
+             (port, monitor_port_identifier()) -> MonitorRef when MonitorRef :: reference();
+             (time_offset, clock_service) -> MonitorRef when MonitorRef :: reference().
+monitor(Type, Item, Opts)
+```
+
+`monitor`的`Type`, 参数决定了`Item`参数的类型.
+
+- 监控`process`: `Item`是`pid`, `atom`, `{RegisteredName, Node}`.
+- 监控`port`: `Item`是`port`, `atom`, `{RegisteredName, Node}`.
+- 监控`time_offset`: `Item`是`clock_service`.
+
+监控`time_offset`的消息格式:
+
+```erlang
+{'CHANGE', MonitorRef, Type, Item, NewTimeOffset}
+```
+
+当 `process` 或 `port` 监视器被触发时会发送一条 'DOWN' 消息其格式如下:
+
+```erlang
+{'DOWN', MonitorRef, Type, Object, Info}
+```
+
+可选的`Opts`设置:
+
+- `{alias, UnaliasOpt}`: 返回的监视器引用也将成为调用进程的别名,
+  - `explicit_unalias`: 只有显式调用 `unalias/1` 才能停用别名.
+  - `demonitor`: 当监控器被移除时，别名将自动停用.
+  - `reply_demonitor`: 当监控器被移除）或收到通过别名发送的回复消息时，别名将自动停用.
+- `{tag, UserDefinedTag}`: 将默认 `Tag` 替换为 `UserDefinedTag` 在监控触发时发送的监控消息中.
+- `priority`: `OTP 28.0`启用优先消息接收.
 
 ### 注册进程
 
@@ -1565,6 +1644,35 @@ whereis(Name) %% 返回在 Name 下注册的进程 ID，如果名称未注册，
 Alias = erlang:alias(). %% 返回一个 alias reference, 绑定到当前进程
 ```
 
+`alias(Opts)`可以为`alias`添加设置,
+
+- `explicit_unalias` 默认行为, 别名只能通过调用`unalias/1`停用.
+- `reply` 当收到通过别名发送的回复消息时，别名将自动停用。也可以通过调用 `unalias/1` 来停用别名.
+- `priority` `OTP 28.0`新设置项,别名可用于发送向创建此别名的进程发送优先级消息.
+
+```erlang
+server() ->
+    receive
+        {request, AliasReqId, Request} ->
+            Result = perform_request(Request),
+            AliasReqId ! {reply, AliasReqId, Result}
+    end,
+    server().
+
+client(ServerPid, Request) ->
+    AliasReqId = alias([reply]),
+    ServerPid ! {request, AliasReqId, Request},
+    %% 如果我们收到回复，别名将会自动停用。
+    receive
+        {reply, AliasReqId, Result} -> Result
+    after 5000 ->
+            unalias(AliasReqId),
+            receive {reply, AliasReqId, Result} -> Result
+            after 0 -> exit(timeout)
+            end
+    end.
+```
+
 ### 进程终止
 
 进程正常终止将返回原子`normal`.
@@ -1573,3 +1681,553 @@ Alias = erlang:alias(). %% 返回一个 alias reference, 绑定到当前进程
 - `exit(Reason)`
 - `error(Reason)`
 - `error(Reason, Args)`
+
+将退出信号会被转换为 `{'EXIT', From, Reason}` 消息，这些消息可以像普通消息一样接收.
+
+```erlang
+process_flag(trap_exit, true).
+```
+
+### 信号
+
+`Erlang Signal` 是 `BEAM VM` 在进程之间传递的"控制级事件",用于
+
+- 进程退出传播
+- 链接/监控通知
+- 系统控制（kill、shutdown 等）
+
+|            | 消息        | 信号          |
+| ---------- | ----------- | ------------- |
+| 发送方式   | `Pid ! Msg` | VM内部        |
+| 是否进邮箱 | 是          | 否            |
+| 是否能忽略 | 可以        | 不可以        |
+| 主要用途   | 业务通信    | 生命周期/容错 |
+
+信号的种类:
+
+- `message`: 使用 `send` 操作符时发送 `!` 或调用 `erlang:send/2,3` 或 `erlang:send_nosuspend/2,3`.
+- `link`: 调用`link/1` 时发送.
+- `unlink`: 调用`unlink/1` 时发送.
+- `exit`: 可以通过调用 `exit/2` 显式发送 `exit` 信号, 或者当链接进程终止.
+- `monitor`: 调用`monitor/2,3` 时发送.
+- `demonitor`: 调用`demonitor/1,2` 时发送,或者当监视另一个进程的进程终止时.
+- `down`: 被监控的进程或端口终止.
+- `change`: 本地运行时系统上的`clock service`在当时间偏移量发生变化时发送.
+- `group_leader`: 调用`group_leader/2` 时发送.
+- `spawn_request/spawn_reply, open_port_request/open_port_reply`: 由于调用了`spawn_link/1,2,3,4` ，
+  `spawn_monitor/1,2,3,4`, `spawn_opt/2,3,4,5` ， `spawn_request/1,2,3,4,5` 或 `erlang:open_port/2`将发送信号,
+  请求信号被发送到`spawn service` ，以回复信号进行响应.
+- `alive_request/alive_reply`: 调用`is_process_alive/1` 时发送.
+- `garbage_collect_request/garbage_collect_reply, check_process_code_request/check_process_code_reply, process_info_request/process_info_reply`:
+  由于调用了`garbage_collect/1,2`, `erlang:check_process_code/2,3`, 或 `process_info/1,2`.
+- `port_command, port_connect, port_close`: 由进程使用发送运算符(!) 或调用 `send()` 函数之一发送到本地节点上的端口,
+  该信号通过传递一个格式为 `{Owner, {command, Data}}` 项来发送.
+  消息内容为: `{Owner, {connect, Pid}}` 或 `{Owner, close}`.
+- `port_command_request/port_command_reply, port_connect_request/port_connect_reply, port_close_request/port_close_reply, port_control_request/port_control_reply, port_call_request/port_call_reply, port_info_request/port_info_reply`:
+  由于调用了以下任一端口而发送`erlang:port_command/2,3` ， `erlang:port_connect/2` ， `erlang:port_close/1` 、 `erlang:port_control/3` 、 `erlang:port_call/3 erlang:port_info/1,2`
+  请求信号发送到本地节点上的一个端口，该端口会以回复信号进行响应.
+- `register_name_request/register_name_reply, unregister_name_request/unregister_name_reply, whereis_name_request/whereis_name_reply`:
+  由于调用了`register/2`, `unregister/1`, 或 `whereis/1`. 请求信号被发送到`name service` ，以回复信号进行响应.
+- `timer_start_request/timer_start_reply, timer_cancel_request/timer_cancel_reply`:
+  由于调用了`erlang:send_after/3,4`, `erlang:start_timer/3,4`, 或 `erlang:cancel_timer/1,2`,
+  请求信号被发送到`timer service` ，`timer service`会以回复信号进行响应.
+
+### 进程字典
+
+> 进程字典是每个进程私有的隐式 Key-Value 存储, 不推荐使用
+
+- `put(Key, Value)`
+- `get(Key)`
+- `get()`
+- `get_keys(Value)`
+- `erase(Key)`
+- `erase()`
+
+## 分布式 Erlang
+
+一个分布式 Erlang 系统由多个彼此通信的 Erlang 运行时系统组成。
+每一个这样的运行时系统称为一个节点（node）。
+
+当使用 pid 时，不同节点上的进程之间进行消息传递，以及建立链接（link）和监控（monitor），都是透明的。
+然而，注册名（registered name）是节点本地的。
+
+这意味着，当使用注册名发送消息或进行相关操作时，必须同时指定节点。
+
+### 节点
+
+节点是一个正在执行的 Erlang 运行时系统,
+使用命令行标志 -name （长名称）或 -sname （简称）赋予一个名称,
+也可以在运行时通过调用 net_kernel:start/1 来指定节点名称.
+
+函数 `node()` 返回节点的名称。
+
+### 节点连接
+
+分布式 Erlang 系统中的节点是松散连接的, 第一次使用另一个节点,
+调用`spawn(Node, M, F, A)` 或 `net_adm:ping(Node)` ，则会尝试连接到该节点.
+
+默认情况下，连接是传递的。如果节点 A 连接到节点 B，而节点 B 又连接到节点 C，那么节点 A 也会尝试连接到节点 C。
+可以使用命令行标志 -connect_all false 关闭此功能.
+
+调用 `erlang:disconnect_node(Node)` 强制断开节点连接,
+`nodes/0` 返回当前连接的（可见）节点列表.
+
+在分布式 Erlang 系统中，有时需要连接到某个节点，而无需连接到所有其他节点,
+可以使用隐藏节点,隐藏节点是指使用命令行标志 `-hidden` 启动的节点, 隐藏节点与其他节点之间的连接不具有传递性，必须显式连接,
+隐藏节点不会出现在 nodes/0 返回的节点列表中。应该使用 `nodes(hidden)` 或 `nodes(connected)`查看.
+
+### 节点常用函数
+
+- `disconnect_node(Node)`: 强制断开节点的连接.
+- `erlang:get_cookie/0`: 返回当前节点的 cookie.
+- `is_alive/0`: 如果运行时系统是一个节点并且可以连接到其他节点，则返回 true ，否则返回 false.
+- `monitor_node(Node, Bool)`: 监视 Node 的状态。如果与节点的连接丢失，则会收到消息`{nodedown, Node}`.
+- `node/0`: 返回当前节点的名称.
+- `node(Arg)`: 返回参数 Arg （进程 ID、引用或端口）所在的节点.
+- `nodes/0`: 返回与此节点连接的所有可见节点的列表
+- `nodes(Arg)`: 根据 Arg ，此函数不仅可以返回可见节点的列表，还可以返回隐藏节点和先前已知的节点的列表.
+- `erlang:set_cookie(Cookie)`: 设置连接 Node 时使用的魔法 cookie.
+- `spawn_link(Node, Fun)`: 在远程节点上创建一个进程.
+- `spawn_opt(Node, Fun, Opts)`: 在远程节点上创建一个进程.
+- `spawn_link(Node, Module, Name, Args)`: 在远程节点上创建一个进程.
+- `spawn_opt(Node, Module, Name, Args, Opts)`: 在远程节点上创建一个进程.
+
+## 端口
+
+> Port 是 Erlang 与外部 OS 进程通信的受控通道
+
+创建端口的 Erlang 进程被称为端口所有者 ，或者说是端口的连接进程。
+所有进出该端口的通信都必须通过端口所有者进行。如果端口所有者终止，端口也会终止（如果外部程序编写正确，则外部程序也会终止）。
+
+调用`open_port(PortName, PortSettings)`创建端口.
+
+`PortName`的设置:
+
+- `{spawn, Command}`: 启动一个外部程序, `Command`是要运行的外部程序的名称, 除非找到名为 Command 的 Erlang 驱动程序，
+  否则 Command 会运行在 Erlang 工作空间之外.
+  对于外部程序，会搜索 `PATH`,这是通过`shell`程序完成的.
+- `{spawn_driver, Command}`: 加载驱动.
+- `{spawn_executable, FileName}`: 类似`{spawn， FileName}`但只运行外部可执行文件.
+- `{fd, In, Out}`: 允许 Erlang 进程访问 Erlang 当前打开的任何文件描述符。
+  文件描述符 In 可用于标准输入，文件描述符 Out 可用于标准输出.
+
+`PortSettings` 的设置:
+
+- `{packet, N}`: 每个消息前面都有一个长度头,长度用 N 个字节表示`N = 1 | 2 | 4`.
+- `stream`: 输出消息发送时没有数据包长度。Erlang 进程与外部对象之间必须使用用户自定义协议.
+- `{line, L}`: 消息按行递送, 消息数据格式为`{Flag， Line}`, Flag 表示 `eol` 或 `noeol`, L 指定最大行长.
+- `{cd, Dir}`: 仅适用于`{spawn, Command}`和`{spawn_executable, FileName}`,设置外部程序的工作目录.
+- `{env, Env}`: 仅适用于`{spawn, Command}`和`{spawn_executable, FileName}`,设置外部程序的环境变量.
+- `{args, [ string() | binary() ]}`: 仅适用于 `{spawn_executable， FileName} 并指定可执行文件的参数.
+- `{arg0, string() | binary()}`: 运行可执行文件时明确指定程序名参数.
+- `exit_status`: 仅适用于`{spawn, Command}`和`{spawn_executable, FileName}`,
+  当连接到端口的外部进程退出时，会收到如下形式的消息 `{Port，{exit_status，Status}}`.
+- `use_stdio`: 仅适用于`{spawn, Command}`和`{spawn_executable, FileName}`,
+  标准输入和输出（文件描述符 0 和 1）与 Erlang 通信.
+- `nouse_stdio`: 和 `use_stdio` 相反。它使用文件描述符 3 和 4 与 Erlang 通信.
+- `stderr_to_stdout`: 标准错误文件会被重定向到其标准输出文件.
+- `overlapped_io`: 仅影响 Windows 上的外部程序端口.
+- `in`: 端口只能用于输入.
+- `out`: 端口只能用于输出.
+- `binary`: 端口的所有输入输出都是二进制数据对象.
+- `eof`: 当端口读到 EOF 时：端口不会自动关闭，也不会触发退出信号；
+  而是向持有该端口的进程发送一条 {Port, eof} 消息.
+- `hide`: 在 Windows 上运行时，会在生成端口程序时抑制创建新的控制台窗口.
+- `{parallelism, Boolean}`: 调度端口任务.
+- `{busy_limits_port, {Low, High} | disabled}`: 设定用于控制端口繁忙状态的限制.
+- `{busy_limits_msgq, {Low, High} | disabled}`: 设置用于控制端口消息队列忙碌状态的限制.
+
+默认是所有端口将设置`[stream, use_stdio]`.
+
+### 驱动驱动
+
+> 过度设计, 可以使用nifs或port代替
+
+可以根据某些原则用 C 编写驱动程序，并动态链接到 Erlang 运行时系统。
+从 Erlang 程序员的角度看，连接驱动看起来像是一个端口 ，称为端口驱动 。
+
+### 端口通信
+
+发送给端口数据格式:
+
+- `{Pid,{command,Data}}`: 发送数据到端口.
+- `{Pid,close}`: 关闭端口.
+- `{Pid,{connect,NewPid}}`: 将 Port 的端口所有者设置为 `NewPid`.
+
+端口发送的数据格式:
+
+- `{Port,{data,Data}}`: 接收到端口的数据.
+- `{Port,closed}`: 响应`Port ! {Pid,close}`.
+- `{Port,connected}`: 响应`Port ! {Pid,{connect,NewPid}}`.
+- `{'EXIT',Port,Reason}`: 端口因某种原因终止.
+
+## 行为
+
+> behaviour 是 Erlang 用来定义“模块必须实现哪些回调函数”的接口机制.
+
+### 常见 OTP behaviours
+
+| Behaviour     | 用途          |
+| ------------- | ------------- |
+| `gen_server`  | 通用服务进程  |
+| `gen_statem`  | 状态机        |
+| `gen_event`   | 事件处理      |
+| `supervisor`  | 监督/重启策略 |
+| `application` | 应用生命周期  |
+
+### gen_server
+
+为服务器提供客户端-服务器关系
+
+```text
+gen_server module            Callback module
+-----------------            ---------------
+gen_server:start
+gen_server:start_monitor
+gen_server:start_link -----> Module:init/1
+
+gen_server:stop       -----> Module:terminate/2
+
+gen_server:call
+gen_server:send_request
+gen_server:multi_call -----> Module:handle_call/3
+
+gen_server:cast
+gen_server:abcast     -----> Module:handle_cast/2
+
+-                     -----> Module:handle_info/2
+
+-                     -----> Module:handle_continue/2
+
+-                     -----> Module:terminate/2
+
+-                     -----> Module:code_change/3
+```
+
+```erlang
+-module(ch3).
+-behaviour(gen_server).
+
+-export([start_link/0]).
+-export([alloc/0, free/1]).
+-export([init/1, handle_call/3, handle_cast/2]).
+
+start_link() ->
+    gen_server:start_link({local, ch3}, ch3, [], []).
+
+alloc() ->
+    gen_server:call(ch3, alloc).
+
+free(Ch) ->
+    gen_server:cast(ch3, {free, Ch}).
+
+init(_Args) ->
+    {ok, channels()}.
+
+handle_call(alloc, _From, Chs) ->
+    {Ch, Chs2} = alloc(Chs),
+    {reply, Ch, Chs2}.
+
+handle_cast({free, Ch}, Chs) ->
+    Chs2 = free(Ch, Chs),
+    {noreply, Chs2}.
+```
+
+### gen_statem
+
+提供了一种通用的状态机行为
+
+```text
+gen_statem module            Callback module
+-----------------            ---------------
+gen_statem:start
+gen_statem:start_monitor
+gen_statem:start_link -----> Module:init/1
+
+Server start or code change
+                      -----> Module:callback_mode/0
+                      selects callback mode
+
+gen_statem:stop
+Supervisor exit
+Callback failure      -----> Module:terminate/3
+
+gen_statem:call
+gen_statem:cast
+gen_statem:send_request
+erlang:send
+erlang:'!'            -----> Module:StateName/3
+                   or -----> Module:handle_event/4
+                   depending on callback mode
+
+Release upgrade/downgrade
+(code change)
+                      -----> Module:code_change/4
+```
+
+示例
+
+```erlang
+-module(door_fsm).
+-behaviour(gen_statem).
+
+%% API
+-export([start_link/1, unlock/2, lock/1, status/1]).
+
+%% gen_statem callbacks
+-export([init/1, callback_mode/0, terminate/3, code_change/4]).
+-export([locked/3, unlocked/3]).
+
+-define(AUTO_LOCK_MS, 5000).
+
+%% =========
+%% Public API
+%% =========
+
+start_link(PinCode) ->
+    gen_statem:start_link(?MODULE, #{pin => PinCode}, []).
+
+unlock(Pid, Pin) ->
+    gen_statem:call(Pid, {unlock, Pin}).
+
+lock(Pid) ->
+    gen_statem:call(Pid, lock).
+
+status(Pid) ->
+    gen_statem:call(Pid, status).
+
+%% =========
+%% gen_statem
+%% =========
+
+callback_mode() ->
+    state_functions.
+
+init(Data0 = #{pin := _}) ->
+    %% 初始状态：locked
+    {ok, locked, Data0}.
+
+terminate(_Reason, _State, _Data) ->
+    ok.
+
+code_change(_OldVsn, State, Data, _Extra) ->
+    {ok, State, Data}.
+
+%% =========
+%% State: locked
+%% =========
+locked({call, From}, {unlock, Pin}, Data = #{pin := Pin0}) ->
+    case Pin =:= Pin0 of
+        true ->
+            %% 转到 unlocked，并设置 state_timeout 自动上锁
+            Actions = [{reply, From, ok}, {state_timeout, ?AUTO_LOCK_MS, auto_lock}],
+            {next_state, unlocked, Data, Actions};
+        false ->
+            {keep_state_and_data, [{reply, From, {error, bad_pin}}]}
+    end;
+
+locked({call, From}, lock, _Data) ->
+    %% 已经是 locked
+    {keep_state_and_data, [{reply, From, ok}]};
+
+locked({call, From}, status, _Data) ->
+    {keep_state_and_data, [{reply, From, locked}]};
+
+locked(_EventType, _EventContent, _Data) ->
+    %% 其他事件忽略
+    keep_state_and_data.
+
+%% =========
+%% State: unlocked
+%% =========
+unlocked({call, From}, lock, Data) ->
+    %% 手动上锁：转回 locked（不再设置 state_timeout）
+    {next_state, locked, Data, [{reply, From, ok}]};
+
+unlocked({call, From}, {unlock, _Pin}, _Data) ->
+    %% 已解锁时重复 unlock：按需求可选择刷新计时或直接 ok
+    %% 这里选择：直接 ok（不刷新自动上锁计时）
+    {keep_state_and_data, [{reply, From, ok}]};
+
+unlocked({call, From}, status, _Data) ->
+    {keep_state_and_data, [{reply, From, unlocked}]};
+
+unlocked(state_timeout, auto_lock, Data) ->
+    %% 自动上锁触发
+    {next_state, locked, Data};
+
+unlocked(_EventType, _EventContent, _Data) ->
+    keep_state_and_data.
+```
+
+### gen_event
+
+通用事件处理行为
+
+```text
+gen_event module                   Callback module
+----------------                   ---------------
+gen_event:start
+gen_event:start_monitor
+gen_event:start_link       ----->  -
+
+gen_event:add_handler
+gen_event:add_sup_handler  ----->  Module:init/1
+
+gen_event:notify
+gen_event:sync_notify      ----->  Module:handle_event/2
+
+gen_event:send_request
+gen_event:call             ----->  Module:handle_call/2
+
+-                          ----->  Module:handle_info/2
+
+gen_event:delete_handler   ----->  Module:terminate/2
+
+gen_event:swap_handler
+gen_event:swap_sup_handler ----->  Module1:terminate/2
+                                   Module2:init/1
+
+gen_event:which_handlers   ----->  -
+
+gen_event:stop             ----->  Module:terminate/2
+
+-                          ----->  Module:code_change/3
+```
+
+示例(向终端写入错误消息的事件处理)
+
+```erlang
+-module(terminal_logger).
+-behaviour(gen_event).
+
+-export([init/1, handle_event/2, terminate/2]).
+
+init(_Args) ->
+    {ok, []}.
+
+handle_event(ErrorMsg, State) ->
+    io:format("***Error*** ~p~n", [ErrorMsg]),
+    {ok, State}.
+
+terminate(_Args, _State) ->
+    ok.
+```
+
+### supervisor
+
+启动子进程、监控子进程退出、按策略重启。不写业务逻辑，只管生命周期和容错。
+
+示例
+
+```erlang
+-module(my_worker).
+-behaviour(gen_server).
+
+-export([start_link/1, ping/1]).
+-export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
+
+start_link(Name) ->
+    gen_server:start_link({local, Name}, ?MODULE, #{name => Name}, []).
+
+ping(Name) ->
+    gen_server:call(Name, ping).
+
+init(State) ->
+    {ok, State}.
+
+handle_call(ping, _From, State) ->
+    {reply, pong, State};
+handle_call(_Req, _From, State) ->
+    {reply, ok, State}.
+
+handle_cast(_Msg, State) ->
+    {noreply, State}.
+
+handle_info(_Info, State) ->
+    {noreply, State}.
+
+terminate(_Reason, _State) ->
+    ok.
+
+code_change(_OldVsn, State, _Extra) ->
+    {ok, State}.
+```
+
+```erlang
+-module(my_sup).
+-behaviour(supervisor).
+
+-export([start_link/0]).
+-export([init/1]).
+
+start_link() ->
+    supervisor:start_link({local, ?MODULE}, ?MODULE, []).
+
+init([]) ->
+    SupFlags = #{
+        strategy => one_for_one,
+        intensity => 3,
+        period => 10
+    },
+
+    %% ChildSpec 使用“map 规格”（现代 OTP 写法）
+    Child1 = #{
+        id => w1,
+        start => {my_worker, start_link, [w1]},
+        restart => permanent,
+        shutdown => 5000,
+        type => worker,
+        modules => [my_worker]
+    },
+    Child2 = #{
+        id => w2,
+        start => {my_worker, start_link, [w2]},
+        restart => permanent,
+        shutdown => 5000,
+        type => worker,
+        modules => [my_worker]
+    },
+
+    {ok, {SupFlags, [Child1, Child2]}}.
+```
+
+### application
+
+应用指的是一个实现某些特定功能的组件，可以作为一个单元启动和停止，并且可以在其他系统中重复使用.
+
+```erlang
+-module(myapp_app).
+-behaviour(application).
+
+-export([start/2, stop/1]).
+
+start(_StartType, _StartArgs) ->
+    myapp_sup:start_link().
+
+stop(_State) ->
+    ok.
+```
+
+### 自定义behaviour
+
+```erlang
+-module(my_worker).
+
+%% 回调规范（类型 + 函数签名）
+-callback init(Args :: term()) ->
+    {ok, State :: term()} | {stop, Reason :: term()}.
+
+-callback handle(Task :: term(), State :: term()) ->
+    {ok, Result :: term(), NewState :: term()}
+  | {error, Reason :: term(), NewState :: term()}
+  | {stop, Reason :: term(), NewState :: term()}.
+
+%% 可选回调（不实现也不会编译告警）
+-optional_callbacks([terminate/2]).
+
+-callback terminate(Reason :: term(), State :: term()) ->
+    ok.
+
+%% behaviour 模块本身通常不需要导出任何函数
+```
