@@ -98,9 +98,9 @@ export default defineConfig({
           autogenerate: { directory: "16-asm" },
         },
         {
-          label: "PHP",
+          label: "AI",
           collapsed: true,
-          autogenerate: { directory: "17-php" },
+          autogenerate: { directory: "17-ai" },
         },
         {
           label: "C#",
