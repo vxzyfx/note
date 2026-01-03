@@ -7,3 +7,4 @@ title: 其他语言目录
 3. [Groovy语言](3-groovy)
 4. [Nix语言](4-nix)
 5. [erlang语言](5-erlang)
+6. [elixir语言](6-elixir)
