@@ -1,9 +1,15 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
+import mermaid from 'astro-mermaid';
+
 
 export default defineConfig({
   site: "https://note.shug.site",
   integrations: [
+    mermaid({
+      theme: 'forest',
+      autoTheme: true
+    }),
     starlight({
       title: "shug的笔记集合",
       lastUpdated: true,
