@@ -108,9 +108,9 @@ export default defineConfig({
           autogenerate: { directory: "18-csharp" },
         },
         {
-          label: "Ruby",
+          label: "区块链",
           collapsed: true,
-          autogenerate: { directory: "19-ruby" },
+          autogenerate: { directory: "19-blockchain" },
         },
         {
           label: "文件系统",
