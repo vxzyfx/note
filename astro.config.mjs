@@ -1,10 +1,18 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import mermaid from 'astro-mermaid';
+import remarkMath from 'remark-math';
+import rehypeMathJax from 'rehype-mathjax';
 
 
 export default defineConfig({
   site: "https://note.shug.site",
+  markdown: {
+    smartypants: false,
+    gfm: false,
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeMathJax],
+  },
   integrations: [
     mermaid({
       theme: 'forest',
