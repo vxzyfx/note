@@ -1,0 +1,3 @@
+.MathJax:not([display]) svg {
+	display: inline !important;
+}

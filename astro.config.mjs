@@ -1,9 +1,9 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import mermaid from 'astro-mermaid';
+import echarts from './echarts-integration';
 import remarkMath from 'remark-math';
 import rehypeMathJax from 'rehype-mathjax';
-
 
 export default defineConfig({
   site: "https://note.shug.site",
@@ -18,9 +18,11 @@ export default defineConfig({
       theme: 'forest',
       autoTheme: true
     }),
+    echarts(),
     starlight({
       title: "shug的笔记集合",
       lastUpdated: true,
+      customCss: ["./global.css"],
       social: [
         { icon: 'github', label: 'GitHub', href: "https://github.com/vxzyfx/note" },
       ],
