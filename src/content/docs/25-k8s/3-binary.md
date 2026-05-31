@@ -1,13 +1,19 @@
 ---
 title: Kubernetes二进制安装方式
+description: 通过二进制组件搭建 Kubernetes 集群的高风险实验笔记和版本化前提。
 ---
+<!-- cspell:words IPVS conntrack rpfilter ipip inotify keepalive intvl syncookies somaxconn ipvsadm apiserver coredns kubelet kubeconfig keyCertSign containerd runc etcd -->
+
+> 高风险实验笔记：本页会修改内核模块、sysctl、系统服务、证书、kubeconfig、容器运行时和 Kubernetes 集群状态。示例面向隔离实验环境，不是生产安装基线；生产环境优先使用 Kubernetes 官方安装、组件配置和安全加固文档，并为所有下载的二进制文件校验签名或 checksum。
+>
+> 版本前提：本文示例显式使用 Kubernetes `v1.32.0`、containerd `2.0.1`、runc `1.2.3`、CNI plugins `1.6.1`、etcd `3.5.17`。这些版本固定为示例输入，不表示当前推荐版本；升级时必须按目标版本重新核对组件参数和配置 API。
 
 ## 准备工作
 
-- 关闭swap
-- 检查MAC地址和product_uuid
+- 按目标 Kubernetes 版本确认 swap 策略；默认生产安装通常要求关闭 swap，启用 swap 需要显式配置 kubelet 的 `failSwapOn` 和 `memorySwap` 行为
+- 检查 MAC 地址和 product_uuid
 
-### 修改hosts文件
+### 修改 hosts 文件
 
 ```txt
 192.168.1.31 k8s-master01
@@ -20,9 +26,11 @@ title: Kubernetes二进制安装方式
 192.168.1.51 k8s-apiserver
 ```
 
-`192.168.1.51`应该设置为虚拟ip
+`192.168.1.51` 应该设置为虚拟 ip
 
 ### 加载内核模块
+
+> 影响范围：下面命令会写入 `/etc/modules-load.d/ipvs.conf` 并重启 `systemd-modules-load.service`，影响节点后续启动时加载的内核模块。执行前先确认内核支持这些模块，并记录当前配置。
 
 ```bash
 cat >> /etc/modules-load.d/ipvs.conf <<EOF 
@@ -58,6 +66,8 @@ systemctl restart systemd-modules-load.service
 - ipip: 用于实现 IP 封装在 IP（IP-over-IP）的隧道功能。它可以在不同网络之间创建虚拟隧道来传输 IP 数据包。
 
 ### 修改内核参数
+
+> 影响范围：下面命令会覆盖 `/etc/sysctl.d/k8s.conf` 并立即执行 `sysctl --system`，影响转发、conntrack、TCP、文件描述符和 IPv6 行为。生产环境应按内核版本、节点规格和 CNI 要求逐项评估。
 
 ```bash
 cat <<EOF > /etc/sysctl.d/k8s.conf
@@ -97,28 +107,30 @@ sysctl --system
 - net.ipv4.ip_forward=1: 允许服务器作为网络路由器转发数据包
 - vm.overcommit_memory=1: 该设置允许原始的内存过量分配策略，当系统的内存已经被完全使用时，系统仍然会分配额外的内存。
 - vm.panic_on_oom=0: 当系统内存不足（OOM）时，禁用系统崩溃和重启。
-- fs.inotify.max_user_watches=89100: 设置系统允许一个用户的inotify实例可以监控的文件数目的上限。
+- fs.inotify.max_user_watches=89100: 设置系统允许一个用户的 inotify 实例可以监控的文件数目的上限。
 - fs.file-max=52706963: 设置系统同时打开的文件数的上限。
 - fs.nr_open=52706963: 设置系统同时打开的文件描述符数的上限。
 - net.netfilter.nf_conntrack_max=2310720: 置系统可以创建的网络连接跟踪表项的最大数量。
-- net.ipv4.tcp_keepalive_time=600: 设置TCP套接字的空闲超时时间（秒），超过该时间没有活动数据时，内核会发送心跳包。
-- net.ipv4.tcp_keepalive_probes=3: 设置未收到响应的TCP心跳探测次数。
-- net.ipv4.tcp_keepalive_intvl=15: 设置TCP心跳探测的时间间隔（秒）。
-- net.ipv4.tcp_max_tw_buckets=36000: 设置系统可以使用的TIME_WAIT套接字的最大数量。
-- net.ipv4.tcp_tw_reuse=1: 启用TIME_WAIT套接字的重新利用，允许新的套接字使用旧的TIME_WAIT套接字。
-- net.ipv4.tcp_max_orphans=327680: 设置系统可以同时存在的TCP套接字垃圾回收包裹数的最大数量。
-- net.ipv4.tcp_orphan_retries=3: 设置系统对于孤立的TCP套接字的重试次数。
-- net.ipv4.tcp_syncookies=1: 启用TCP SYN cookies保护，用于防止SYN洪泛攻击。
-- net.ipv4.tcp_max_syn_backlog=16384: 设置新的TCP连接的半连接数（半连接队列）的最大长度。
+- net.ipv4.tcp_keepalive_time=600: 设置 TCP 套接字的空闲超时时间（秒），超过该时间没有活动数据时，内核会发送心跳包。
+- net.ipv4.tcp_keepalive_probes=3: 设置未收到响应的 TCP 心跳探测次数。
+- net.ipv4.tcp_keepalive_intvl=15: 设置 TCP 心跳探测的时间间隔（秒）。
+- net.ipv4.tcp_max_tw_buckets=36000: 设置系统可以使用的 TIME_WAIT 套接字的最大数量。
+- net.ipv4.tcp_tw_reuse=1: 启用 TIME_WAIT 套接字的重新利用，允许新的套接字使用旧的 TIME_WAIT 套接字。
+- net.ipv4.tcp_max_orphans=327680: 设置系统可以同时存在的 TCP 套接字垃圾回收包裹数的最大数量。
+- net.ipv4.tcp_orphan_retries=3: 设置系统对于孤立的 TCP 套接字的重试次数。
+- net.ipv4.tcp_syncookies=1: 启用 TCP SYN cookies 保护，用于防止 SYN 洪泛攻击。
+- net.ipv4.tcp_max_syn_backlog=16384: 设置新的 TCP 连接的半连接数（半连接队列）的最大长度。
 - net.ipv4.ip_conntrack_max=65536: 设置系统可以创建的网络连接跟踪表项的最大数量。
-- net.ipv4.tcp_timestamps=0: 关闭TCP时间戳功能，用于提供更好的安全性。
+- net.ipv4.tcp_timestamps=0: 关闭 TCP 时间戳功能，用于提供更好的安全性。
 - net.core.somaxconn=16384: 设置系统核心层的连接队列的最大值。
-- net.ipv6.conf.all.disable_ipv6=0:  启用IPv6协议。
-- net.ipv6.conf.default.disable_ipv6=0: 启用IPv6协议。
-- net.ipv6.conf.lo.disable_ipv6=0: 启用IPv6协议。
-- net.ipv6.conf.all.forwarding=1: 允许IPv6数据包转发。
+- net.ipv6.conf.all.disable_ipv6=0: 启用 IPv6 协议。
+- net.ipv6.conf.default.disable_ipv6=0: 启用 IPv6 协议。
+- net.ipv6.conf.lo.disable_ipv6=0: 启用 IPv6 协议。
+- net.ipv6.conf.all.forwarding=1: 允许 IPv6 数据包转发。
 
 ### 安装运行时
+
+> 供应链提醒：不要只下载二进制文件后直接解包到系统目录。应从官方 release 页面取得目标版本、checksum 和签名验证材料，校验通过后再安装。
 
 [containerd](https://github.com/containerd/containerd)
 
@@ -130,13 +142,13 @@ wget https://github.com/containerd/containerd/releases/download/v2.0.1/container
 curl -sSL -O https://github.com/containerd/containerd/releases/download/v2.0.1/containerd-2.0.1-linux-amd64.tar.gz
 ```
 
-2. 安装
+1. 安装
 
 ```bash
 tar Cxzvf /usr/local containerd-2.0.1-linux-amd64.tar.gz
 ```
 
-3. 设置systemd服务
+1. 设置 systemd 服务
 
 ```bash
 cat <<EOF > /lib/systemd/system/containerd.service
@@ -166,7 +178,7 @@ WantedBy=multi-user.target
 EOF
 ```
 
-4. 安装runc
+1. 安装 runc
 
 [runc](https://github.com/opencontainers/runc)
 
@@ -178,7 +190,7 @@ curl -sSL -O https://github.com/opencontainers/runc/releases/download/v1.2.3/run
 install -m 755 runc.amd64 /usr/local/sbin/runc
 ```
 
-5. 安装cri
+1. 安装 cri
 
 [cri](https://github.com/containernetworking/plugins)
 
@@ -191,24 +203,26 @@ mkdir -p /opt/cni/bin
 tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.6.1.tgz
 ```
 
-6. 开启containerd
+1. 开启 containerd
+
+> 影响范围：`systemctl enable --now containerd` 会立即启动 containerd 并设置开机自启。先确认 `/usr/local/bin/containerd`、`runc`、CNI 插件和 systemd unit 均来自已校验的目标版本。
 
 ```bash
 systemctl daemon-reload
 systemctl enable --now containerd
 ```
 
-安装ipvsadm
+安装 ipvsadm
 
 ```bash
-apt install ipvsadm ipset sysstat conntrack -y
+sudo apt install ipvsadm ipset sysstat conntrack -y
 ```
 
 ## 主节点安装
 
-以`k8s-master01`为例, apiserver的统一入口设置为`k8s-apiserver`
+以 `k8s-master01` 为例, apiserver 的统一入口设置为 `k8s-apiserver`
 
-### 安装ectd
+### 安装 etcd
 
 [etcd](https://github.com/etcd-io/etcd)
 
@@ -221,8 +235,7 @@ tar xf etcd-v3.5.17-linux-amd64.tar.gz
 mv etcd-v3.5.17-linux-amd64/etcd* /usr/local/bin/
 ```
 
-
-### 安装Kubernetes组件
+### 安装 Kubernetes 组件
 
 ```bash
 version="v1.32.0"
@@ -250,24 +263,26 @@ chmod +x /usr/local/bin/kubelet
 chmod +x /usr/local/bin/kubectl
 ```
 
-### 生成etcd证书
+### 生成 etcd 证书
 
-etcd证书存放目录`/etc/kubernetes/pki/etcd`
+> 证书提醒：示例会在 `/etc/kubernetes/pki/etcd` 生成私钥和证书。私钥不得提交仓库或复制到无关节点；证书 SAN 必须按实际主机名、VIP 和 IP 地址调整。
+
+etcd 证书存放目录 `/etc/kubernetes/pki/etcd`
 
 ```bash
 mkdir -p /etc/kubernetes/pki/etcd
 cd /etc/kubernetes/pki/etcd
 ```
 
-生成etcd的ca证书
+生成 etcd 的 ca 证书
 
 ```bash
 openssl ecparam -genkey -name prime256v1 -noout -out ca.key
 
-openssl req -x509 -new -nodes -key ca.key -sha256 -days 3650 -out ca.crt -subj  "/CN=etcd-ca" -addext "basicConstraints=critical,CA:TRUE" -addext "keyUsage=critical,digitalSignature,keyEncipherment,Certificate Sign"
+openssl req -x509 -new -nodes -key ca.key -sha256 -days 3650 -out ca.crt -subj  "/CN=etcd-ca" -addext "basicConstraints=critical,CA:TRUE" -addext "keyUsage=critical,digitalSignature,keyEncipherment,keyCertSign"
 ```
 
-生成`server`证书用于etcd的server端
+生成 `server` 证书用于 etcd 的 server 端
 
 ```bash
 openssl ecparam -genkey -name prime256v1 -noout -out server.key
@@ -277,7 +292,7 @@ openssl req -x509 -new -nodes -key server.key -sha256 -days 3650 -CA ca.crt -CAk
 openssl verify -CAfile ca.crt server.crt
 ```
 
-生成`peer`证书用于etcd服务端之间的通信
+生成 `peer` 证书用于 etcd 服务端之间的通信
 
 ```bash
 openssl ecparam -genkey -name prime256v1 -noout -out peer.key
@@ -287,7 +302,7 @@ openssl req -x509 -new -nodes -key peer.key -sha256 -days 3650 -CA ca.crt -CAkey
 openssl verify -CAfile ca.crt peer.crt
 ```
 
-生成`kube-apiserver-etcd-client`证书用于kube-apiserver访问etcd
+生成 `kube-apiserver-etcd-client` 证书用于 kube-apiserver 访问 etcd
 
 ```bash
 openssl ecparam -genkey -name prime256v1 -noout -out kube-apiserver-etcd-client.key
@@ -297,25 +312,25 @@ openssl req -x509 -new -nodes -key kube-apiserver-etcd-client.key -sha256  -days
 openssl verify -CAfile ca.crt kube-apiserver-etcd-client.crt
 ```
 
-### 生成Kubernetes的证书
+### 生成 Kubernetes 的证书
 
-Kubernetes证书存放目录`/etc/kubernetes/pki`
+Kubernetes 证书存放目录 `/etc/kubernetes/pki`
 
 ```bash
 mkdir -p /etc/kubernetes/pki
 cd /etc/kubernetes/pki
 ```
 
-生成Kubernetes的CA证书
+生成 Kubernetes 的 CA 证书
 
 ```bash
 openssl ecparam -genkey -name prime256v1 -noout -out ca.key
-openssl req -x509 -new -nodes -key ca.key -sha256 -days 3650 -out ca.crt -subj "/CN=kubernetes" -addext "basicConstraints=critical,CA:TRUE" -addext "keyUsage=critical,digitalSignature,keyEncipherment,Certificate Sign"
-``` 
+openssl req -x509 -new -nodes -key ca.key -sha256 -days 3650 -out ca.crt -subj "/CN=kubernetes" -addext "basicConstraints=critical,CA:TRUE" -addext "keyUsage=critical,digitalSignature,keyEncipherment,keyCertSign"
+```
 
-生成apiserver证书用于apiserver服务端
+生成 apiserver 证书用于 apiserver 服务端
 
-> 将`service_cluster_ip_range`的ip段的第一个ip加入证书中，如`10.10.0.1`.
+> 将 `service_cluster_ip_range` 的 ip 段的第一个 ip 加入证书中，如 `10.10.0.1` .
 
 ```bash
 openssl ecparam -genkey -name prime256v1 -noout -out apiserver.key
@@ -325,7 +340,7 @@ openssl req -x509 -new -nodes -key apiserver.key -sha256 -days 3650 -out apiserv
 openssl verify -CAfile ca.crt apiserver.crt
 ```
 
-生成apiserver-kubelet-client证书用于kubelet与apiserver通信
+生成 apiserver-kubelet-client 证书用于 kubelet 与 apiserver 通信
 
 ```bash
 openssl ecparam -genkey -name prime256v1 -noout -out apiserver-kubelet-client.key
@@ -335,7 +350,7 @@ openssl req -x509 -new -nodes -key apiserver-kubelet-client.key -sha256 -days 36
 openssl verify -CAfile ca.crt apiserver-kubelet-client.crt
 ```
 
-生成kube-controller-manager证书用于kube-controller-manager与apiserver通信
+生成 kube-controller-manager 证书用于 kube-controller-manager 与 apiserver 通信
 
 ```bash
 openssl ecparam -genkey -name prime256v1 -noout -out kube-controller-manager.key
@@ -345,7 +360,7 @@ openssl req -x509 -new -nodes -key kube-controller-manager.key -sha256 -days 365
 openssl verify -CAfile ca.crt kube-controller-manager.crt
 ```
 
-生成kube-scheduler证书用于kube-scheduler与apiserver通信
+生成 kube-scheduler 证书用于 kube-scheduler 与 apiserver 通信
 
 ```bash
 openssl ecparam -genkey -name prime256v1 -noout -out kube-scheduler.key
@@ -355,7 +370,7 @@ openssl req -x509 -new -nodes -key kube-scheduler.key -sha256 -days 3650 -out ku
 openssl verify -CAfile ca.crt kube-scheduler.crt
 ```
 
-生成kube-proxy证书用于kube-proxy与apiserver通信
+生成 kube-proxy 证书用于 kube-proxy 与 apiserver 通信
 
 ```bash
 openssl ecparam -genkey -name prime256v1 -noout -out kube-proxy.key
@@ -365,7 +380,7 @@ openssl req -x509 -new -nodes -key kube-proxy.key -sha256 -days 3650 -out kube-p
 openssl verify -CAfile ca.crt kube-proxy.crt
 ```
 
-生成admin证书用于admin与apiserver通信
+生成 admin 证书用于 admin 与 apiserver 通信
 
 ```bash
 openssl ecparam -genkey -name prime256v1 -noout -out admin.key
@@ -375,14 +390,14 @@ openssl req -x509 -new -nodes -key admin.key -sha256 -days 3650 -out admin.crt -
 openssl verify -CAfile ca.crt admin.crt
 ```
 
-生成front-proxy的CA
+生成 front-proxy 的 CA
 
 ```bash
 openssl ecparam -genkey -name prime256v1 -noout -out front-proxy-ca.key
-openssl req -x509 -new -nodes -key front-proxy-ca.key -sha256 -days 3650 -out front-proxy-ca.crt -subj  "/CN=front-proxy-ca" -addext "subjectAltName=DNS:front-proxy-ca" -addext "basicConstraints=critical,CA:TRUE" -addext "keyUsage=critical,digitalSignature,keyEncipherment,Certificate Sign"
+openssl req -x509 -new -nodes -key front-proxy-ca.key -sha256 -days 3650 -out front-proxy-ca.crt -subj  "/CN=front-proxy-ca" -addext "subjectAltName=DNS:front-proxy-ca" -addext "basicConstraints=critical,CA:TRUE" -addext "keyUsage=critical,digitalSignature,keyEncipherment,keyCertSign"
 ```
 
-签发front-proxy-client证书
+签发 front-proxy-client 证书
 
 ```bash
 openssl ecparam -genkey -name prime256v1 -noout -out front-proxy-client.key
@@ -392,7 +407,7 @@ openssl req -x509 -new -nodes -key front-proxy-client.key -sha256  -days 3650 -o
 openssl verify -CAfile front-proxy-ca.crt front-proxy-client.crt
 ```
 
-生成ServiceAccount Key
+生成 ServiceAccount Key
 
 ```bash
 openssl ecparam -genkey -name prime256v1 -out sa.key
@@ -435,9 +450,12 @@ openssl ec -in sa.key -pubout -out sa.pub
     └── sa.pub
 ```
 
-### 生成kubeconfig文件
+### 生成 kubeconfig 文件
 
-生成controller-manager.conf
+> 凭据提醒：kubeconfig 文件会内嵌客户端证书、私钥或 bootstrap token，等同集群凭据。生成后限制文件权限，避免写入公开仓库。
+
+生成 controller-manager.conf
+
 ```bash
 kubectl config set-cluster kubernetes \
    --certificate-authority=/etc/kubernetes/pki/ca.crt \
@@ -460,7 +478,8 @@ kubectl config use-context system:kube-controller-manager@kubernetes \
    --kubeconfig=/etc/kubernetes/controller-manager.conf
 ```
 
-生成scheduler.conf
+生成 scheduler.conf
+
 ```bash
 kubectl config set-cluster kubernetes \
    --certificate-authority=/etc/kubernetes/pki/ca.crt \
@@ -483,7 +502,8 @@ kubectl config use-context system:kube-scheduler@kubernetes \
    --kubeconfig=/etc/kubernetes/scheduler.conf
 ```
 
-生成admin.conf
+生成 admin.conf
+
 ```bash
 kubectl config set-cluster kubernetes \
    --certificate-authority=/etc/kubernetes/pki/ca.crt \
@@ -506,7 +526,7 @@ kubectl config use-context kubernetes-admin@kubernetes \
    --kubeconfig=/etc/kubernetes/admin.conf
 ```
 
-生成kube-proxy.conf
+生成 kube-proxy.conf
 
 ```bash
 kubectl config set-cluster kubernetes \
@@ -530,7 +550,8 @@ kubectl config use-context kube-proxy@kubernetes \
    --kubeconfig=/etc/kubernetes/kube-proxy.conf
 ```
 
-生成bootstrap-kubelet.conf
+生成 bootstrap-kubelet.conf
+
 ```bash
 
 kubectl config set-cluster bootstrap \
@@ -539,7 +560,7 @@ kubectl config set-cluster bootstrap \
    --kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf
 
 kubectl config set-credentials kubelet-bootstrap \
-   --token=0e5634.55bf9fc480d29395 \
+   --token=<bootstrap-token-id>.<bootstrap-token-secret> \
    --kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf
 
 kubectl config set-context bootstrap \
@@ -592,9 +613,12 @@ kubectl config use-context bootstrap \
 └── scheduler.conf
 ```
 
-### 设置systemd服务
+### 设置 systemd 服务
 
-生成etcd服务
+> 影响范围：下面多段 `cat <<EOF > /usr/lib/systemd/system/*.service` 会覆盖 systemd unit 文件。写入前先备份旧 unit，写入后用 `systemd-analyze verify <unit>` 或 `systemctl cat <unit>` 检查内容，再启动服务。
+
+生成 etcd 服务
+
 ```bash
 cat <<EOF > /usr/lib/systemd/system/etcd.service
 [Unit]
@@ -634,7 +658,8 @@ Alias=etcd3.service
 EOF
 ```
 
-生成kube-apiserver服务
+生成 kube-apiserver 服务
+
 ```bash
 cat <<EOF > /usr/lib/systemd/system/kube-apiserver.service
 [Unit]
@@ -680,7 +705,7 @@ WantedBy=multi-user.target
 EOF
 ```
 
-生成kube-controller-manager服务
+生成 kube-controller-manager 服务
 
 ```bash
 cat <<EOF > /usr/lib/systemd/system/kube-controller-manager.service
@@ -719,7 +744,7 @@ WantedBy=multi-user.target
 EOF
 ```
 
-生成kube-scheduler服务
+生成 kube-scheduler 服务
 
 ```bash
 cat <<EOF > /usr/lib/systemd/system/kube-scheduler.service
@@ -744,7 +769,7 @@ WantedBy=multi-user.target
 EOF
 ```
 
-生成kubelet服务
+生成 kubelet 服务
 
 ```bash
 cat <<EOF > /usr/lib/systemd/system/kubelet.service
@@ -768,7 +793,8 @@ WantedBy=multi-user.target
 EOF
 ```
 
-生成`/etc/kubernetes/kubelet-conf.yaml`配置文件
+生成 `/etc/kubernetes/kubelet-conf.yaml` 配置文件
+
 ```bash
 cat <<EOF > /etc/kubernetes/kubelet-conf.yaml
 apiVersion: kubelet.config.k8s.io/v1beta1
@@ -822,7 +848,7 @@ serverTLSBootstrap: true
 EOF
 ```
 
-生成kube-proxy服务
+生成 kube-proxy 服务
 
 ```bash
 cat <<EOF > /usr/lib/systemd/system/kube-proxy.service
@@ -844,7 +870,8 @@ WantedBy=multi-user.target
 EOF
 ```
 
-生成`/etc/kubernetes/kube-proxy.yaml`
+生成 `/etc/kubernetes/kube-proxy.yaml`
+
 ```bash
 cat <<EOF > /etc/kubernetes/kube-proxy.yaml
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
@@ -888,6 +915,8 @@ EOF
 
 ### 启动主节点
 
+> 影响范围：下面命令会立即启动 etcd、API Server、controller-manager、scheduler 和 kube-proxy。先确认证书、kubeconfig、etcd 数据目录、端口和 systemd unit 均已校验。
+
 ```bash
 systemctl enable --now etcd.service 
 systemctl enable --now kube-apiserver.service
@@ -896,7 +925,9 @@ systemctl enable --now kube-scheduler.service
 systemctl enable --now kube-proxy.service
 ```
 
-设置TLS bootstrapping
+设置 TLS bootstrapping
+
+> 凭据提醒：bootstrap token 应通过安全随机方式生成，并设置合适的过期时间。下面 YAML 使用占位符，不能直接作为真实凭据提交或复用。
 
 `bootstrapping.yaml`
 
@@ -904,13 +935,13 @@ systemctl enable --now kube-proxy.service
 apiVersion: v1
 kind: Secret
 metadata:
-  name: bootstrap-token-0e5634
+  name: bootstrap-token-<token-id>
   namespace: kube-system
 type: bootstrap.kubernetes.io/token
 stringData:
   description: "The default bootstrap token generated by 'kubelet '."
-  token-id: "0e5634"
-  token-secret: "55bf9fc480d29395"
+  token-id: "<token-id>"
+  token-secret: "<token-secret>"
   usage-bootstrap-authentication: "true"
   usage-bootstrap-signing: "true"
   auth-extra-groups: system:bootstrappers:default-node-token,system:bootstrappers:worker,system:bootstrappers:ingress
@@ -959,7 +990,7 @@ roleRef:
 kubectl apply -f bootstrapping.yaml
 ```
 
-启动kubelet
+启动 kubelet
 
 ```bash
 systemctl enable --now kubelet.service
@@ -967,14 +998,14 @@ systemctl enable --now kubelet.service
 
 ### 配置节点
 
-复制admin.config
+复制 admin.config
 
 ```bash
 mkdir ~/.kube
 cp /etc/kubernetes/admin.conf ~/.kube/config
 ```
 
-查看证书kubelet证书申请
+查看证书 kubelet 证书申请
 
 ```bash
 kubectl get csr
@@ -986,15 +1017,17 @@ kubectl get csr
 kubectl certificate approve <name>
 ```
 
-### 安装CoreDNS
+### 安装 CoreDNS
 
-安装helm
+> 供应链提醒：`curl ... | bash` 会把远程脚本直接交给 shell 执行，适合临时实验但不适合生产变更。生产环境应下载固定版本 Helm release，校验签名/checksum 后安装。
+
+安装 helm
 
 ```bash
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 ```
 
-安装CoreDNS的helm仓库
+安装 CoreDNS 的 helm 仓库
 
 ```bash
 helm repo add coredns https://coredns.github.io/helm
@@ -1006,13 +1039,15 @@ service:
   clusterIP: "10.10.0.10"
 ```
 
-安装coredns
+安装 coredns
 
 ```bash
 helm -n kube-system install coredns coredns/coredns -f coredns-values.yaml
 ```
 
 ### 安装网络插件
+
+> 影响范围：网络插件会创建 DaemonSet、RBAC、CNI 配置并影响 Pod 网络。部署前确认 Pod CIDR、Kubernetes 版本和插件版本兼容。
 
 #### flannel
 
@@ -1024,12 +1059,11 @@ wget https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel
 curl -sSL -O https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 ```
 
-修改`Network`为podCIDR，如`10.11.0.0`, 安装flannel
+修改 `Network` 为 podCIDR，如 `10.11.0.0` , 安装 flannel
 
 ```bash
 kubectl apply -f kube-flannel.yml 
 ```
-
 
 ## 工作节点安装
 
@@ -1038,7 +1072,7 @@ kubectl apply -f kube-flannel.yml
 - `/etc/kubernetes/pki/ca.crt`
 - `/etc/kubernetes/bootstrap-kubelet.conf`
 
-### 安装Kubernetes组件
+### 安装 Kubernetes 组件
 
 ```bash
 version="v1.32.0"
@@ -1051,11 +1085,12 @@ curl -sSL https://dl.k8s.io/${version}/bin/linux/amd64/kube-proxy -o /usr/local/
 curl -sSL https://dl.k8s.io/${version}/bin/linux/amd64/kubelet -o /usr/local/bin/kubelet
 
 chmod +x /usr/local/bin/kube-proxy
-chmod +x /usr/local/bin/kubectl
+chmod +x /usr/local/bin/kubelet
 ```
 
-### 启动systemd服务
-生成kubelet服务
+### 启动 systemd 服务
+
+生成 kubelet 服务
 
 ```bash
 cat <<EOF > /usr/lib/systemd/system/kubelet.service
@@ -1079,7 +1114,8 @@ WantedBy=multi-user.target
 EOF
 ```
 
-生成`/etc/kubernetes/kubelet-conf.yaml`配置文件
+生成 `/etc/kubernetes/kubelet-conf.yaml` 配置文件
+
 ```bash
 cat <<EOF > /etc/kubernetes/kubelet-conf.yaml
 apiVersion: kubelet.config.k8s.io/v1beta1
@@ -1133,7 +1169,7 @@ serverTLSBootstrap: true
 EOF
 ```
 
-生成kube-proxy服务
+生成 kube-proxy 服务
 
 ```bash
 cat <<EOF > /usr/lib/systemd/system/kube-proxy.service
@@ -1155,7 +1191,8 @@ WantedBy=multi-user.target
 EOF
 ```
 
-生成`/etc/kubernetes/kube-proxy.yaml`
+生成 `/etc/kubernetes/kube-proxy.yaml`
+
 ```bash
 cat <<EOF > /etc/kubernetes/kube-proxy.yaml
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
@@ -1196,3 +1233,17 @@ portRange: ""
 udpIdleTimeout: 250ms
 EOF
 ```
+
+## 参考资料
+
+1. [Kubernetes production environment](https://kubernetes.io/docs/setup/production-environment/)（访问日期：2026-05-31）
+1. [Kubernetes command-line tools reference](https://kubernetes.io/docs/reference/command-line-tools-reference/)（访问日期：2026-05-31）
+1. [Kubernetes component config API](https://kubernetes.io/docs/reference/config-api/)（访问日期：2026-05-31）
+1. [Kubernetes container runtimes](https://kubernetes.io/docs/setup/production-environment/container-runtimes/)（访问日期：2026-05-31）
+1. [Kubelet configuration v1beta1](https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/)（访问日期：2026-05-31）
+1. [Kube-proxy configuration v1alpha1](https://kubernetes.io/docs/reference/config-api/kube-proxy-config.v1alpha1/)（访问日期：2026-05-31）
+1. [Kubernetes v1.32 release notes](https://kubernetes.io/blog/2024/12/11/kubernetes-v1-32-release/)（访问日期：2026-05-31）
+1. [containerd releases](https://github.com/containerd/containerd/releases)（访问日期：2026-05-31）
+1. [Open Containers runc releases](https://github.com/opencontainers/runc/releases)（访问日期：2026-05-31）
+1. [CNI plugins releases](https://github.com/containernetworking/plugins/releases)（访问日期：2026-05-31）
+1. [etcd releases](https://github.com/etcd-io/etcd/releases)（访问日期：2026-05-31）

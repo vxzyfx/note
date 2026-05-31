@@ -1,43 +1,47 @@
 ---
 title: linux网络管理
+description: Linux 网络管理工具、DNS、路由和接口配置命令的安全操作笔记。
 ---
+<!-- cspell:words nmcli nmtui Netplan networkd iface ifup ifdown ifquery iwctl resolvconf resolv veth -->
+
+> 操作提醒：本页包含会安装软件、启停服务、修改 DNS、路由、接口、MAC 地址、ARP 表和网络命名空间的命令。远程机器上执行前先确认当前连接路径，并优先使用只读命令查看状态。
 
 ## NetworkManager
 
-NetworkManager 是一个开源的网络管理工具，旨在简化Linux和其他Unix类系统上的网络配置和管理。它提供了一个统一的接口来管理各种网络连接，包括有线网络、无线网络、移动宽带、VPN等。以下是NetworkManager的一些关键特性和常见用法：
+NetworkManager 是一个开源的网络管理工具，旨在简化 Linux 和其他 Unix 类系统上的网络配置和管理。它提供了一个统一的接口来管理各种网络连接，包括有线网络、无线网络、移动宽带、VPN 等。以下是 NetworkManager 的一些关键特性和常见用法：
 
-#### 主要特性
+### 主要特性
 
 1. **自动网络配置**：
-   - NetworkManager能够自动检测并配置网络连接。当您连接到一个新网络时，它会自动处理配置细节，如IP地址、DNS服务器等。
+   - NetworkManager 能够自动检测并配置网络连接。当您连接到一个新网络时，它会自动处理配置细节，如 IP 地址、DNS 服务器等。
 
-2. **支持多种网络类型**：
-   - 支持以太网（有线网络）、Wi-Fi（无线网络）、移动宽带（3G/4G）、蓝牙、VPN等多种类型的网络连接。
+1. **支持多种网络类型**：
+   - 支持以太网（有线网络）、Wi-Fi（无线网络）、移动宽带（3G/4G）、蓝牙、VPN 等多种类型的网络连接。
 
-3. **用户友好的图形界面**：
-   - NetworkManager附带了多个图形前端，如GNOME的nm-applet和KDE的plasma-nm，使用户可以方便地通过图形界面管理网络连接。
+1. **用户友好的图形界面**：
+   - NetworkManager 附带了多个图形前端，如 GNOME 的 nm-applet 和 KDE 的 plasma-nm，使用户可以方便地通过图形界面管理网络连接。
 
-4. **命令行工具**：
-   - 提供了nmcli和nmtui两个命令行工具，供在终端中进行网络配置和管理。
+1. **命令行工具**：
+   - 提供了 nmcli 和 nmtui 两个命令行工具，供在终端中进行网络配置和管理。
 
-5. **配置文件管理**：
+1. **配置文件管理**：
    - 支持通过配置文件管理网络连接设置，允许在不同的网络环境中快速切换配置。
 
 #### 安装与启动
 
-在大多数Linux发行版中，NetworkManager默认是预装的。如果没有，可以通过包管理器进行安装。例如，在Debian或Ubuntu系统上可以使用以下命令安装：
+在大多数 Linux 发行版中，NetworkManager 默认是预装的。如果没有，可以通过包管理器进行安装。例如，在 Debian 或 Ubuntu 系统上可以使用以下命令安装：
 
 ```bash
 sudo apt-get install network-manager
 ```
 
-在CentOS或Fedora系统上，可以使用：
+在 CentOS 或 Fedora 系统上，可以使用：
 
 ```bash
-sudo yum install NetworkManager
+sudo dnf install NetworkManager
 ```
 
-安装完成后，可以使用以下命令启动NetworkManager服务：
+安装完成后，可以使用以下命令启动 NetworkManager 服务：
 
 ```bash
 sudo systemctl start NetworkManager
@@ -47,59 +51,67 @@ sudo systemctl enable NetworkManager  # 开机自启动
 #### 常用命令
 
 ##### nmcli
-`nmcli` 是NetworkManager的命令行工具，用于管理网络连接。以下是一些常用命令：
+
+`nmcli` 是 NetworkManager 的命令行工具，用于管理网络连接。以下是一些常用命令：
 
 - **显示网络状态**：
+
   ```bash
   nmcli general status
   ```
 
 - **列出所有连接**：
+
   ```bash
   nmcli connection show
   ```
 
 - **激活一个连接**：
+
   ```bash
   nmcli connection up <connection_name>
   ```
 
 - **禁用一个连接**：
+
   ```bash
   nmcli connection down <connection_name>
   ```
 
-- **连接到一个Wi-Fi网络**：
+- **连接到一个 Wi-Fi 网络**：
+
   ```bash
   nmcli device wifi connect <SSID> password <password>
   ```
 
 ##### nmtui
+
 `nmtui` 是一个基于文本的用户界面，允许在终端中以图形方式管理网络连接。
 
-- **启动nmtui**：
+- **启动 nmtui**：
+
   ```bash
   nmtui
   ```
 
 ## Netplan
 
-  Netplan 是一种网络配置工具，主要用于配置Ubuntu等基于Debian的系统上的网络。它使用YAML文件定义网络设置，并通过systemd-networkd或NetworkManager来应用这些设置。Netplan提供了一种简洁、统一的方式来管理网络配置。
+  Netplan 是一种网络配置工具，主要用于配置 Ubuntu 等基于 Debian 的系统上的网络。它使用 YAML 文件定义网络设置，并通过 systemd-networkd 或 NetworkManager 来应用这些设置。Netplan 提供了一种简洁、统一的方式来管理网络配置。
 
-#### Netplan 主要特性
+### Netplan 主要特性
 
-1. **简单的YAML配置文件**：使用YAML文件来定义网络接口、IP地址、网关、DNS等配置。
-2. **统一管理**：支持多种网络管理后台，包括systemd-networkd和NetworkManager。
-3. **动态和静态配置**：支持动态（DHCP）和静态网络配置。
-4. **支持多种网络类型**：包括以太网、有线网络、无线网络等。
+1. **简单的 YAML 配置文件**：使用 YAML 文件来定义网络接口、IP 地址、网关、DNS 等配置。
+1. **统一管理**：支持多种网络管理后台，包括 systemd-networkd 和 NetworkManager。
+1. **动态和静态配置**：支持动态（DHCP）和静态网络配置。
+1. **支持多种网络类型**：包括以太网、有线网络、无线网络等。
 
 #### Netplan 配置文件
 
-Netplan 的配置文件位于 `/etc/netplan/` 目录下，通常命名为 `*.yaml` 文件。默认情况下，Ubuntu会创建一个默认的Netplan配置文件，例如 `/etc/netplan/01-netcfg.yaml`。
+Netplan 的配置文件位于 `/etc/netplan/` 目录下，通常命名为 `*.yaml` 文件。默认情况下，Ubuntu 会创建一个默认的 Netplan 配置文件，例如 `/etc/netplan/01-netcfg.yaml`。
 
 #### Netplan 配置示例
 
-以下是一些常见的Netplan配置示例：
+以下是一些常见的 Netplan 配置示例：
 
 ##### 1. 使用 DHCP 配置以太网接口
 
@@ -121,7 +133,9 @@ network:
       dhcp4: false
       addresses:
         - 192.168.1.100/24
-      gateway4: 192.168.1.1
+      routes:
+        - to: default
+          via: 192.168.1.1
       nameservers:
         addresses:
           - 8.8.8.8
@@ -143,6 +157,8 @@ network:
 
 #### 应用配置
 
+> 影响范围：`netplan apply` 会立即替换网络配置，错误配置可能断开 SSH。优先使用 `sudo netplan try`，确认连通性后再永久应用。
+
 编辑完配置文件后，可以使用以下命令来应用配置：
 
 ```bash
@@ -157,29 +173,31 @@ sudo netplan apply
 sudo netplan try
 ```
 
-此命令将暂时应用配置，并在90秒后回滚，以防配置错误导致网络中断。
+此命令将暂时应用配置，并在 90 秒后回滚，以防配置错误导致网络中断。
 
 ##### 常用命令
 
 - **列出当前配置**：
+
   ```bash
   netplan show
   ```
 
 - **生成配置文件（如果有变动）**：
+
   ```bash
   sudo netplan generate
   ```
 
 ## systemd-networkd
 
-[转到systemd](/linux/service_manager#networkctl使用)
+[转到 systemd](../2-service_manager#networkctl-使用)
 
 ## ifupdown
 
 `ifupdown` 是一个传统的 Linux 网络管理工具集，包含 `ifup` 和 `ifdown` 命令，用于启动和关闭网络接口。它们主要与 `/etc/network/interfaces` 文件配合使用，以定义和管理网络接口的配置。以下是关于 `ifupdown` 的详细介绍。
 
-#### 安装 ifupdown
+### 安装 ifupdown
 
 在大多数 Linux 发行版中，`ifupdown` 通常是预装的。如果没有，可以通过包管理器进行安装。例如，在 Debian 或 Ubuntu 系统上，可以使用以下命令进行安装：
 
@@ -218,6 +236,8 @@ iface eth1 inet static
   - **static**：表示接口使用静态 IP 地址。
 
 #### ifup 和 ifdown 基本用法
+
+> 影响范围：`ifup` 和 `ifdown` 会启停接口，可能中断远程连接。先用 `ifquery --list` 和发行版网络管理工具确认接口是否由 ifupdown 管理。
 
 ##### ifup
 
@@ -300,11 +320,11 @@ ifquery --list
 
 `wpa_supplicant` 是一个用户空间的网络工具，用于在 Linux 和其他操作系统上管理无线网络连接，特别是使用 WPA 和 WPA2 加密的无线网络。它可以与不同的无线工具和网络管理守护进程（如 `NetworkManager`）配合使用。以下是 `wpa_supplicant` 的安装、配置和使用方法。
 
-#### 安装 wpa_supplicant
+### 安装 wpa_supplicant
 
 在大多数 Linux 发行版上，可以通过包管理器安装 `wpa_supplicant`。
 
-##### 在 Debian/Ubuntu 系统上安装 wpa_supplicant
+#### 在 Debian/Ubuntu 系统上安装 wpa_supplicant
 
 ```bash
 sudo apt-get update
@@ -314,7 +334,7 @@ sudo apt-get install wpasupplicant
 ##### 在 CentOS/RHEL 系统上安装 wpa_supplicant
 
 ```bash
-sudo yum install wpa_supplicant
+sudo dnf install wpa_supplicant
 ```
 
 ##### 在 Fedora 系统上安装 wpa_supplicant
@@ -357,6 +377,8 @@ network={
 
 #### 使用 wpa_supplicant 连接无线网络
 
+> 凭据提醒：示例中的 SSID 和 PSK 必须替换为占位值或本地测试网络；不要把真实 Wi-Fi 密码提交到文档或仓库。直接启动 `wpa_supplicant` 也可能与 NetworkManager、iwd 等守护进程冲突。
+
 ##### 1. 创建配置文件
 
 首先，确保 `/etc/wpa_supplicant/wpa_supplicant.conf` 文件已正确配置。
@@ -376,6 +398,7 @@ sudo wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf
 ```
 
 选项解释：
+
 - `-B`：在后台运行 `wpa_supplicant`。
 - `-i`：指定无线接口。
 - `-c`：指定配置文件。
@@ -454,7 +477,7 @@ sudo apt-get install network-manager
 在 CentOS/RHEL 系统上：
 
 ```bash
-sudo yum install NetworkManager
+sudo dnf install NetworkManager
 ```
 
 在 Fedora 系统上：
@@ -504,16 +527,15 @@ nmcli device wifi connect YourNetworkSSID password YourNetworkPassword
 nmcli connection show
 ```
 
-
 ## iwd
 
 `iwd`（iNet wireless daemon）是一个用于管理无线网络连接的现代工具。`iwd` 是由 Intel 开发的，它的目标是提供更简洁、高效和现代化的无线网络管理。`iwd` 通常用于替代传统的 `wpa_supplicant`。以下是关于 `iwd` 的安装、配置和使用的一些基本介绍。
 
-#### 安装 iwd
+### 安装 iwd
 
 在大多数 Linux 发行版上，可以通过包管理器安装 `iwd`。
 
-##### 在 Debian/Ubuntu 系统上安装 `iwd`
+#### 在 Debian/Ubuntu 系统上安装 `iwd`
 
 ```bash
 sudo apt-get update
@@ -523,7 +545,7 @@ sudo apt-get install iwd
 ##### 在 CentOS/RHEL 系统上安装 `iwd`
 
 ```bash
-sudo yum install iwd
+sudo dnf install iwd
 ```
 
 ##### 在 Fedora 系统上安装 `iwd`
@@ -565,7 +587,7 @@ EnableNetworkConfiguration=true
 NameResolvingService=systemd
 ```
 
-#### 使用 iwd 进行 WiFi 管理
+#### 使用 iwd 进行 Wi-Fi 管理
 
 `iwd` 提供了一个命令行工具 `iwctl`，用于管理无线网络连接。
 
@@ -575,7 +597,7 @@ NameResolvingService=systemd
 sudo iwctl
 ```
 
-在 `iwctl` 命令行中，可以使用以下命令管理 WiFi 连接：
+在 `iwctl` 命令行中，可以使用以下命令管理 Wi-Fi 连接：
 
 ##### 扫描可用网络
 
@@ -593,7 +615,7 @@ station wlan0 scan
 station wlan0 get-networks
 ```
 
-##### 连接到 WiFi 网络
+##### 连接到 Wi-Fi 网络
 
 ```bash
 station <device_name> connect <SSID>
@@ -605,7 +627,7 @@ station <device_name> connect <SSID>
 station wlan0 connect MySSID
 ```
 
-连接时，系统可能会提示您输入 WiFi 密码。
+连接时，系统可能会提示您输入 Wi-Fi 密码。
 
 ##### 断开连接
 
@@ -643,9 +665,11 @@ known-networks list
 known-networks remove <SSID>
 ```
 
-## dns管理工具
+## dns 管理工具
 
 ### 直接修改
+
+> 影响范围：直接编辑 `/etc/resolv.conf` 或设置不可变属性会绕过 NetworkManager、systemd-resolved、resolvconf 等管理器，可能导致 DHCP/DNS 更新失效。优先使用当前系统实际的 DNS 管理器。
 
 您可以使用文本编辑器直接编辑 `/etc/resolv.conf` 文件来配置 DNS 服务器。以下是一个示例文件：
 
@@ -694,7 +718,7 @@ sudo chattr -i /etc/resolv.conf
 
 ### systemd-resolved
 
-[systemd](/linux/service_manager#resolvectl使用)
+[systemd](../2-service_manager#resolvectl-使用)
 
 1. **启用并启动 systemd-resolved**：
 
@@ -703,7 +727,7 @@ sudo systemctl enable systemd-resolved
 sudo systemctl start systemd-resolved
 ```
 
-2. **链接 /etc/resolv.conf 到 systemd-resolved**：
+1. **链接 /etc/resolv.conf 到 systemd-resolved**：
 
 确保 `/etc/resolv.conf` 链接到 `systemd-resolved` 的生成文件：
 
@@ -713,7 +737,6 @@ sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
 
 ### resolvconf
 
-
 在一些系统上，`/etc/resolv.conf` 文件可能由 `resolvconf` 工具动态管理。`resolvconf` 会根据不同的网络配置自动生成该文件。要使用 `resolvconf` 管理 DNS 配置，可以按照以下步骤操作：
 
 1. **安装 resolvconf**：
@@ -722,7 +745,7 @@ sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
 sudo apt-get install resolvconf
 ```
 
-2. **配置网络接口**：
+1. **配置网络接口**：
 
 在 `/etc/network/interfaces` 文件中添加 DNS 服务器配置：
 
@@ -735,14 +758,14 @@ iface eth0 inet dhcp
   dns-search example.com
 ```
 
-3. **启用并启动 resolvconf**：
+1. **启用并启动 resolvconf**：
 
 ```bash
 sudo systemctl enable resolvconf
 sudo systemctl start resolvconf
 ```
 
-4. **更新 resolvconf**：
+1. **更新 resolvconf**：
 
 ```bash
 sudo resolvconf -u
@@ -865,13 +888,13 @@ eth0      Link encap:Ethernet  HWaddr 00:0c:29:68:8c:35
           RX bytes:12345678 (12.3 MB)  TX bytes:12345678 (12.3 MB)
 ```
 
-2. **为 eth0 配置静态 IP 地址**
+1. **为 eth0 配置静态 IP 地址**
 
 ```bash
 sudo ifconfig eth0 192.168.1.100 netmask 255.255.255.0
 ```
 
-3. **启用和禁用网络接口 eth0**
+1. **启用和禁用网络接口 eth0**
 
 启用：
 
@@ -885,13 +908,13 @@ sudo ifconfig eth0 up
 sudo ifconfig eth0 down
 ```
 
-4. **为 eth0 配置广播地址**
+1. **为 eth0 配置广播地址**
 
 ```bash
 sudo ifconfig eth0 broadcast 192.168.1.255
 ```
 
-5. **更改 eth0 的 MAC 地址**
+1. **更改 eth0 的 MAC 地址**
 
 ```bash
 sudo ifconfig eth0 hw ether 00:11:22:33:44:55
@@ -899,12 +922,13 @@ sudo ifconfig eth0 hw ether 00:11:22:33:44:55
 
 ### route
 
-`route` 命令是一个传统的网络路由管理工具，用于查看和配置Linux系统中的IP路由表。虽然现代系统中通常使用 `ip route` 命令来替代 `route` 命令，但在一些系统中，`route` 仍然是一个有用的工具。以下是 `route` 命令的一些基本用法和示例。
+`route` 命令是一个传统的网络路由管理工具，用于查看和配置 Linux 系统中的 IP 路由表。虽然现代系统中通常使用 `ip route` 命令来替代 `route` 命令，但在一些系统中，`route` 仍然是一个有用的工具。以下是 `route` 命令的一些基本用法和示例。
 
 安装命令
+
 ```bash
 sudo apt-get install net-tools
-sudo yum install net-tools
+sudo dnf install net-tools
 ```
 
 #### 查看当前路由表
@@ -914,9 +938,12 @@ route -n
 ```
 
 选项解释：
+
 - `-n`：以数字形式显示地址而不是尝试解析主机名。
 
 #### 添加静态路由
+
+> 影响范围：添加、删除默认路由或静态路由会改变主机出站路径，可能立刻断开远程会话。先用 `ip route show` 记录当前路由表。
 
 ##### 添加到特定网络的静态路由
 
@@ -925,6 +952,7 @@ sudo route add -net 192.168.2.0 netmask 255.255.255.0 gw 192.168.1.1
 ```
 
 选项解释：
+
 - `-net`：表示目标是一个网络。
 - `192.168.2.0`：目标网络地址。
 - `netmask 255.255.255.0`：子网掩码。
@@ -937,6 +965,7 @@ sudo route add -host 192.168.2.10 gw 192.168.1.1
 ```
 
 选项解释：
+
 - `-host`：表示目标是一个主机。
 - `192.168.2.10`：目标主机地址。
 - `gw 192.168.1.1`：网关地址。
@@ -986,19 +1015,19 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 sudo route add -net 192.168.2.0 netmask 255.255.255.0 gw 192.168.1.1
 ```
 
-2. **添加到主机 `192.168.2.10` 的静态路由**
+1. **添加到主机 `192.168.2.10` 的静态路由**
 
 ```bash
 sudo route add -host 192.168.2.10 gw 192.168.1.1
 ```
 
-3. **删除到网络 `192.168.2.0/24` 的静态路由**
+1. **删除到网络 `192.168.2.0/24` 的静态路由**
 
 ```bash
 sudo route del -net 192.168.2.0 netmask 255.255.255.0 gw 192.168.1.1
 ```
 
-4. **删除到主机 `192.168.2.10` 的静态路由**
+1. **删除到主机 `192.168.2.10` 的静态路由**
 
 ```bash
 sudo route del -host 192.168.2.10 gw 192.168.1.1
@@ -1043,12 +1072,13 @@ sudo ip route add default via 192.168.1.1
 `ip` 命令是一个现代化且功能强大的网络管理工具，用于配置和查看网络接口、路由、隧道等。`ip` 命令取代了传统的 `ifconfig` 和 `route` 命令，并提供了更丰富的功能。以下是 `ip` 命令的一些基本用法和示例：
 
 安装命令
+
 ```bash
 sudo apt-get install iproute2
-sudo yum install iproute
+sudo dnf install iproute
 ```
 
-##### 查看所有网络接口
+#### 查看所有网络接口
 
 ```bash
 ip addr show
@@ -1067,6 +1097,8 @@ ip addr show dev eth0
 ```
 
 #### 配置网络接口
+
+> 影响范围：`ip addr`、`ip link`、`ip route` 和 `ip netns` 示例会改变内核网络状态；除非写入发行版网络配置，否则重启后通常不会保留。
 
 ##### 分配 IP 地址
 
@@ -1315,43 +1347,43 @@ netstat -tp
 netstat -a
 ```
 
-2. **查看所有监听的端口**：
+1. **查看所有监听的端口**：
 
 ```bash
 netstat -l
 ```
 
-3. **查看所有 TCP 连接**：
+1. **查看所有 TCP 连接**：
 
 ```bash
 netstat -t
 ```
 
-4. **查看所有 UDP 连接**：
+1. **查看所有 UDP 连接**：
 
 ```bash
 netstat -u
 ```
 
-5. **查看路由表**：
+1. **查看路由表**：
 
 ```bash
 netstat -r
 ```
 
-6. **查看网络接口的统计信息**：
+1. **查看网络接口的统计信息**：
 
 ```bash
 netstat -i
 ```
 
-7. **查看所有网络连接及其对应的进程信息**：
+1. **查看所有网络连接及其对应的进程信息**：
 
 ```bash
 netstat -p
 ```
 
-8. **持续更新网络连接信息**：
+1. **持续更新网络连接信息**：
 
 ```bash
 netstat -c
@@ -1367,7 +1399,7 @@ netstat -c
 ss -a
 ```
 
-2. **ip**：用于管理网络接口和路由，是 `ifconfig` 和 `route` 的现代替代品。
+1. **ip**：用于管理网络接口和路由，是 `ifconfig` 和 `route` 的现代替代品。
 
 ```bash
 ip addr show
@@ -1379,9 +1411,10 @@ ip route show
 `ss` 命令是一个强大的网络实用程序，用于显示套接字统计信息。它是 `netstat` 命令的现代替代品，速度更快，功能更强大。`ss` 可以显示 TCP、UDP、UNIX 套接字的详细信息，帮助管理员诊断网络问题和监控网络活动。
 
 安装命令
+
 ```bash
 sudo apt-get install iproute2
-sudo yum install iproute
+sudo dnf install iproute
 ```
 
 #### 基本用法和示例
@@ -1465,7 +1498,16 @@ ss -t dport = :80
 ss -s
 ```
 
-##### 查看网络命名空间中的套接字
+## 参考资料
+
+1. [ip(8) Linux man page](https://man7.org/linux/man-pages/man8/ip.8.html)（访问日期：2026-05-31）
+1. [ip-route(8) Linux man page](https://man7.org/linux/man-pages/man8/ip-route.8.html)（访问日期：2026-05-31）
+1. [ss(8) Linux man page](https://man7.org/linux/man-pages/man8/ss.8.html)（访问日期：2026-05-31）
+1. [systemd-resolved.service(8)](https://www.freedesktop.org/software/systemd/man/latest/systemd-resolved.service.html)（访问日期：2026-05-31）
+1. [Netplan documentation](https://netplan.readthedocs.io/en/stable/)（访问日期：2026-05-31）
+1. [NetworkManager nmcli manual](https://networkmanager.dev/docs/api/latest/nmcli.html)（访问日期：2026-05-31）
+
+### 查看网络命名空间中的套接字
 
 使用 `-N` 选项可以查看特定网络命名空间中的套接字。
 
@@ -1501,43 +1543,43 @@ ss -tlp sport = :22
 ss -t
 ```
 
-2. **查看所有监听的 TCP 套接字**：
+1. **查看所有监听的 TCP 套接字**：
 
 ```bash
 ss -tl
 ```
 
-3. **查看所有 UDP 连接**：
+1. **查看所有 UDP 连接**：
 
 ```bash
 ss -u
 ```
 
-4. **查看所有连接的详细信息**：
+1. **查看所有连接的详细信息**：
 
 ```bash
 ss -e
 ```
 
-5. **查看所有连接及其关联的进程**：
+1. **查看所有连接及其关联的进程**：
 
 ```bash
 ss -p
 ```
 
-6. **查看所有处于 ESTABLISHED 状态的 TCP 连接**：
+1. **查看所有处于 ESTABLISHED 状态的 TCP 连接**：
 
 ```bash
 ss -t state established
 ```
 
-7. **查看端口 80 的所有连接**：
+1. **查看端口 80 的所有连接**：
 
 ```bash
 ss -t sport = :80
 ```
 
-8. **显示套接字的摘要统计信息**：
+1. **显示套接字的摘要统计信息**：
 
 ```bash
 ss -s

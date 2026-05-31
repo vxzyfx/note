@@ -2,7 +2,7 @@
 title: ARMv7介绍
 ---
 
-ARM指令始终是32位的指令,并且是4字节对齐.
+ARM 指令始终是 32 位的指令,并且是 4 字节对齐.
 
 在 ARM 指令集中，条件执行意味着只有当 APSR 中的 N、Z、C 和 V 条件标志满足指令编码。如果标志不满足此条件，则该指令将充当 NOP，即正常执行到下一条指令，包括对正在发生的异常进行任何相关检查，但没有其他效果。
 
@@ -15,29 +15,28 @@ ARM指令始终是32位的指令,并且是4字节对齐.
   +---------+-------+-----------+----+--------+
   ```
 
-cond位
+cond 位
 
 | 条件码 | 含义            | 解释                         |
 |-------|----------------|-----------------------------|
-| 0000  | EQ（Equal）     | 相等（Z标志位设置）          |
-| 0001  | NE（Not Equal） | 不相等（Z标志位清除）        |
-| 0010  | CS（Carry Set） | 进位（C标志位设置）          |
-| 0011  | CC（Carry Clear）| 无进位（C标志位清除）        |
-| 0100  | MI（Minus）     | 负数（N标志位设置）          |
-| 0101  | PL（Plus）      | 正数或零（N标志位清除）      |
-| 0110  | VS（Overflow）  | 溢出（V标志位设置）          |
-| 0111  | VC（No Overflow）| 无溢出（V标志位清除）        |
-| 1000  | HI（Unsigned Higher）| 无符号高于（C设置且Z清除）|
-| 1001  | LS（Unsigned Lower or Same）| 无符号低于或相同（C清除或Z设置）|
-| 1010  | GE（Greater or Equal）| 大于或等于（N等于V）    |
-| 1011  | LT（Less Than） | 小于（N不等于V）             |
-| 1100  | GT（Greater Than）| 大于（Z清除且N等于V）      |
-| 1101  | LE（Less or Equal）| 小于或等于（Z设置或N不等于V）|
+| 0000  | EQ（Equal）     | 相等（Z 标志位设置）          |
+| 0001  | NE（Not Equal） | 不相等（Z 标志位清除）        |
+| 0010  | CS（Carry Set） | 进位（C 标志位设置）          |
+| 0011  | CC（Carry Clear）| 无进位（C 标志位清除）        |
+| 0100  | MI（Minus）     | 负数（N 标志位设置）          |
+| 0101  | PL（Plus）      | 正数或零（N 标志位清除）      |
+| 0110  | VS（Overflow）  | 溢出（V 标志位设置）          |
+| 0111  | VC（No Overflow）| 无溢出（V 标志位清除）        |
+| 1000  | HI（Unsigned Higher）| 无符号高于（C 设置且 Z 清除）|
+| 1001  | LS（Unsigned Lower or Same）| 无符号低于或相同（C 清除或 Z 设置）|
+| 1010  | GE（Greater or Equal）| 大于或等于（N 等于 V）    |
+| 1011  | LT（Less Than） | 小于（N 不等于 V）             |
+| 1100  | GT（Greater Than）| 大于（Z 清除且 N 等于 V）      |
+| 1101  | LE（Less or Equal）| 小于或等于（Z 设置或 N 不等于 V）|
 | 1110  | AL（Always）    | 总是（无条件执行）           |
 | 1111  | AL             | 总是（无条件执行）           |
 
-
-op位
+op 位
 
 | op1 | op | 介绍 |
 |--|--|--|
@@ -50,34 +49,34 @@ op位
 
 ## 指令注解
 
-1. c: cond， 条件判断
+1. c: cond，条件判断
 2. shift: 移位操作类型，包括 LSL（逻辑左移），LSR（逻辑右移），ASR（算术右移），ROR（循环右移）。
 3. 立即数: 以#开头的数字
 4. S: 设置条件标志。如果包含这个后缀，指令执行后会更新条件标志。
-4. type: 移位操作类型，包括 LSL（逻辑左移0b00），LSR（逻辑右移0b01），ASR（算术右移0b10），ROR（循环右移0b11）。
+5. type: 移位操作类型，包括 LSL（逻辑左移 0b00），LSR（逻辑右移 0b01），ASR（算术右移 0b10），ROR（循环右移 0b11）。
 
 ## CPSR(当前程序状态寄存器)
 
 | 位    | 标识    | 说明                                        |
 |-------|---------|---------------------------------------------|
-| 31    | N       | 负数标志（Negative flag），上次运算结果为负时置1 |
-| 30    | Z       | 零标志（Zero flag），上次运算结果为零时置1       |
+| 31    | N       | 负数标志（Negative flag），上次运算结果为负时置 1 |
+| 30    | Z       | 零标志（Zero flag），上次运算结果为零时置 1       |
 | 29    | C       | 进位标志（Carry flag），用于加法进位或减法借位   |
 | 28    | V       | 溢出标志（Overflow flag），用于指示有符号数溢出  |
 | 27    | Q       | 饱和标志（Saturation flag），用于指示饱和运算   |
-| 26-25 |         | 保留位（Reserved），通常为0                  |
-| 24    | J       | Jazelle状态位，指示处理器是否处于Jazelle状态  |
+| 26-25 |         | 保留位（Reserved），通常为 0                  |
+| 24    | J       | Jazelle 状态位，指示处理器是否处于 Jazelle 状态  |
 | 23-20 | GE[3:0] | 更大的或相等标志（Greater than or Equal flags）|
-| 19-16 |         | 保留位（Reserved），通常为0                  |
+| 19-16 |         | 保留位（Reserved），通常为 0                  |
 | 15    | E       | 大端标志（Endianness flag），指示内存访问方式    |
-| 14-10 |         | 保留位（Reserved），通常为0                  |
-| 9     | IT[1:0] | If-Then状态位，用于Thumb-2指令集              |
-| 8-7   |         | 保留位（Reserved），通常为0                  |
+| 14-10 |         | 保留位（Reserved），通常为 0                  |
+| 9     | IT[1:0] | If-Then 状态位，用于 Thumb-2 指令集              |
+| 8-7   |         | 保留位（Reserved），通常为 0                  |
 | 6     | E       | 大端标志（Endianness flag），指示内存访问方式    |
-| 5     | A       | 异常屏蔽（Asynchronous abort disable），1表示屏蔽|
-| 4     | I       | IRQ禁用（Interrupt disable），1表示屏蔽IRQ中断 |
-| 3     | F       | FIQ禁用（Fast Interrupt disable），1表示屏蔽FIQ中断|
-| 2     | T       | Thumb状态位，1表示处理器处于Thumb状态        |
+| 5     | A       | 异常屏蔽（Asynchronous abort disable），1 表示屏蔽|
+| 4     | I       | IRQ 禁用（Interrupt disable），1 表示屏蔽 IRQ 中断 |
+| 3     | F       | FIQ 禁用（Fast Interrupt disable），1 表示屏蔽 FIQ 中断|
+| 2     | T       | Thumb 状态位，1 表示处理器处于 Thumb 状态        |
 | 1-0   | M[4:0]  | 模式位（Mode bits），指示当前处理器模式       |
 
 模式位（M[4:0]）的取值和含义：

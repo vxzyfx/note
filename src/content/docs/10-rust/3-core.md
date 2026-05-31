@@ -210,7 +210,6 @@ fn main() {
 
 ## Unpin
 
-
 在 Rust 中，`Unpin` 是一个标记 trait，用于表示某个类型可以安全地移动。对于大多数类型，它们在内存中的位置并不重要，可以在内存中自由移动。然而，对于某些类型（特别是那些包含自引用或需要固定内存位置的类型），移动它们可能会导致内存安全问题。这些类型不会自动实现 `Unpin`。
 
 ### `Unpin` 的定义
@@ -231,11 +230,11 @@ pub auto trait Unpin {}
 - 大多数标准库类型，例如 `String`、`Vec<T>`、`Box<T>` 等。
 - 组合类型（如结构体和枚举），只要其所有字段都实现了 `Unpin`。
 
-以下类型默认不实现 `Unpin`(即实现了!Unpin)：
+以下类型默认不实现 `Unpin` (即实现了!Unpin)：
 
 - 指针。
-- async块
-- async函数返回值
+- async 块
+- async 函数返回值
 - 包含自引用的类型。
 - 明确使用 `PhantomPinned` 防止自动实现 `Unpin` 的类型。
 
@@ -322,7 +321,6 @@ fn main() {
     let my_struct = MyStruct { data: std::ptr::null() };
 }
 ```
-
 
 ## Sized
 
@@ -517,7 +515,6 @@ fn main() {
 
 对于包含堆分配数据或需要复杂管理的类型，应使用 `Clone` 而不是 `Copy`。
 
-
 ## Clone
 
 在 Rust 中，`Clone` 是一个 trait，用于表示一个类型可以显式地复制自身。与 `Copy` 不同，`Clone` 可以用于复杂的类型，允许深拷贝，即在堆上分配的数据也会被复制。
@@ -664,7 +661,7 @@ pub trait Future {
 
 ### 使用 `Future`
 
-通常你不会直接实现 `Future` trait，而是使用 `async`/`await` 语法，因为它可以自动生成实现了 `Future` 的状态机。
+通常你不会直接实现 `Future` trait，而是使用 `async` / `await` 语法，因为它可以自动生成实现了 `Future` 的状态机。
 
 以下是一个简单的异步函数，它返回一个 `Future`：
 
@@ -684,7 +681,7 @@ async fn main() {
 
 ### 手动实现 `Future`
 
-尽管通常使用 `async`/`await` 语法，你也可以手动实现 `Future`。以下是一个简单的示例，展示如何手动实现一个计时器 `Future`：
+尽管通常使用 `async` / `await` 语法，你也可以手动实现 `Future`。以下是一个简单的示例，展示如何手动实现一个计时器 `Future`：
 
 ```rust
 use std::pin::Pin;
@@ -729,11 +726,11 @@ async fn main() {
 
 - **异步计算**：`Future` 代表一个可能尚未完成的计算。
 - **非阻塞**：`poll` 方法应该是非阻塞的，这意味着它应该立即返回，而不是等待计算完成。
-- **状态机**：使用 `async`/`await` 语法时，编译器会自动将异步函数转换为状态机，以管理 `Future` 的状态。
+- **状态机**：使用 `async` / `await` 语法时，编译器会自动将异步函数转换为状态机，以管理 `Future` 的状态。
 
 ## Stream
 
-在Rust编程语言中，`Stream` 是异步编程中的一个重要概念，类似于迭代器，但用于异步操作。`Stream` 是一个持续产生值的异步序列，类似于标准库中的 `Iterator` 特征，但 `Stream` 特征是异步的。
+在 Rust 编程语言中，`Stream` 是异步编程中的一个重要概念，类似于迭代器，但用于异步操作。`Stream` 是一个持续产生值的异步序列，类似于标准库中的 `Iterator` 特征，但 `Stream` 特征是异步的。
 
 以下是一些基础知识和示例，帮助你了解并使用 `Stream`：
 
@@ -760,7 +757,7 @@ pub trait Stream {
 
 - `poll_next` 方法：异步地尝试从 `Stream` 中获取下一个值。
 - `Pin`：确保对象的内存位置不会被移动。
-- `Context`：提供Waker，允许 `Stream` 在准备好时通知执行器（executor）。
+- `Context`：提供 Waker，允许 `Stream` 在准备好时通知执行器（executor）。
 - `Poll`：表示一个操作的状态，可以是 `Poll::Pending` 或 `Poll::Ready(Some(Item))` 或 `Poll::Ready(None)`。
 
 ### 使用 `Stream`
@@ -831,10 +828,10 @@ async fn main() {
 
 ### 常用的 `Stream` 操作符
 
-- `next()`: 获取 `Stream` 中的下一个值。
-- `filter()`: 过滤 `Stream` 中的元素。
-- `map()`: 映射 `Stream` 中的元素。
-- `fold()`: 对 `Stream` 中的元素进行累积操作。
+- `next()` : 获取 `Stream` 中的下一个值。
+- `filter()` : 过滤 `Stream` 中的元素。
+- `map()` : 映射 `Stream` 中的元素。
+- `fold()` : 对 `Stream` 中的元素进行累积操作。
 
 ## Iterator
 
@@ -915,6 +912,7 @@ fn main() {
 迭代器适配器是 `Iterator` trait 上定义的方法，这些方法可以对迭代器进行转换或组合。常见的迭代器适配器包括 `map`、`filter`、`take`、`collect` 等。
 
 - **`map`**：对每个元素应用一个函数，并返回一个新的迭代器。
+
   ```rust
   let v = vec![1, 2, 3];
   let v2: Vec<_> = v.iter().map(|x| x + 1).collect();
@@ -922,6 +920,7 @@ fn main() {
   ```
 
 - **`filter`**：过滤掉不符合条件的元素，并返回一个新的迭代器。
+
   ```rust
   let v = vec![1, 2, 3, 4, 5];
   let v2: Vec<_> = v.iter().filter(|&&x| x % 2 == 0).collect();
@@ -929,6 +928,7 @@ fn main() {
   ```
 
 - **`take`**：只取前 `n` 个元素，并返回一个新的迭代器。
+
   ```rust
   let v = vec![1, 2, 3, 4, 5];
   let v2: Vec<_> = v.iter().take(3).collect();
@@ -936,6 +936,7 @@ fn main() {
   ```
 
 - **`collect`**：将迭代器转换为集合，例如 `Vec`、`HashSet` 等。
+
   ```rust
   let v = vec![1, 2, 3];
   let v2: Vec<_> = v.iter().collect();
@@ -947,6 +948,7 @@ fn main() {
 消耗适配器是一些会消耗迭代器的方法，通常会遍历整个迭代器并产生一个值。例如：
 
 - **`sum`**：计算所有元素的和。
+
   ```rust
   let v = vec![1, 2, 3, 4];
   let sum: i32 = v.iter().sum();
@@ -954,6 +956,7 @@ fn main() {
   ```
 
 - **`count`**：计算元素的个数。
+
   ```rust
   let v = vec![1, 2, 3, 4];
   let count = v.iter().count();
@@ -961,6 +964,7 @@ fn main() {
   ```
 
 - **`fold`**：将元素组合为一个值。
+
   ```rust
   let v = vec![1, 2, 3, 4];
   let sum = v.iter().fold(0, |acc, &x| acc + x);

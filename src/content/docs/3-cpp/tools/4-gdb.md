@@ -4,11 +4,11 @@ title: gdb
 
 ## 基础
 
-GDB (GNU Debugger) 是一个强大的调试工具，广泛用于调试C和C++程序。以下是GDB的基本使用教程，帮助你入门并有效地使用GDB进行调试。
+GDB (GNU Debugger) 是一个强大的调试工具，广泛用于调试 C 和 C++程序。以下是 GDB 的基本使用教程，帮助你入门并有效地使用 GDB 进行调试。
 
-### 安装GDB
+### 安装 GDB
 
-在大多数Linux发行版中，你可以通过包管理器安装GDB。例如：
+在大多数 Linux 发行版中，你可以通过包管理器安装 GDB。例如：
 
 ```bash
 sudo apt-get install gdb    # Debian/Ubuntu
@@ -18,66 +18,66 @@ sudo pacman -S gdb          # Arch Linux
 
 ### 编译带调试信息的程序
 
-在使用GDB调试程序之前，需要使用 `-g` 选项编译你的程序，以包含调试信息：
+在使用 GDB 调试程序之前，需要使用 `-g` 选项编译你的程序，以包含调试信息：
 
 ```bash
 gcc -g -o myprogram myprogram.c
 ```
 
-### 启动GDB
+### 启动 GDB
 
-在终端中运行以下命令启动GDB并加载你的程序：
+在终端中运行以下命令启动 GDB 并加载你的程序：
 
 ```bash
 gdb myprogram
 ```
 
-### 常用GDB命令
+### 常用 GDB 命令
 
 #### 启动和运行程序
 
-- `run` (或 `r`): 启动程序并运行到断点或程序结束。
-- `run [args]`: 运行程序并传递命令行参数。
+- `run` (或 `r` ): 启动程序并运行到断点或程序结束。
+- `run [args]` : 运行程序并传递命令行参数。
 
 #### 设置断点
 
-- `break [location]` (或 `b [location]`): 在指定位置设置断点。
-  - `break main`: 在 `main` 函数开始处设置断点。
-  - `break myprogram.c:10`: 在 `myprogram.c` 文件的第10行设置断点。
+- `break [location]` (或 `b [location]` ): 在指定位置设置断点。
+  - `break main` : 在 `main` 函数开始处设置断点。
+  - `break myprogram.c:10` : 在 `myprogram.c` 文件的第 10 行设置断点。
 
 #### 控制执行
 
-- `continue` (或 `c`): 继续执行程序，直到下一个断点或程序结束。
-- `next` (或 `n`): 执行下一行源代码，不进入函数调用。
-- `step` (或 `s`): 执行下一行源代码，如果是函数调用则进入函数。
-- `finish`: 执行当前函数直到返回。
+- `continue` (或 `c` ): 继续执行程序，直到下一个断点或程序结束。
+- `next` (或 `n` ): 执行下一行源代码，不进入函数调用。
+- `step` (或 `s` ): 执行下一行源代码，如果是函数调用则进入函数。
+- `finish` : 执行当前函数直到返回。
 
 #### 检查程序状态
 
-- `print [expression]` (或 `p [expression]`): 打印表达式的值。
-  - `print x`: 打印变量 `x` 的值。
-- `info locals`: 打印当前函数中的所有局部变量。
-- `backtrace` (或 `bt`): 打印当前的调用堆栈。
-- `list [location]` (或 `l [location]`): 显示源代码。
-  - `list 10`: 显示第10行附近的源代码。
+- `print [expression]` (或 `p [expression]` ): 打印表达式的值。
+  - `print x` : 打印变量 `x` 的值。
+- `info locals` : 打印当前函数中的所有局部变量。
+- `backtrace` (或 `bt` ): 打印当前的调用堆栈。
+- `list [location]` (或 `l [location]` ): 显示源代码。
+  - `list 10` : 显示第 10 行附近的源代码。
 
 #### 修改变量值
 
-- `set var [variable] = [value]`: 修改变量的值。
-  - `set var x = 10`: 将变量 `x` 的值设置为10。
+- `set var [variable] = [value]` : 修改变量的值。
+  - `set var x = 10` : 将变量 `x` 的值设置为 10。
 
 #### 调试多线程程序
 
-- `info threads`: 显示所有线程的信息。
-- `thread [num]`: 切换到指定线程。
+- `info threads` : 显示所有线程的信息。
+- `thread [num]` : 切换到指定线程。
 
-#### 退出GDB
+#### 退出 GDB
 
-- `quit` (或 `q`): 退出GDB。
+- `quit` (或 `q` ): 退出 GDB。
 
 ### 示例调试流程
 
-1. **启动GDB并加载程序**
+1. **启动 GDB 并加载程序**
 
    ```bash
    gdb myprogram
@@ -119,7 +119,7 @@ gdb myprogram
    (gdb) backtrace
    ```
 
-8. **退出GDB**
+8. **退出 GDB**
 
    ```bash
    (gdb) quit
@@ -127,17 +127,17 @@ gdb myprogram
 
 ## gdbinit
 
-在使用GDB时，你可以通过`.gdbinit`文件自动加载GDB命令，使每次启动GDB时自动执行这些命令。以下是配置和使用GDB自动加载命令的步骤：
+在使用 GDB 时，你可以通过 `.gdbinit` 文件自动加载 GDB 命令，使每次启动 GDB 时自动执行这些命令。以下是配置和使用 GDB 自动加载命令的步骤：
 
 ### 创建 `.gdbinit` 文件
 
-1. **在当前目录创建 `.gdbinit` 文件**：在你要调试的程序所在的目录下创建一个名为 `.gdbinit` 的文件。如果你希望这些命令在所有GDB会话中都生效，可以在你的主目录中创建该文件。
+1. **在当前目录创建 `.gdbinit` 文件**：在你要调试的程序所在的目录下创建一个名为 `.gdbinit` 的文件。如果你希望这些命令在所有 GDB 会话中都生效，可以在你的主目录中创建该文件。
 
     ```bash
     touch .gdbinit
     ```
 
-2. **编辑 `.gdbinit` 文件**：使用你喜欢的文本编辑器打开 `.gdbinit` 文件，并添加你希望自动加载的GDB命令。例如：
+2. **编辑 `.gdbinit` 文件**：使用你喜欢的文本编辑器打开 `.gdbinit` 文件，并添加你希望自动加载的 GDB 命令。例如：
 
     ```plaintext
     # 设置一个断点在 main 函数
@@ -152,7 +152,7 @@ gdb myprogram
 
 ### 示例 `.gdbinit` 文件
 
-以下是一个示例 `.gdbinit` 文件，它包含一些常用的GDB命令：
+以下是一个示例 `.gdbinit` 文件，它包含一些常用的 GDB 命令：
 
 ```plaintext
 # 设置一个断点在 main 函数
@@ -176,15 +176,15 @@ layout src
 
 ### 安全提示
 
-GDB默认会自动加载当前目录下的 `.gdbinit` 文件，但为了安全起见，它不会自动加载主目录中的 `.gdbinit` 文件，除非你明确允许。你可以通过以下方式允许自动加载：
+GDB 默认会自动加载当前目录下的 `.gdbinit` 文件，但为了安全起见，它不会自动加载主目录中的 `.gdbinit` 文件，除非你明确允许。你可以通过以下方式允许自动加载：
 
-1. **在GDB启动时使用 `-x` 选项指定加载 `.gdbinit` 文件**：
+1. **在 GDB 启动时使用 `-x` 选项指定加载 `.gdbinit` 文件**：
 
     ```bash
     gdb -x ~/.gdbinit myprogram
     ```
 
-2. **修改GDB配置文件 `~/.gdbinit`，允许加载主目录中的 `.gdbinit` 文件**：
+2. **修改 GDB 配置文件 `~/.gdbinit`，允许加载主目录中的 `.gdbinit` 文件**：
 
     在 `~/.gdbinit` 文件中添加以下命令：
 
@@ -204,15 +204,15 @@ break main
 run
 ```
 
-你可以通过以下步骤确保GDB会自动加载并执行这些命令：
+你可以通过以下步骤确保 GDB 会自动加载并执行这些命令：
 
-1. **确保GDB配置允许加载主目录中的 `.gdbinit` 文件**：
+1. **确保 GDB 配置允许加载主目录中的 `.gdbinit` 文件**：
 
     ```plaintext
     add-auto-load-safe-path ~/
     ```
 
-2. **启动GDB并加载程序**：
+2. **启动 GDB 并加载程序**：
 
     ```bash
     gdb myprogram
@@ -262,7 +262,7 @@ run
 
 ### 高级用法
 
-4. **在条件满足时设置断点**
+1. **在条件满足时设置断点**
 
    ```bash
    (gdb) break function_name if condition
@@ -274,7 +274,7 @@ run
    (gdb) break myfunc if x == 5
    ```
 
-5. **在特定地址设置断点**
+2. **在特定地址设置断点**
 
    ```bash
    (gdb) break *address
@@ -288,13 +288,13 @@ run
 
 ### 断点管理
 
-6. **查看所有断点**
+1. **查看所有断点**
 
    ```bash
    (gdb) info breakpoints
    ```
 
-7. **删除断点**
+2. **删除断点**
 
    ```bash
    (gdb) delete breakpoint_number
@@ -306,7 +306,7 @@ run
    (gdb) delete 1
    ```
 
-8. **禁用断点**
+3. **禁用断点**
 
    ```bash
    (gdb) disable breakpoint_number
@@ -318,7 +318,7 @@ run
    (gdb) disable 2
    ```
 
-9. **启用断点**
+4. **启用断点**
 
    ```bash
    (gdb) enable breakpoint_number
@@ -329,7 +329,8 @@ run
    ```bash
    (gdb) enable 2
    ```
-9. **启用断点**
+
+5. **启用断点**
 
    ```bash
    (gdb) tbreak [location]
@@ -352,20 +353,20 @@ run
    (gdb) run
    ```
 
-2. **在 `myfile.c` 文件的第20行设置断点**
+2. **在 `myfile.c` 文件的第 20 行设置断点**
 
    ```bash
    (gdb) break myfile.c:20
    (gdb) run
    ```
 
-3. **在当前文件的第50行设置断点**
+3. **在当前文件的第 50 行设置断点**
 
    ```bash
    (gdb) break 50
    ```
 
-4. **在 `myfunc` 函数中，当变量 `x` 等于10时设置断点**
+4. **在 `myfunc` 函数中，当变量 `x` 等于 10 时设置断点**
 
    ```bash
    (gdb) break myfunc if x == 10
@@ -431,7 +432,7 @@ run
 
 ### 其他类型的监视点
 
-3. **读取监视点**
+1. **读取监视点**
 
    ```bash
    (gdb) rwatch variable
@@ -445,7 +446,7 @@ run
 
    这将设置一个读取监视点，当变量 `x` 被读取时，程序会暂停执行。
 
-4. **访问监视点**
+2. **访问监视点**
 
    ```bash
    (gdb) awatch variable
@@ -461,13 +462,13 @@ run
 
 ### 管理监视点
 
-5. **查看所有监视点**
+1. **查看所有监视点**
 
    ```bash
    (gdb) info watchpoints
    ```
 
-6. **删除监视点**
+2. **删除监视点**
 
    ```bash
    (gdb) delete watchpoint_number
@@ -479,7 +480,7 @@ run
    (gdb) delete 2
    ```
 
-7. **禁用监视点**
+3. **禁用监视点**
 
    ```bash
    (gdb) disable watchpoint_number
@@ -491,7 +492,7 @@ run
    (gdb) disable 2
    ```
 
-8. **启用监视点**
+4. **启用监视点**
 
    ```bash
    (gdb) enable watchpoint_number
@@ -591,7 +592,7 @@ run
    (gdb) info registers
    ```
 
-   显示所有CPU寄存器的内容。
+   显示所有 CPU 寄存器的内容。
 
 5. **查看线程**
 
@@ -661,7 +662,7 @@ run
     (gdb) info proc mappings
     ```
 
-    显示当前进程的内存映射（仅在Linux上可用）。
+    显示当前进程的内存映射（仅在 Linux 上可用）。
 
 13. **查看线程库信息**
 
@@ -747,7 +748,7 @@ run
     (gdb) info address myfunc
     ```
 
-13. **查看当前进程的内存映射（仅在Linux上可用）**
+13. **查看当前进程的内存映射（仅在 Linux 上可用）**
 
     ```bash
     (gdb) info proc mappings
@@ -762,21 +763,21 @@ run
 (gdb) continue [count]
 ```
 
-2. next
+1. next
 执行多步
 
 ```bash
 (gdb) next [count]
 ```
 
-3. step
+1. step
 执行多步
 
 ```bash
 (gdb) step [count]
 ```
 
-4. finish
+1. finish
 执行当前函数直到返回
 
 ```bash
@@ -835,7 +836,7 @@ run
 
 ### 打印数组和结构体
 
-4. **打印数组**
+1. **打印数组**
 
    ```bash
    (gdb) print array
@@ -850,7 +851,7 @@ run
 
    这将显示数组 `arr` 的所有元素。
 
-5. **打印结构体**
+2. **打印结构体**
 
    ```bash
    (gdb) print struct
@@ -871,7 +872,7 @@ run
 
 ### 打印指定格式
 
-6. **指定打印格式**
+1. **指定打印格式**
 
    ```bash
    (gdb) print /format expression
@@ -896,7 +897,7 @@ run
 
 ### 示例
 
-假设你在调试一个简单的C程序：
+假设你在调试一个简单的 C 程序：
 
 ```c
 #include <stdio.h>
@@ -917,7 +918,7 @@ int main() {
 }
 ```
 
-在GDB中调试该程序并打印变量、数组和结构体的值：
+在 GDB 中调试该程序并打印变量、数组和结构体的值：
 
 1. **打印变量 `a` 和 `b` 的值**
 
@@ -978,7 +979,7 @@ int main() {
 
 ### 带参数的用法
 
-2. **显示指定深度的调用堆栈**
+1. **显示指定深度的调用堆栈**
 
    ```bash
    (gdb) backtrace [n]
@@ -990,9 +991,9 @@ int main() {
    (gdb) backtrace 3
    ```
 
-   这将显示从当前栈帧开始的前3个栈帧。
+   这将显示从当前栈帧开始的前 3 个栈帧。
 
-3. **显示从指定深度开始的调用堆栈**
+2. **显示从指定深度开始的调用堆栈**
 
    ```bash
    (gdb) backtrace [n] [m]
@@ -1004,11 +1005,11 @@ int main() {
    (gdb) backtrace 3 5
    ```
 
-   这将显示从第3个栈帧开始的5个栈帧。
+   这将显示从第 3 个栈帧开始的 5 个栈帧。
 
 ### 示例
 
-假设你在调试一个简单的C程序：
+假设你在调试一个简单的 C 程序：
 
 ```c
 #include <stdio.h>
@@ -1027,7 +1028,7 @@ int main() {
 }
 ```
 
-在GDB中调试该程序并查看调用堆栈：
+在 GDB 中调试该程序并查看调用堆栈：
 
 1. **在 `foo` 函数中设置断点并运行程序**
 
@@ -1059,7 +1060,7 @@ int main() {
 
    这显示了当前栈帧（`foo` 函数）和调用链中的其他函数（`bar` 和 `main`）。
 
-3. **显示前2个栈帧**
+3. **显示前 2 个栈帧**
 
    ```bash
    (gdb) backtrace 2
@@ -1072,7 +1073,7 @@ int main() {
    #1  0x000000000040114d in bar () at myfile.c:9
    ```
 
-4. **显示从第1个栈帧开始的2个栈帧**
+4. **显示从第 1 个栈帧开始的 2 个栈帧**
 
    ```bash
    (gdb) backtrace 1 2
@@ -1101,7 +1102,7 @@ int main() {
 
 ### 带参数的用法
 
-2. **指定行号**
+1. **指定行号**
 
    ```bash
    (gdb) list line_number
@@ -1113,9 +1114,9 @@ int main() {
    (gdb) list 10
    ```
 
-   这将显示文件中第10行附近的源代码。
+   这将显示文件中第 10 行附近的源代码。
 
-3. **指定文件和行号**
+2. **指定文件和行号**
 
    ```bash
    (gdb) list filename:line_number
@@ -1127,9 +1128,9 @@ int main() {
    (gdb) list myfile.c:10
    ```
 
-   这将显示 `myfile.c` 文件中第10行附近的源代码。
+   这将显示 `myfile.c` 文件中第 10 行附近的源代码。
 
-4. **指定函数**
+3. **指定函数**
 
    ```bash
    (gdb) list function_name
@@ -1143,7 +1144,7 @@ int main() {
 
    这将显示 `main` 函数的源代码。
 
-5. **显示下一部分源代码**
+4. **显示下一部分源代码**
 
    ```bash
    (gdb) list
@@ -1151,7 +1152,7 @@ int main() {
 
    再次使用 `list` 命令，将显示上一条 `list` 命令之后的源代码。
 
-6. **显示指定范围的源代码**
+5. **显示指定范围的源代码**
 
    ```bash
    (gdb) list line_number_start,line_number_end
@@ -1163,11 +1164,11 @@ int main() {
    (gdb) list 10,20
    ```
 
-   这将显示从第10行到第20行的源代码。
+   这将显示从第 10 行到第 20 行的源代码。
 
 ### 示例
 
-假设你在调试一个简单的C程序：
+假设你在调试一个简单的 C 程序：
 
 ```c
 #include <stdio.h>
@@ -1188,7 +1189,7 @@ int main() {
 }
 ```
 
-在GDB中调试该程序并查看源代码：
+在 GDB 中调试该程序并查看源代码：
 
 1. **显示当前执行位置的源代码**
 
@@ -1208,7 +1209,7 @@ int main() {
    11      }
    ```
 
-2. **显示第15行附近的源代码**
+2. **显示第 15 行附近的源代码**
 
    ```bash
    (gdb) list 15
@@ -1243,7 +1244,7 @@ int main() {
    18      }
    ```
 
-4. **显示 `myfile.c` 文件中第5行到第10行的源代码**
+4. **显示 `myfile.c` 文件中第 5 行到第 10 行的源代码**
 
    ```bash
    (gdb) list myfile.c:5,10
@@ -1316,7 +1317,7 @@ GDB 中的 `set` 命令用于修改调试器的内部状态、变量的值、设
 
 ### 调整调试选项
 
-3. **设置显示格式**
+1. **设置显示格式**
 
    ```bash
    (gdb) set print [option]
@@ -1330,7 +1331,7 @@ GDB 中的 `set` 命令用于修改调试器的内部状态、变量的值、设
 
    这将限制打印数组时显示的元素数为 10 个。
 
-4. **设置调试信息**
+2. **设置调试信息**
 
    ```bash
    (gdb) set logging [option]
@@ -1346,7 +1347,7 @@ GDB 中的 `set` 命令用于修改调试器的内部状态、变量的值、设
 
 ### 调整运行时参数
 
-5. **设置程序的命令行参数**
+1. **设置程序的命令行参数**
 
    ```bash
    (gdb) set args [arguments]
@@ -1360,7 +1361,7 @@ GDB 中的 `set` 命令用于修改调试器的内部状态、变量的值、设
 
    这将设置程序运行时的命令行参数为 `arg1` 和 `arg2`。
 
-6. **设置环境变量**
+2. **设置环境变量**
 
    ```bash
    (gdb) set environment VARIABLE = value
@@ -1376,7 +1377,7 @@ GDB 中的 `set` 命令用于修改调试器的内部状态、变量的值、设
 
 ### 设置调试器选项
 
-7. **设置自动显示源代码**
+1. **设置自动显示源代码**
 
    ```bash
    (gdb) set listsize [number]
@@ -1390,7 +1391,7 @@ GDB 中的 `set` 命令用于修改调试器的内部状态、变量的值、设
 
    这将设置每次显示源代码的行数为 20 行。
 
-8. **设置分页**
+2. **设置分页**
 
    ```bash
    (gdb) set pagination [on|off]
@@ -1406,7 +1407,7 @@ GDB 中的 `set` 命令用于修改调试器的内部状态、变量的值、设
 
 ### 示例
 
-假设你在调试一个简单的C程序：
+假设你在调试一个简单的 C 程序：
 
 ```c
 #include <stdio.h>
@@ -1419,7 +1420,7 @@ int main() {
 }
 ```
 
-在GDB中调试该程序并使用 `set` 命令：
+在 GDB 中调试该程序并使用 `set` 命令：
 
 1. **修改变量 `x` 的值**
 
@@ -1513,7 +1514,7 @@ int main() {
 
 ### 高级用法
 
-4. **对所有线程执行命令**
+1. **对所有线程执行命令**
 
    ```bash
    (gdb) thread apply all command
@@ -1527,7 +1528,7 @@ int main() {
 
    这将对所有线程执行 `bt`（backtrace）命令，显示每个线程的调用堆栈。
 
-5. **对特定线程执行命令**
+2. **对特定线程执行命令**
 
    ```bash
    (gdb) thread apply thread_number command
@@ -1543,7 +1544,7 @@ int main() {
 
 ### 示例
 
-假设你在调试一个多线程的C程序：
+假设你在调试一个多线程的 C 程序：
 
 ```c
 #include <stdio.h>
@@ -1568,9 +1569,9 @@ int main() {
 }
 ```
 
-在GDB中调试该程序并查看和切换线程：
+在 GDB 中调试该程序并查看和切换线程：
 
-1. **启动GDB并运行程序**
+1. **启动 GDB 并运行程序**
 
    ```bash
    (gdb) run

@@ -14,7 +14,7 @@ template: splash
 8. [Linux](8-linux)
 9. [协议](9-protocol)
 10. [Rust](10-rust)
-11. [Javascript](11-javascript)
+11. [JavaScript](11-javascript)
 12. [Kotlin](12-kotlin)
 13. [Java](13-java)
 14. [Python](14-python)
@@ -28,4 +28,6 @@ template: splash
 22. [Spring](22-spring)
 23. [加密](23-encryption)
 24. [容器技术](24-container)
-25. [kubernetes合集](25-k8s)
+25. [Kubernetes](25-k8s)
+
+写作前请先看仓库根目录的 `DOCS_STYLE.md`。

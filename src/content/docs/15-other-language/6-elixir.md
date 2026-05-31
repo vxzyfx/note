@@ -7,15 +7,15 @@ title: elixir语言
 Elixir 运行在 Erlang VM（BEAM）上, 具有一下优势:
 
 - 高并发、低延迟、可扩展（大量进程、消息传递）
-- 容错强（“让它崩溃” + Supervisor 自动拉起）
+- 容错强（“让它崩溃”+ Supervisor 自动拉起）
 - 分布式友好（节点间通信是语言/运行时一等公民）
 - Web 后端（Phoenix）是 Elixir 最主流落地方向
 
-Elixir主要有3个命令行工具:
+Elixir 主要有 3 个命令行工具:
 
-- `iex`: 交互式命令行工具, 可以输入任意 Elixir 表达式并获得其结果.
-- `elixir`: 执行 Elixir 代码文件.
-- `elixirc`: 把 `.ex` 源文件编译成 BEAM 虚拟机可加载的字节码（.beam），并可选生成应用的 `.app` 描述文件.
+- `iex` : 交互式命令行工具, 可以输入任意 Elixir 表达式并获得其结果.
+- `elixir` : 执行 Elixir 代码文件.
+- `elixirc` : 把 `.ex` 源文件编译成 BEAM 虚拟机可加载的字节码（.beam），并可选生成应用的 `.app` 描述文件.
 
 ## 注释
 
@@ -23,7 +23,7 @@ Elixir主要有3个命令行工具:
 1          # 注释文本
 ```
 
-## elixir类型
+## elixir 类型
 
 ### 数字
 
@@ -39,7 +39,7 @@ Elixir主要有3个命令行工具:
 
 #### 浮点数
 
-elixir的浮点数是64 位精度的
+elixir 的浮点数是 64 位精度的
 
 ```elixir
 1.0 # float
@@ -66,7 +66,7 @@ elixir的浮点数是64 位精度的
 true # 布尔值
 ```
 
-Elixir 还提供了三个布尔算子： `or` 、 `and` 、`not`
+Elixir 还提供了三个布尔算子：`or`、`and`、`not`
 
 ```elixir
 false and raise("This error will never be raised") # and是短路的
@@ -75,7 +75,7 @@ true or raise("This error will never be raised") # or是短路的
 
 Elixir 还提供了 `nil` 的概念，表示值的缺失.
 
-对于`||/2`、`&&/2`、 和`!/1`。这些算符，`false` 和 `nil` 被视为“假”，其他所有值被视为“真值”：
+对于 `||/2`、`&&/2`、和 `!/1`。这些算符，`false` 和 `nil` 被视为“假”，其他所有值被视为“真值”：
 
 ```elixir
 1 || true # 1
@@ -91,7 +91,7 @@ true && 17 # 17
 
 原子是一个常数，其值即为其自身名称.
 
-尔值`true`和`false`还有`nil`也是原子, 原子通常以前导词`:`作为起始标志.
+尔值 `true` 和 `false` 还有 `nil` 也是原子, 原子通常以前导词 `:` 作为起始标志.
 
 ### 字符串
 
@@ -127,7 +127,7 @@ String.upcase("hello") # HELLO
 <<1>> == <<257>> # 超过可用配置位数存储的值都会被截断
 ```
 
-`binaries`是一种位串，其中位数可被 8 整除.
+`binaries` 是一种位串，其中位数可被 8 整除.
 
 ### 字符列表
 
@@ -265,7 +265,7 @@ add_one = &(&1 + 1) # 创建更简单的匿名函数
 
 ## 模式匹配
 
-`=`被称为匹配算子
+`=` 被称为匹配算子
 
 ```elixir
 x = 1 # 1
@@ -281,7 +281,7 @@ x = 1 # 1
 [head | tail] = [1, 2, 3] # head = 1, tail = [2,3]
 ```
 
-不希望`=`重新绑定新的变量
+不希望 `=` 重新绑定新的变量
 
 ```elixir
 x = 1
@@ -329,7 +329,7 @@ end
 
 ### if
 
-在特定条件下进行结构和匹配可以使用`if`
+在特定条件下进行结构和匹配可以使用 `if`
 
 ```elixir
 if true do
@@ -345,7 +345,7 @@ end
 # 结果为: nil
 ```
 
-带`else`块
+带 `else` 块
 
 ```elixir
 if nil do
@@ -397,7 +397,7 @@ for <<r::8, g::8, b::8 <- pixels>>, do: {r, g, b}
 # [{213, 45, 132}, {64, 76, 32}, {76, 0, 0}, {234, 32, 15}]
 ```
 
-使用`:into`转换类型
+使用 `:into` 转换类型
 
 ```elixir
 for <<c <- " hello world ">>, c != ?\s, into: "head", do: <<c>>
@@ -417,7 +417,7 @@ defmodule Math do
 end
 ```
 
-使用`do:`
+使用 `do:`
 
 ```elixir
 defmodule Math do
@@ -438,8 +438,8 @@ end
 
 ### 别名
 
-别名是一个大写标识符, 如`String`和`Keyword`在编译过程中会被转换为原子,
-`String`将转换成原子`Elixir.String`.
+别名是一个大写标识符, 如 `String` 和 `Keyword` 在编译过程中会被转换为原子,
+`String` 将转换成原子 `Elixir.String` .
 
 ```elixir
 is_atom(String) # true
@@ -481,7 +481,7 @@ import List, only: [duplicate: 2] # 只导入`duplicate/2`
 
 ### use
 
-`use`模块时, 允许该模块在当前模块中注入任何代码.
+`use` 模块时, 允许该模块在当前模块中注入任何代码.
 
 ```elixir
 defmodule MyMod do
@@ -499,10 +499,10 @@ end
 
 常用属性:
 
-- `@moduledoc`: 当前模块提供文档
-- `@doc`: 函数或宏提供文档
-- `@spec`: 函数提供类型规范
-- `@behaviour`: 指定 OTP 或用户定义的行为
+- `@moduledoc` : 当前模块提供文档
+- `@doc` : 函数或宏提供文档
+- `@spec` : 函数提供类型规范
+- `@behaviour` : 指定 OTP 或用户定义的行为
 
 示例
 
@@ -583,7 +583,7 @@ Enum.map(1..3, fn x -> x * 2 end)
 # [2, 4, 6]
 ```
 
-管道运算符`|>` 左侧表达式的输出作为右侧函数调用的第一个参数传递.
+管道运算符 `|>` 左侧表达式的输出作为右侧函数调用的第一个参数传递.
 
 ### 流
 
@@ -643,9 +643,9 @@ defimpl Utility, for: User do
 end
 ```
 
-通过`Any`为类型推导协议实现和自动为所有类型实现协议.
+通过 `Any` 为类型推导协议实现和自动为所有类型实现协议.
 
-为`Any`实现协议
+为 `Any` 实现协议
 
 ```elixir
 defimpl Utility, for: Any do
@@ -653,7 +653,7 @@ defimpl Utility, for: Any do
 end
 ```
 
-通过`derive`推导实现
+通过 `derive` 推导实现
 
 ```elixir
 defmodule OtherUser do
@@ -676,7 +676,7 @@ end
 
 符号以波浪号（~）开头，后面跟一个小写字母或一个或多个大写字母，然后是分隔符。最终分隔符后添加可选修饰符.
 
-以用于创建正则表达式的`~r`为例:
+以用于创建正则表达式的 `~r` 为例:
 
 ```elixir
 regex = ~r/foo|bar/
@@ -699,21 +699,21 @@ regex = ~r/foo|bar/
 
 ### 内置符号
 
-- `~r`: 创建正则表达式.
-- `~s`: 用于生成字符串, 与`""`作用一样.
-- `~c`: 创建字符列表.
-- `~w`: 生成单词列表, `~w(foo bar bat)`结果为`["foo", "bar", "bat"]`,
+- `~r` : 创建正则表达式.
+- `~s` : 用于生成字符串, 与 `""` 作用一样.
+- `~c` : 创建字符列表.
+- `~w` : 生成单词列表, `~w(foo bar bat)` 结果为 `["foo", "bar", "bat"]` ,
   支持 `c`、`s` 和 `a` 修饰符, 分别代表字符、字符串和原子.
-- `~D`: 创建一个`%Date{}`结构体,包括字段`year`, `month`, `day`, 和 `calendar`, `~D[2019-10-31]`.
-- `~T`: 创建一个`%Time{}`结构体,包括字段`hour`, `minute`, `second`, `microsecond`,
-  和 `calendar`, `~T[23:00:07.0]`.
-- `~N`: 创建一个`%NaiveDateTime{}`结构体,包括`Date` 和 `Time`的字段, `~N[2019-10-31 23:00:07]`.
-- `~U`: 创建一个`%DateTime{}`结构体, 字段和`%NaiveDateTime{}`类似,但是添加了时区字段, `~U[2019-10-31 19:59:03Z]`,
-- 大写变体: 如`~S`与`~s`相比不支持转义字符.
+- `~D` : 创建一个 `%Date{}` 结构体,包括字段 `year` , `month` , `day` , 和 `calendar` , `~D[2019-10-31]` .
+- `~T` : 创建一个 `%Time{}` 结构体,包括字段 `hour` , `minute` , `second` , `microsecond` ,
+  和 `calendar` , `~T[23:00:07.0]` .
+- `~N` : 创建一个 `%NaiveDateTime{}` 结构体,包括 `Date` 和 `Time` 的字段, `~N[2019-10-31 23:00:07]` .
+- `~U` : 创建一个 `%DateTime{}` 结构体, 字段和 `%NaiveDateTime{}` 类似,但是添加了时区字段, `~U[2019-10-31 19:59:03Z]` ,
+- 大写变体: 如 `~S` 与 `~s` 相比不支持转义字符.
 
 ### 自定义符号
 
-使用符号 `~r/foo/i` 等同于用二进制和字符列表作为参数调用 `sigil_r`.
+使用符号 `~r/foo/i` 等同于用二进制和字符列表作为参数调用 `sigil_r` .
 
 ```elixir
 sigil_r(<<"foo">>, [?i])
@@ -739,13 +739,13 @@ mport MySigils
 
 ### 错误
 
-运行时错误可以通过使用`raise/1`产生`RuntimeError`.
+运行时错误可以通过使用 `raise/1` 产生 `RuntimeError` .
 
 ```elixir
 raise "oops"
 ```
 
-使用`raise/2`, 产生其他错误.
+使用 `raise/2` , 产生其他错误.
 
 ```elixir
 raise ArgumentError, message: "invalid argument foo"
@@ -804,14 +804,13 @@ end
 
 ### 退出
 
-当进程因“自然原因”（例如未处理的异常）而终止时，它会发送退出信号。
-进程也可能通过显式发送退出信号而终止.
+当进程因“自然原因”（例如未处理的异常）而终止时，它会发送退出信号。进程也可能通过显式发送退出信号而终止.
 
 ```elixir
 spawn_link(fn -> exit(1) end)
 ```
 
-`try/catch`拦截`exit`.
+`try/catch` 拦截 `exit` .
 
 ```elixir
 try do
@@ -821,7 +820,7 @@ catch
 end
 ```
 
-`catch`也可以在函数体中使用
+`catch` 也可以在函数体中使用
 
 ```elixir
 defmodule Example do
@@ -876,8 +875,7 @@ end
 
 ## 进程
 
-在 Elixir 中，所有代码都运行在进程内部。进程彼此隔离，并发运行，并通过消息传递进行通信。
-进程不仅是 Elixir 并发的基础，还为构建分布式且容错程序提供了手段.
+在 Elixir 中，所有代码都运行在进程内部。进程彼此隔离，并发运行，并通过消息传递进行通信。进程不仅是 Elixir 并发的基础，还为构建分布式且容错程序提供了手段.
 
 ### 创建进程
 
@@ -885,7 +883,7 @@ end
 spawn(fn -> 1 + 2 end)
 ```
 
-获取当前Pid
+获取当前 Pid
 
 ```elixir
 self()
@@ -893,7 +891,7 @@ self()
 
 ### 发送和接收消息
 
-`send/2`发送消息给进程, `receive/1`接收消息.
+`send/2` 发送消息给进程, `receive/1` 接收消息.
 
 ```elixir
 send(self(), {:hello, "world"})
@@ -916,20 +914,20 @@ end
 
 ### 连接进程
 
-`spawn/1`进程失败只是记录了一个错误, 但父进程仍在运行.
+`spawn/1` 进程失败只是记录了一个错误, 但父进程仍在运行.
 `spawn_link/1` 一个进程的失败传播到另一个进程.
 
-也可以通过`Process.link/1`手动连接.
+也可以通过 `Process.link/1` 手动连接.
 
 ### 任务
 
-任务是在`spawn`函数基础上构建，以提供更好的错误报告和内省.
+任务是在 `spawn` 函数基础上构建，以提供更好的错误报告和内省.
 
 ```elixir
 Task.start(fn -> raise "oops" end)
 ```
 
-使用`Task.spawn/1`和`Task.spawn_link/1`代替`spawn/1`和`spawn_link/1`.
+使用 `Task.spawn/1` 和 `Task.spawn_link/1` 代替 `spawn/1` 和 `spawn_link/1` .
 
 ### 状态
 
@@ -961,7 +959,7 @@ end
 send(pid, {:get, :hello, self()})
 ```
 
-通过`Agents`简化.
+通过 `Agents` 简化.
 
 ```elixir
 {:ok, pid} = Agent.start_link(fn -> %{} end)
@@ -985,7 +983,7 @@ IO.gets("yes or no? ") # 读取标准输入
 IO.puts(:stderr, "hello world") # 输出到标准错误输出
 ```
 
-### File模块
+### File 模块
 
 包含作为 IO 设备打开文件的功能, 默认情况下，文件以二进制模式打开,
 需要使用 IO 模块中的 `IO.binread/2` 和 `IO.binwrite/2` 函数
@@ -998,19 +996,19 @@ IO.binwrite(file, "world")
 File.close(file)
 ```
 
-### Path模块
+### Path 模块
 
-`Path`模块提供了处理路径的工具.
+`Path` 模块提供了处理路径的工具.
 
 ```elixir
 Path.join("foo", "bar") # "foo/bar"
 ```
 
-## Erlang库
+## Erlang 库
 
 Elixir 与 Erlang 库提供了极佳的互作性,
 
-Erlang的模块名称都是原子.
+Erlang 的模块名称都是原子.
 
 ```elixir
 # 访问binary模块

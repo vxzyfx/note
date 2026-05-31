@@ -9,7 +9,9 @@ void main() {
   print('Hello, World!');
 }
 ```
+
 如果需要读取命令行参数
+
 ``` dart
 void main(List<String> arguments) {
   print('Hello, World!');
@@ -18,14 +20,16 @@ void main(List<String> arguments) {
 
 ## 变量声明
 
-**在dart中Object是除了null所有类型的父类**
+**在 dart 中 Object 是除了 null 所有类型的父类**
 
 自动推断类型
+
 ```dart
 var name = 'Dart' // namne的类型被推断成String
 ```
 
 明确类型
+
 ```dart
 String name = 'Dart'
 ```
@@ -36,21 +40,22 @@ String name = 'Dart'
 Object name = 'Dart'
 ```
 
-对于局部变量建议使用`var`
+对于局部变量建议使用 `var`
 
 ## 类型转换
 
 在 Dart 中，类型转换是一种将一个数据类型转换为另一个数据类型的过程。Dart 提供了多种方式来进行类型转换，以下是几种常见的方法：
 
 1. **使用 `as` 操作符进行显式类型转换**：
+
    ```dart
    dynamic someValue = 'Hello Dart';
    String strValue = someValue as String;
    print(strValue);  // 输出: Hello Dart
    ```
 
-2. **类型检查和转换**：
-   使用 `is` 关键字来检查一个对象是否是某个类型，然后使用 `as` 关键字进行转换：
+2. **类型检查和转换**：使用 `is` 关键字来检查一个对象是否是某个类型，然后使用 `as` 关键字进行转换：
+
    ```dart
    dynamic someValue = 123;
    if (someValue is int) {
@@ -60,6 +65,7 @@ Object name = 'Dart'
    ```
 
 3. **使用 `toString` 方法将其他类型转换为字符串**：
+
    ```dart
    int intValue = 42;
    String strValue = intValue.toString();
@@ -67,6 +73,7 @@ Object name = 'Dart'
    ```
 
 4. **使用 `parse` 方法将字符串转换为数字**：
+
    ```dart
    String strValue = '123';
    int intValue = int.parse(strValue);
@@ -77,24 +84,24 @@ Object name = 'Dart'
    print(doubleValue);  // 输出: 123.45
    ```
 
-5. **使用 `tryParse` 方法进行安全转换**：
-   如果转换失败，不会抛出异常，而是返回 null：
+5. **使用 `tryParse` 方法进行安全转换**：如果转换失败，不会抛出异常，而是返回 null：
+
    ```dart
    String invalidStr = 'abc';
    int? intValue = int.tryParse(invalidStr);
    print(intValue);  // 输出: null
    ```
 
-6. **列表类型转换**：
-   可以将一个动态类型的列表转换为特定类型的列表：
+6. **列表类型转换**：可以将一个动态类型的列表转换为特定类型的列表：
+
    ```dart
    List<dynamic> dynamicList = [1, 2, 3];
    List<int> intList = dynamicList.cast<int>();
    print(intList);  // 输出: [1, 2, 3]
    ```
 
-7. **自定义对象类型转换**：
-   如果你有一个自定义类，你可以定义一个方法来进行类型转换：
+7. **自定义对象类型转换**：如果你有一个自定义类，你可以定义一个方法来进行类型转换：
+
    ```dart
    class Person {
      String name;
@@ -117,10 +124,11 @@ Object name = 'Dart'
 
 ## 字符串格式化
 
-在Dart中，字符串格式化有几种常见的方法，以下是每种方法的示例：
+在 Dart 中，字符串格式化有几种常见的方法，以下是每种方法的示例：
 
 ### 1. 使用字符串插值 (String Interpolation)
-这是Dart中最常用和最简洁的字符串格式化方法。
+
+这是 Dart 中最常用和最简洁的字符串格式化方法。
 
 ```dart
 void main() {
@@ -134,6 +142,7 @@ void main() {
 ```
 
 ### 2. 使用 `String` 类的 `replaceAll` 方法
+
 可以使用 `replaceAll` 方法进行简单的字符串替换。
 
 ```dart
@@ -147,6 +156,7 @@ void main() {
 ```
 
 ### 3. 使用 `StringBuffer`
+
 `StringBuffer` 提供了高效的字符串拼接方法，适用于需要大量拼接的情况。
 
 ```dart
@@ -165,6 +175,7 @@ void main() {
 ```
 
 ### 4. 使用 `dart:convert` 中的 `jsonEncode` 进行简单的模板替换
+
 这种方法适用于复杂的模板替换场景，可以将变量替换逻辑和模板分开。
 
 ```dart
@@ -185,6 +196,7 @@ void main() {
 ```
 
 ### 5. 使用 `intl` 包中的 `NumberFormat` 和 `DateFormat`
+
 `intl` 包提供了强大的国际化和格式化功能，适用于处理日期和数字格式。
 
 ```dart
@@ -205,13 +217,14 @@ void main() {
 ```
 
 ## 空安全
-dart的类型默认是非null的, 如果要使变量能接收null, 需要使用可null类型, 在类型声明后面加上?
+
+dart 的类型默认是非 null 的, 如果要使变量能接收 null, 需要使用可 null 类型, 在类型声明后面加上?
 
 ```dart
 String? name
 ```
 
-在使用变量前需要先初始化变量, 对于可null类型, 默认有默认值null初始化, 对于非null类型, dart不会设置默认值, 强制需要初始化, 不能访问可null类型除了hashCode和toString之外的属性和方法。
+在使用变量前需要先初始化变量, 对于可 null 类型, 默认有默认值 null 初始化, 对于非 null 类型, dart 不会设置默认值, 强制需要初始化, 不能访问可 null 类型除了 hashCode 和 toString 之外的属性和方法。
 
 不强制要求在声明局部的位置进行初始化, 但是要在其使用前分配一个值。
 
@@ -229,7 +242,8 @@ print(lineCount);
 
 ## 惰性变量
 
-在dart中使用`late`声明惰性变量, 惰性变量可以延迟初始化
+在 dart 中使用 `late` 声明惰性变量, 惰性变量可以延迟初始化
+
 ```dart
 late String description;
 
@@ -242,22 +256,24 @@ void main() {
 如果在读取读去变量时还没有初始化, 程序将发生运行时错误
 
 惰性初始化多用于
+
 1. 变量可能不需要, 并且初始化变量的成本很高
-2. 正在初始化实例变量, 其初始化设定项需要访问this
+2. 正在初始化实例变量, 其初始化设定项需要访问 this
 
 ```dart
 late String temperature = readThermometer(); 
 ```
-如果未使用temperature, readThermometer将不会运行
 
-## final和const
+如果未使用 temperature, readThermometer 将不会运行
 
-如果不修改声明的变量, 使用`final`或`const`代替`var`, const变量是编译时常量(const 是隐式的 final)
+## final 和 const
 
+如果不修改声明的变量, 使用 `final` 或 `const` 代替 `var` , const 变量是编译时常量(const 是隐式的 final)
 
-***实力变量可以是final, 但不能是const***
+***实力变量可以是 final, 但不能是 const***
 
 任何变量都可以具有常量的值
+
 ```dart
 var foo = const [];
 final bar = const [];
@@ -265,12 +281,13 @@ const baz = []; // Equivalent to `const []`
 
 ```
 
-可以修改非final和const的值, 即使之前是const值
+可以修改非 final 和 const 的值, 即使之前是 const 值
 
 ```dart
 foo = [1, 2, 3];
 ```
-可以使用类型检查(`is` 和 `as`), 集合(`if`), 拓展运算(`...` 和 `...?`)
+
+可以使用类型检查( `is` 和 `as` ), 集合( `if` ), 拓展运算( `...` 和 `...?` )
 
 ```dart
 const Object i = 3; // 常量对象, 值是3
@@ -280,23 +297,22 @@ const set = {if (list is List<int>) ...list};
 
 ```
 
-***final无法修改对象, 但是对象的属性是可以修改的, const对象及其字段都无法修改***
+***final 无法修改对象, 但是对象的属性是可以修改的, const 对象及其字段都无法修改***
 
 ## 运算符
 
-
 |   描述   |      操作符                                    |  关联    |
 | -------  | -------------------------------------------- | -------- |
-| 一元后缀  |  expr++  expr--  ()  []  ?[]  .  ?.  !        | 无       |
+| 一元后缀  |  expr++ expr-- () [] ?[] . ?. !        | 无       |
 | 一元前缀  |  -expr !expr ~expr ++expr --expr await expr   | 无       |
-| 乘法级    |  * / % ～/                                    | 左       |
+| 乘法级    |  * / %～/                                    | 左       |
 | 加法级    |  + -                                          | 左       |
-| 移位      |  <<  >>  >>>                                  | 左       |
+| 移位      |  << >> >>>                                  | 左       |
 | 位与      |  &                                            | 左       |
 | 位异或    |  ^                                            | 左       |
 | 位或      |  \|                                           | 左       |
-| 关系判断   |  >=  > <= as is !is                           | 无       |
-| 相等      |  == ！=                                       | 无       |
+| 关系判断   |  >= > <= as is !is                           | 无       |
+| 相等      |  ==！=                                       | 无       |
 | 逻辑与     |  &&                                          | 左       |
 | 逻辑或     |  \|\|                                        | 左       |
 | 空判断     |  ??                                          | 左       |
@@ -304,9 +320,9 @@ const set = {if (list is List<int>) ...list};
 | 级联      |  .. ?..                                       | 左       |
 | 赋值      |  = *= /= += 等                                 | 右       |
 
-> dart有两种除法 `/`和`～/`, `/`计算结果是浮点数, `～/`计算结果是整数
+> dart 有两种除法 `/` 和 `～/` , `/` 计算结果是浮点数, `～/` 计算结果是整数
 
-***is和!is用于判断值和类型的关系***
+***is 和!is 用于判断值和类型的关系***
 
 ```dart
 var i = 1
@@ -361,15 +377,15 @@ void main(List<String> args) {
 
 ## 元数据
 
-元数据提供有关代码的信息, 元数据以`@`开头, 后跟编译时常量的引用或常量构造函数的调用
+元数据提供有关代码的信息, 元数据以 `@` 开头, 后跟编译时常量的引用或常量构造函数的调用
 
-所有dart代码都有的四个注释`@Deprecated`, `@deprecated`, `@override`, 和 `@pragma`
+所有 dart 代码都有的四个注释 `@Deprecated` , `@deprecated` , `@override` , 和 `@pragma`
 
-`@Deprecated`和`@deprecated`都表示将要废弃, `@Deprecated`可以自定义提示信息, `@deprecated`不能自定义提示信息
+`@Deprecated` 和 `@deprecated` 都表示将要废弃, `@Deprecated` 可以自定义提示信息, `@deprecated` 不能自定义提示信息
 
 ## 库
 
-在库中以`_`开始的标识符仅在库内可见
+在库中以 `_` 开始的标识符仅在库内可见
 
 导入库
 
@@ -397,7 +413,8 @@ import 'package:lib1/lib1.dart' show foo;
 import 'package:lib2/lib2.dart' hide foo;
 ```
 
-延迟加载库(仅适用于Web)
+延迟加载库(仅适用于 Web)
+
 ```dart
 import 'package:greetings/hello.dart' deferred as hello;
 
@@ -407,7 +424,7 @@ Future<void> greet() async {
 }
 ```
 
-`library`指令, 指定库级的文档注释或元数据
+`library` 指令, 指定库级的文档注释或元数据
 
 ```dart
 @TestOn('browser')
@@ -419,15 +436,17 @@ library;
 ### 内置类型
 
 #### 数字类型
-dart包含两种数字类型`int`和`double`
 
-> int是不大于64位的有符号整数类型, 在javascript中用64位浮点数的的整数部分表示(相当于53位的有符号整数)
-> double 是64位双精度浮点数
+dart 包含两种数字类型 `int` 和 `double`
 
-int和double是num的子类
+> int 是不大于 64 位的有符号整数类型, 在 javascript 中用 64 位浮点数的的整数部分表示(相当于 53 位的有符号整数)
+> double 是 64 位双精度浮点数
+
+int 和 double 是 num 的子类
 
 #### 字符串
-dart字符串是utf-16编码的, 可以使用单引号和双引号创建字符串
+
+dart 字符串是 utf-16 编码的, 可以使用单引号和双引号创建字符串
 
 ```dart
 var s1 = "s1 string";
@@ -448,12 +467,12 @@ var s6 = r'原始字符串 \n \r';
 
 #### Bool
 
-布尔类型只有两种值, true和false, 并且都是编译时常量
-dart是强类型语言, 在if中不会隐式转换为bool
-
+布尔类型只有两种值, true 和 false, 并且都是编译时常量
+dart 是强类型语言, 在 if 中不会隐式转换为 bool
 
 #### 符文
-对应Unicode码位, 如果要读取或写入单个Unicode字符, 使用`characters`包
+
+对应 Unicode 码位, 如果要读取或写入单个 Unicode 字符, 使用 `characters` 包
 
 ```dart
 import 'package:characters/characters.dart';
@@ -475,6 +494,7 @@ var s = #bar;
 ```
 
 #### 记录(Records)
+
 记录是只读的, 记录可以有名称, 名称不同或类型不同, 记录的类型不同
 
 ```dart
@@ -508,6 +528,7 @@ gifts['first'] = 'partridge'; // 给Map添加值
 ```
 
 展开运算符
+
 ```dart
 var list = [1, 2, 3];
 var list2 = [0, ...list]; // list2 = [0, 1, 2, 3];
@@ -536,6 +557,7 @@ var listOfStrings = ['#0', for (var i in listOfInts) '#$i'];
 
 泛型可以生成更好的代码, 减少重复代码
 默认约束
+
 ```dart
 // 默认泛型都继承 Object?
 class Foo<T extends Object> {
@@ -550,6 +572,7 @@ typedef Compare<T> = int Function(T a, T b);
 ```
 
 ### 模式
+
 模式可以用来匹配值或解构值
 
 ```dart
@@ -603,7 +626,8 @@ switch (shape) {
 ```
 
 ### 函数
-函数是对象且具有Function类型。
+
+函数是对象且具有 Function 类型。
 
 ```dart
 // 实现一个函数
@@ -621,6 +645,7 @@ int add(int i, int j) => i+ j;
 ```
 
 命名参数
+
 ```dart
 // bold, hidden默认是null
 void enableFlags({bool? bold, bool? hidden}) {
@@ -676,9 +701,9 @@ void main() {
 }
 ```
 
-> dart的所有函数都有一个返回值, 如果未指定返回值则默认返回null
+> dart 的所有函数都有一个返回值, 如果未指定返回值则默认返回 null
 
-dart有两种生成器, 同步生成器Iterable和异步生成器Stream
+dart 有两种生成器, 同步生成器 Iterable 和异步生成器 Stream
 
 ```dart
 Iterable<int> naturalsTo(int n) sync* {
@@ -696,7 +721,7 @@ Stream<int> asynchronousNaturalsTo(int n) async* {
 
 外部函数
 
-`external`是函数体和声明分开的函数。在函数声明前加external, 通常用于函数实现在另外的dart库, 或者函数的实现来自另外的语言, 引入外部的函数或值。外部函数可以是顶级函数, 实例方法, getter，setter或非重定向构造函数, 实例变量使用`external`相当于外部的getter和setter(变量不是final)。
+`external` 是函数体和声明分开的函数。在函数声明前加 external, 通常用于函数实现在另外的 dart 库, 或者函数的实现来自另外的语言, 引入外部的函数或值。外部函数可以是顶级函数, 实例方法, getter，setter 或非重定向构造函数, 实例变量使用 `external` 相当于外部的 getter 和 setter(变量不是 final)。
 
 ```dart
 external void someFunc(int i);
@@ -772,11 +797,12 @@ token = switch (charCode) {
   _ => throw FormatException('Invalid')
 };
 ```
-## 异常
-在dart中如果抛出的异常没有被捕获则将导致`isolate`挂起, 通常会导致`isolate`及其程序被终止。
-dart提供了`Exception`和`Error`类型, 但是dart中可以使用thow抛出任意的非null对象, 不要求必须是`Exception`和`Error`类型的对象作为异常, 通常还是使用`Exception`和`Error`类型的异常。
 
-通过thow抛出的异常可以通过catch捕获到。
+## 异常
+
+在 dart 中如果抛出的异常没有被捕获则将导致 `isolate` 挂起, 通常会导致 `isolate` 及其程序被终止。dart 提供了 `Exception` 和 `Error` 类型, 但是 dart 中可以使用 throw 抛出任意的非 null 对象, 不要求必须是 `Exception` 和 `Error` 类型的对象作为异常, 通常还是使用 `Exception` 和 `Error` 类型的异常。
+
+通过 throw 抛出的异常可以通过 catch 捕获到。
 
 ```dart
 // 不需要异常的信息
@@ -823,9 +849,11 @@ try {
 ```
 
 ## 类
-每个实例都是类的对象, 除了Null之外的所有类都源于Object, 除了顶层类`Object?`都只有一个超类。拓展方法可以在不更改类和创建子类的情况下向类添加功能。
+
+每个实例都是类的对象, 除了 Null 之外的所有类都源于 Object, 除了顶层类 `Object?` 都只有一个超类。拓展方法可以在不更改类和创建子类的情况下向类添加功能。
 
 常量构造函数
+
 ```dart
 class ImmutablePoint {
   static const ImmutablePoint origin = ImmutablePoint(0, 0);
@@ -850,9 +878,10 @@ class Point {
 }
 
 ```
-所有实例变量都会有隐式getter, 非final变量和没有初始化的late final 还会生成隐式的setter方法
 
-> 声明非late的实例变量会在实例创建时, 构造函数及其初始化列表执行之前设置值, 因此非late实例变量的初始化表达式不能访问`this`
+所有实例变量都会有隐式 getter, 非 final 变量和没有初始化的 late final 还会生成隐式的 setter 方法
+
+> 声明非 late 的实例变量会在实例创建时, 构造函数及其初始化列表执行之前设置值, 因此非 late 实例变量的初始化表达式不能访问 `this`
 
 隐式接口
 
@@ -879,6 +908,7 @@ void main() {
 ```
 
 类变量
+
 ```dart
 // 类变量要使用时才会初始化
 class Person {
@@ -986,7 +1016,6 @@ var logMap = {'name': 'UI'};
 var loggerJson = Logger.fromJson(logMap);
 ```
 
-
 运算符重载
 
 支持的运算符
@@ -1024,7 +1053,7 @@ void main() {
 }
 ```
 
-显式getter和setter
+显式 getter 和 setter
 
 ```dart
 class Rectangle {
@@ -1047,6 +1076,7 @@ void main() {
 ```
 
 继承
+
 ```dart
 class Television {
   void turnOn() {
@@ -1060,7 +1090,7 @@ class SmartTelevision extends Television {
 }
 ```
 
-noSuchMethod函数
+noSuchMethod 函数
 
 ```dart
 class A {
@@ -1081,7 +1111,7 @@ void main() {
 
 mixin
 
-mixin不能有extends, 并且不能声明构造函数
+mixin 不能有 extends, 并且不能声明构造函数
 
 ```dart
 mixin Musical {
@@ -1111,7 +1141,7 @@ void main() {
 }
 ```
 
-通过`on`限制使用mixin的超类
+通过 `on` 限制使用 mixin 的超类
 
 ```dart
 class Musician {
@@ -1123,7 +1153,6 @@ class SingerDancer extends Musician with MusicalPerformer {
 ```
 
 mixin class
-
 
 ```dart
 // mixin class同时有class和mixin的限制
@@ -1175,9 +1204,10 @@ class Novice extends Musician { // Musician 作为class
 ```
 
 枚举
-枚举都会自动拓展Enum类, 他们都是密封的, 不能显示实例化
+枚举都会自动拓展 Enum 类, 他们都是密封的, 不能显示实例化
 
 简单枚举
+
 ```dart
 enum Color { red, green, blue }
 ```
@@ -1239,6 +1269,7 @@ void main() {
 ```
 
 未命名的拓展
+
 ```dart
 extension on String {
   bool get isBlank => trim().isEmpty;
@@ -1262,7 +1293,7 @@ void main() {
 
 ### 类修饰符
 
-类修饰符用于控制class或mixin的使用方式
+类修饰符用于控制 class 或 mixin 的使用方式
 
 + abstract
 + base
@@ -1271,9 +1302,9 @@ void main() {
 + sealed
 + mixin
 
-使用`base`可以用在mixin前面
+使用 `base` 可以用在 mixin 前面
 
-如果允许从任何库或子类型不受限制的使用, 使用不带修饰符的class或mixin
+如果允许从任何库或子类型不受限制的使用, 使用不带修饰符的 class 或 mixin
 
 #### abstract
 
@@ -1287,7 +1318,8 @@ abstract class Vehicle {
 ```
 
 #### base
-强制继承类或mixin的实现, 基类不能在自己库之外实现
+
+强制继承类或 mixin 的实现, 基类不能在自己库之外实现
 
 ```dart   [Library a.dart]
 base class Vehicle {
@@ -1323,9 +1355,9 @@ interface class Vehicle {
 }
 ```
 
-#### abstract interface 
+#### abstract interface
 
-不但无法extends, 还可以包含抽象方法
+不但无法 extends, 还可以包含抽象方法
 
 #### final
 
@@ -1339,15 +1371,16 @@ final class Vehicle {
 
 #### sealed
 
-sealed类是隐式抽象的, 但是sealed的子类不是隐式抽象的
+sealed 类是隐式抽象的, 但是 sealed 的子类不是隐式抽象的
 
 ## 并发
 
-dart的运行时是基于事件循环的
+dart 的运行时是基于事件循环的
 
 ### Futures
 
-Future表示异步操作的结果, 该操作最终会带有一个值或一个错误
+Future 表示异步操作的结果, 该操作最终会带有一个值或一个错误
+
 ```dart
 Future<void> checkVersion() async {
   var version = await lookUpVersion();

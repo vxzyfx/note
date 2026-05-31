@@ -1,25 +1,25 @@
 ---
 title: 项目搭建
+description: 前端项目初始化和常用工具配置速查
 ---
 
-## eslint
+## ESLint
 
-eslint是一款代码规范估计,用于规范代码格式
+ESLint 是一款代码规范工具，用于检查和统一代码格式。
 
-> [eslint官网](https://eslint.org/docs/latest/use/getting-started)
+> [eslint 官网](https://eslint.org/docs/latest/use/getting-started)
 
-### 安装eslint
+### 安装 ESLint
 
 ```bash
-npm init @eslint/config
+npm init @eslint/config@latest
 ```
 
 ## husky
 
-husky是一款git的hook工具, 可以更方便的设置git hook
-[husky官网](https://typicode.github.io/husky/)
+husky 是一款 Git hook 工具，可以更方便地设置 git hook。[husky 官网](https://typicode.github.io/husky/)
 
-### 安装husky
+### 安装 husky
 
 ```bash [NPM]
 npm install --save-dev husky
@@ -29,7 +29,7 @@ npm install --save-dev husky
 pnpm add --save-dev husky
 ```
 
-```shell [YARM]
+```shell [YARN]
 yarn add --dev husky
 # Add pinst ONLY if your package is not private
 yarn add --dev pinst
@@ -39,7 +39,7 @@ yarn add --dev pinst
 bun add --dev husky
 ```
 
-### 配置husky
+### 配置 husky
 
 ```bash [NPM]
 npx husky init
@@ -49,7 +49,7 @@ npx husky init
 pnpm exec husky init
 ```
 
-```shell [YARM]
+```shell [YARN]
 # 不支持
 ```
 
@@ -62,7 +62,7 @@ bunx husky init
 commitlint 是一个提交信息规范的插件
 [commitlint 官网](https://commitlint.js.org/)
 
-### commitlint安装
+### commitlint 安装
 
 ```bash [NPM]
 npm install --save-dev @commitlint/config-conventional @commitlint/cli
@@ -72,7 +72,7 @@ npm install --save-dev @commitlint/config-conventional @commitlint/cli
 pnpm add --save-dev @commitlint/config-conventional @commitlint/cli
 ```
 
-```shell [YARM]
+```shell [YARN]
 yarn add --dev @commitlint/config-conventional @commitlint/cli
 ```
 
@@ -80,9 +80,9 @@ yarn add --dev @commitlint/config-conventional @commitlint/cli
 bun add --dev @commitlint/config-conventional @commitlint/cli
 ```
 
-### commitlint配置
+### commitlint 配置
 
-在项目根目录下创建配置文件`commitlint.config.mjs`
+在项目根目录下创建配置文件 `commitlint.config.mjs`
 
 ```typescript [commitlint.config.mjs]
 export default {
@@ -98,9 +98,9 @@ npx --no -- commitlint --edit ${1}
 EOF
 ```
 
-### 安装prompt-cli
+### 安装 prompt-cli
 
-prompt-cli 可以根据 commitlint.config快速生成提交信息
+prompt-cli 可以根据 commitlint.config 快速生成提交信息
 
 ```bash [NPM]
 npm install --save-dev @commitlint/prompt-cli
@@ -110,7 +110,7 @@ npm install --save-dev @commitlint/prompt-cli
 pnpm add --save-dev @commitlint/prompt-cli
 ```
 
-```shell [YARM]
+```shell [YARN]
 yarn add --dev @commitlint/prompt-cli
 ```
 
@@ -118,7 +118,7 @@ yarn add --dev @commitlint/prompt-cli
 bun add --dev @commitlint/prompt-cli
 ```
 
-### prompt-cli使用
+### prompt-cli 使用
 
 ```bash [NPM]
 npx commit
@@ -128,7 +128,7 @@ npx commit
 pnpm exec commit
 ```
 
-```shell [YARM]
+```shell [YARN]
 # 不支持
 ```
 
@@ -136,7 +136,7 @@ pnpm exec commit
 bunx commit
 ```
 
-可以将commit添加到`package.json`
+可以将 commit 添加到 `package.json`
 
 ```json [package.json]
 {
@@ -148,10 +148,10 @@ bunx commit
 
 ## lint-staged
 
-lint-staged是针对暂存区的git文件运行linter的工具
-[lint-staged官网](https://github.com/lint-staged/lint-staged)
+lint-staged 是针对暂存区的 git 文件运行 linter 的工具
+[lint-staged 官网](https://github.com/lint-staged/lint-staged)
 
-### lint-staged安装
+### lint-staged 安装
 
 ```bash [NPM]
 npm install --save-dev lint-staged
@@ -161,7 +161,7 @@ npm install --save-dev lint-staged
 pnpm add --save-dev lint-staged
 ```
 
-```shell [YARM]
+```shell [YARN]
 yarn add --dev lint-staged
 ```
 
@@ -169,9 +169,9 @@ yarn add --dev lint-staged
 bun add --dev lint-staged
 ```
 
-### lint-staged配置
+### lint-staged 配置
 
-lint-staged配置可以放在`package.json`
+lint-staged 配置可以放在 `package.json`
 
 ```json5 [package.json]
 {
@@ -195,8 +195,7 @@ EOF
 
 ## prettier
 
-prettier是一款支持多语言的代码格式化工具
-[prettier官网](https://prettier.io/)
+prettier 是一款支持多语言的代码格式化工具。[prettier 官网](https://prettier.io/)
 
 ### prettier 安装
 
@@ -208,7 +207,7 @@ npm install --save-dev prettier
 pnpm add --save-dev prettier
 ```
 
-```shell [YARM]
+```shell [YARN]
 yarn add --dev --exact prettier
 ```
 
@@ -218,7 +217,7 @@ bun add --dev prettier
 
 ### prettier 配置
 
-创建`.prettierignore`文件, 排除运行prettier的目录
+创建 `.prettierignore` 文件, 排除运行 prettier 的目录
 
 ```text
 # Ignore artifacts:
@@ -226,7 +225,7 @@ build
 coverage
 ```
 
-创建配置文件`prettier.config.mjs`
+创建配置文件 `prettier.config.mjs`
 
 ```javascript
 // prettier.config.js, .prettierrc.js, prettier.config.mjs, or .prettierrc.mjs
@@ -242,7 +241,7 @@ const config = {
 export default config;
 ```
 
-### 兼容eslint
+### 兼容 ESLint
 
 安装兼容插件
 
@@ -254,7 +253,7 @@ npm install --save-dev eslint-config-prettier eslint-plugin-prettier
 pnpm add --save-dev eslint-config-prettier eslint-plugin-prettier
 ```
 
-```shell [YARM]
+```shell [YARN]
 yarn add --dev eslint-config-prettier eslint-plugin-prettier
 ```
 
@@ -262,7 +261,7 @@ yarn add --dev eslint-config-prettier eslint-plugin-prettier
 bun add --dev eslint-config-prettier eslint-plugin-prettier
 ```
 
-修改eslint配置文件
+修改 ESLint 配置文件
 
 ```json
 {
@@ -275,13 +274,13 @@ bun add --dev eslint-config-prettier eslint-plugin-prettier
 
 ### stylelint 安装
 
-stylelint是对css等样式表进行检查的工具[stylelint官网](https://stylelint.io/user-guide/get-started)
+stylelint 是对 CSS 等样式表进行检查的工具 [stylelint 官网](https://stylelint.io/user-guide/get-started)
 
 ```shell
-npm init stylelint
+npm create stylelint@latest
 ```
 
-### 支持scss
+### 支持 scss
 
 ```bash [NPM]
 npm install --save-dev stylelint stylelint-config-standard-scss
@@ -291,7 +290,7 @@ npm install --save-dev stylelint stylelint-config-standard-scss
 pnpm add --save-dev stylelint stylelint-config-standard-scss
 ```
 
-```shell [YARM]
+```shell [YARN]
 yarn add --dev stylelint stylelint-config-standard-scss
 ```
 
@@ -299,7 +298,7 @@ yarn add --dev stylelint stylelint-config-standard-scss
 bun add --dev stylelint stylelint-config-standard-scss
 ```
 
-修改stylelint配置文件
+修改 stylelint 配置文件
 
 ```javascript
 /** @type {import('stylelint').Config} */
@@ -308,7 +307,7 @@ export default {
 };
 ```
 
-### 设置stylelint顺序插件
+### 设置 stylelint 顺序插件
 
 ```bash [NPM]
 npm install --save-dev stylelint-order
@@ -318,7 +317,7 @@ npm install --save-dev stylelint-order
 pnpm add --save-dev stylelint-order
 ```
 
-```shell [YARM]
+```shell [YARN]
 yarn add --dev stylelint-order
 ```
 
@@ -326,7 +325,7 @@ yarn add --dev stylelint-order
 bun add --dev stylelint-order
 ```
 
-修改stylelint配置文件
+修改 stylelint 配置文件
 
 ```javascript
 /** @type {import('stylelint').Config} */
@@ -339,7 +338,7 @@ export default {
 };
 ```
 
-### 设置stylelint支持vue
+### 设置 stylelint 支持 vue
 
 ```bash [NPM]
 npm install --save-dev postcss-html stylelint-config-html
@@ -349,7 +348,7 @@ npm install --save-dev postcss-html stylelint-config-html
 pnpm add --save-dev postcss-html stylelint-config-html
 ```
 
-```shell [YARM]
+```shell [YARN]
 yarn add --dev postcss-html stylelint-config-html
 ```
 
@@ -357,7 +356,7 @@ yarn add --dev postcss-html stylelint-config-html
 bun add --dev postcss-html stylelint-config-html
 ```
 
-修改stylelint配置文件
+修改 stylelint 配置文件
 
 ```javascript
 /** @type {import('stylelint').Config} */
@@ -368,4 +367,12 @@ export default {
 
 ## Tailwind CSS
 
-Tailwind CSS是一款现代css库, 通过类名引用样式 [Tailwind CSS的安装](https://tailwindcss.com/docs/installation)
+Tailwind CSS 是一个实用类优先的 CSS 框架，通过类名组合样式。[Tailwind CSS 的安装](https://tailwindcss.com/docs/installation)
+
+## 参考资料
+
+1. [Getting Started with ESLint](https://eslint.org/docs/latest/use/getting-started)（访问日期：2026-05-31）
+2. [Get started | Husky](https://typicode.github.io/husky/get-started.html)（访问日期：2026-05-31）
+3. [Getting started | stylelint](https://stylelint.io/user-guide/get-started)（访问日期：2026-05-31）
+4. [Install - Prettier](https://prettier.io/docs/install)（访问日期：2026-05-31）
+5. [Installing Tailwind CSS](https://tailwindcss.com/docs)（访问日期：2026-05-31）

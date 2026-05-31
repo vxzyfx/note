@@ -23,8 +23,8 @@ int main() {
 
 这种形式的 `main` 函数接受两个参数：`argc` 和 `argv`，用于处理命令行参数。
 
-- `int argc`: 表示命令行参数的数量。
-- `char* argv[]`: 是一个数组，包含命令行参数的字符串。
+- `int argc` : 表示命令行参数的数量。
+- `char* argv[]` : 是一个数组，包含命令行参数的字符串。
 
 ```cpp
 #include <iostream>
@@ -42,8 +42,8 @@ int main(int argc, char* argv[]) {
 
 `main` 函数的返回值类型是 `int`，通常返回 0 表示程序正常结束，返回其他值表示程序出现错误。
 
-- `return 0;`: 表示程序成功执行。
-- `return 1;`: 通常表示程序执行过程中遇到错误。
+- `return 0;` : 表示程序成功执行。
+- `return 1;` : 通常表示程序执行过程中遇到错误。
 
 #### 4. `main` 函数的命令行参数
 
@@ -88,10 +88,10 @@ type variable_name = value;
 #### 基本变量类型定义
 
 1. **整数类型**:
-   - `int`: 通常用于整数。
-   - `short`: 短整型。
-   - `long`: 长整型。
-   - `long long`: 超长整型。
+   - `int` : 通常用于整数。
+   - `short` : 短整型。
+   - `long` : 长整型。
+   - `long long` : 超长整型。
 
 ```cpp
 int a = 10;
@@ -100,10 +100,10 @@ long c = 30L;
 long long d = 40LL;
 ```
 
-2. **浮点类型**:
-   - `float`: 单精度浮点数。
-   - `double`: 双精度浮点数。
-   - `long double`: 长双精度浮点数。
+1. **浮点类型**:
+   - `float` : 单精度浮点数。
+   - `double` : 双精度浮点数。
+   - `long double` : 长双精度浮点数。
 
 ```cpp
 float e = 3.14f;
@@ -111,17 +111,17 @@ double f = 3.14159;
 long double g = 3.141592653589793L;
 ```
 
-3. **字符类型**:
-   - `char`: 字符类型，用于存储单个字符。
-   - `wchar_t`: 宽字符类型，用于存储宽字符。
+1. **字符类型**:
+   - `char` : 字符类型，用于存储单个字符。
+   - `wchar_t` : 宽字符类型，用于存储宽字符。
 
 ```cpp
 char h = 'A';
 wchar_t i = L'B';
 ```
 
-4. **布尔类型**:
-   - `bool`: 布尔类型，用于存储真或假。
+1. **布尔类型**:
+   - `bool` : 布尔类型，用于存储真或假。
 
 ```cpp
 bool j = true;
@@ -357,7 +357,8 @@ void function() {
 ```
 
 ## 类型转换
-在C++中，类型转换（Type Conversion）是将一种数据类型的值转换为另一种数据类型的值的过程。类型转换可以分为隐式转换（implicit conversion）和显式转换（explicit conversion）。
+
+在 C++中，类型转换（Type Conversion）是将一种数据类型的值转换为另一种数据类型的值的过程。类型转换可以分为隐式转换（implicit conversion）和显式转换（explicit conversion）。
 
 ### 隐式转换
 
@@ -375,10 +376,10 @@ double b = a; // 隐式转换 int 到 double
 
 显式转换需要程序员明确指定。常用的显式转换方式有：
 
-1. C风格的强制类型转换
+1. C 风格的强制类型转换
 2. C++风格的强制类型转换
 
-#### 1. C风格的强制类型转换
+#### 1. C 风格的强制类型转换
 
 ```cpp
 int a = 10;
@@ -482,10 +483,11 @@ int main() {
 
 ## 字符串格式化
 
-在C++中，字符串格式化有几种常见的方法，以下是每种方法的示例：
+在 C++中，字符串格式化有几种常见的方法，以下是每种方法的示例：
 
 ### 1. 使用 `sprintf`
-这是C语言中常用的字符串格式化函数，C++也可以使用。
+
+这是 C 语言中常用的字符串格式化函数，C++也可以使用。
 
 ```cpp
 #include <cstdio>
@@ -501,7 +503,8 @@ int main() {
 ```
 
 ### 2. 使用 `std::stringstream`
-这是C++中更常用的方法，利用字符串流来进行格式化。
+
+这是 C++中更常用的方法，利用字符串流来进行格式化。
 
 ```cpp
 #include <iostream>
@@ -519,7 +522,8 @@ int main() {
 ```
 
 ### 3. 使用 `std::format` (C++20)
-从C++20开始，标准库中引入了 `std::format`，类似于Python的 `str.format`。
+
+从 C++20 开始，标准库中引入了 `std::format`，类似于 Python 的 `str.format`。
 
 ```cpp
 #include <iostream>
@@ -535,7 +539,8 @@ int main() {
 ```
 
 ### 4. 使用 `boost::format`
-如果使用Boost库，可以使用 `boost::format` 进行字符串格式化。
+
+如果使用 Boost 库，可以使用 `boost::format` 进行字符串格式化。
 
 ```cpp
 #include <iostream>
@@ -551,6 +556,7 @@ int main() {
 ```
 
 ### 5. 使用 `std::snprintf`
+
 类似于 `sprintf`，但更加安全，因为可以指定缓冲区的大小。
 
 ```cpp
@@ -678,7 +684,7 @@ int main()
 }
 ```
 
-#### 带初始化的if
+#### 带初始化的 if
 
 ```cpp [c++17]
 std::map<int, std::string> m;
@@ -712,6 +718,7 @@ int demo()
     }
 }
 ```
+
 #### constexpr if
 
 ```cpp
@@ -793,9 +800,9 @@ int main() {
 
 #### 注意事项
 
-1. **大括号**: `if`, `else if`, `else` 语句中的代码块应使用 `{}` 包围，虽然对于单行代码可以省略，但为了代码的可读性和维护性，推荐始终使用 `{}`。
+1. **大括号**: `if` , `else if` , `else` 语句中的代码块应使用 `{}` 包围，虽然对于单行代码可以省略，但为了代码的可读性和维护性，推荐始终使用 `{}`。
 
-2. **`switch` 语句中的 `break`**: 每个 `case` 分支末尾应使用 `break` 语句来防止程序继续执行下一个 `case` 代码块。`default` 分支是可选的，但它能处理所有未列出的 `case` 情况，提供更健壮的程序行为。
+2. `switch` 语句中的 `break`：每个 `case` 分支末尾应使用 `break` 语句来防止程序继续执行下一个 `case` 代码块。`default` 分支是可选的，但它能处理所有未列出的 `case` 情况，提供更健壮的程序行为。
 
 #### 综合示例
 
@@ -838,7 +845,7 @@ int main() {
 }
 ```
 
-### 5. for循环
+### 5. for 循环
 
 ```cpp
 #include <iostream>
@@ -851,7 +858,7 @@ int main() {
 }
 ```
 
-### 6. while循环
+### 6. while 循环
 
 ```cpp
 #include <iostream>
@@ -866,8 +873,7 @@ int main() {
 }
 ```
 
-
-### 7. do-while循环
+### 7. do-while 循环
 
 ```cpp
 #include <iostream>
@@ -882,12 +888,12 @@ int main() {
 }
 ```
 
-### 8. range-for循环
+### 8. range-for 循环
 
 在 C++ 中，要使一个类能够与范围 for 循环（range-based for loop）一起使用，类必须实现以下两种方法之一：
 
-+ 提供 begin() 和 end() 成员函数，这些函数返回迭代器或指针。
-+ 提供自定义的迭代器类，该类实现 operator*, operator!= 和 operator++ 操作符。
+- 提供 begin() 和 end() 成员函数，这些函数返回迭代器或指针。
+- 提供自定义的迭代器类，该类实现 operator*, operator!= 和 operator++ 操作符。
 
 ```cpp
 #include <iostream>
@@ -944,6 +950,7 @@ int main()
     std::cout << '\n';
 }
 ```
+
 ### 9. 循环控制语句
 
 - `break`：立即终止循环。

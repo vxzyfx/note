@@ -2,34 +2,42 @@
 title: Gradle 构建工具
 ---
 
-Gradle是一种现代化的构建工具，主要用于Java项目，但也支持其他语言的项目构建。它提供了灵活性和强大的依赖管理功能。以下是Gradle的一些关键特性和使用指南：
+Gradle 是一种现代化的构建工具，主要用于 Java 项目，但也支持其他语言的项目构建。它提供了灵活性和强大的依赖管理功能。以下是 Gradle 的一些关键特性和使用指南：
 
 ## 关键特性
-1. **声明性构建脚本**：使用Groovy或Kotlin DSL编写，简洁且可读性强。
-2. **依赖管理**：支持Maven和Ivy仓库，可以方便地管理项目依赖。
+
+1. **声明性构建脚本**：使用 Groovy 或 Kotlin DSL 编写，简洁且可读性强。
+2. **依赖管理**：支持 Maven 和 Ivy 仓库，可以方便地管理项目依赖。
 3. **多项目构建**：适用于大型项目，能有效地处理多模块的依赖和构建。
 4. **任务自动化**：可以自定义任务，自动化构建、测试、部署等流程。
 5. **性能优化**：包括增量构建和缓存，极大提高构建速度。
 
 ## 基本使用
+
 ### 安装
+
 1. **通过包管理工具安装**：
-   - **Mac**：使用Homebrew
+   - **Mac**：使用 Homebrew
+
      ```bash
      brew install gradle
      ```
-   - **Windows**：使用Chocolatey
+
+   - **Windows**：使用 Chocolatey
+
      ```bash
      choco install gradle
      ```
-   - **Linux**：使用SDKMAN
+
+   - **Linux**：使用 SDKMAN
+
      ```bash
      sdk install gradle
      ```
 
 2. **手动安装**：
-   - 从[Gradle官网](https://gradle.org/releases/)下载最新版本的二进制包。
-   - 解压到所需目录，并将`bin`目录添加到系统路径中。
+   - 从 [Gradle 官网](https://gradle.org/releases/)下载最新版本的二进制包。
+   - 解压到所需目录，并将 `bin` 目录添加到系统路径中。
 
 ### 创建项目
 
@@ -40,13 +48,13 @@ mkdir my-gradle-project
 cd my-gradle-project
 ```
 
+1. 初始化 Gradle 项目
 
-2. 初始化 Gradle 项目
 ```bash
 gradle init
 ```
 
-## kotlin项目结构
+## kotlin 项目结构
 
 ```plaintext
 my-gradle-project
@@ -202,18 +210,23 @@ class AppTest {
 ### 运行和构建项目
 
 1. **构建项目**：
+
    ```sh
    ./gradlew build
    ```
+
    这将编译代码、运行测试并生成构建输出。
 
 2. **运行应用程序**：
+
    ```sh
    ./gradlew run
    ```
+
    确保 `build.gradle.kts` 文件中正确配置了 `mainClass.set("org.example.AppKt")`。
 
 3. **清理项目**：
+
    ```sh
    ./gradlew clean
    ```
@@ -227,7 +240,7 @@ class AppTest {
 #### 使用 alias 管理插件和依赖
 
 1. **定义版本目录**：
-   
+
    在 `gradle/libs.versions.toml` 文件中定义插件和依赖的别名和版本。
 
    ```toml
@@ -284,11 +297,11 @@ class AppTest {
    }
    ```
 
-### id
+### ID
 
 `id` 用于在 `plugins` 块中应用插件。它是应用插件的基本方式，尤其是在不使用版本目录的情况下。
 
-#### 使用 id 应用插件
+#### 使用 ID 应用插件
 
 1. **应用插件**：
 
@@ -315,7 +328,7 @@ class AppTest {
    }
    ```
 
-2. **api**：用于库项目中，添加的依赖项不仅在编译时和运行时可用，而且会暴露给依赖这个模块的其他模块。
+2. **API**：用于库项目中，添加的依赖项不仅在编译时和运行时可用，而且会暴露给依赖这个模块的其他模块。
 
    ```kotlin
    dependencies {
@@ -382,7 +395,7 @@ class AppTest {
 
 ### 使用版本目录中的依赖项
 
-如果你使用 Gradle 版本目录 (`version catalogs`) 来集中管理依赖项，你可以在 `gradle/libs.versions.toml` 文件中定义依赖项的别名，然后在 `build.gradle.kts` 文件中引用这些别名。
+如果你使用 Gradle 版本目录 ( `version catalogs` ) 来集中管理依赖项，你可以在 `gradle/libs.versions.toml` 文件中定义依赖项的别名，然后在 `build.gradle.kts` 文件中引用这些别名。
 
 #### `gradle/libs.versions.toml`
 
@@ -501,6 +514,7 @@ dependencyResolutionManagement {
 ```
 
 ## 自定义任务
+
 在 Gradle 中，自定义任务可以帮助你在构建过程中执行特定的操作。下面是如何在 `build.gradle.kts` 文件中定义和使用自定义任务的示例。
 
 ### 定义自定义任务

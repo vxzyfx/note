@@ -20,7 +20,6 @@ public class HelloWorld {
 
 Java 有两种数据类型：原始数据类型（Primitive Data Types）和引用数据类型（Reference Data Types）。
 
-
 ### 原始数据类型（Primitive Data Types）
 
 | 数据类型 | 大小    | 默认值  | 范围                                                         |
@@ -256,10 +255,11 @@ public class BoxingUnboxing {
 
 ## 字符串格式化
 
-在Java中，字符串格式化可以通过多种方式实现，以下是几种常见的方法：
+在 Java 中，字符串格式化可以通过多种方式实现，以下是几种常见的方法：
 
 ### 1. 使用 `String.format()`
-这是Java中最常用的字符串格式化方法，类似于C语言中的 `printf`。
+
+这是 Java 中最常用的字符串格式化方法，类似于 C 语言中的 `printf`。
 
 ```java
 public class Main {
@@ -273,6 +273,7 @@ public class Main {
 ```
 
 ### 2. 使用 `System.out.printf()`
+
 这种方法适用于直接输出格式化的字符串。
 
 ```java
@@ -286,6 +287,7 @@ public class Main {
 ```
 
 ### 3. 使用 `MessageFormat`
+
 `MessageFormat` 类提供了另一种格式化字符串的方法，尤其适用于本地化消息。
 
 ```java
@@ -303,6 +305,7 @@ public class Main {
 ```
 
 ### 4. 使用 `StringBuilder` 或 `StringBuffer`
+
 对于更复杂的字符串构建，可以使用 `StringBuilder` 或 `StringBuffer`。
 
 ```java
@@ -318,6 +321,7 @@ public class Main {
 ```
 
 ### 5. 使用 `+` 运算符进行字符串拼接
+
 对于简单的字符串拼接，可以直接使用 `+` 运算符，但这种方式在性能上不如 `StringBuilder`。
 
 ```java
@@ -1011,7 +1015,7 @@ public static void printList(List<?> list) {
 }
 ```
 
-- 有界通配符（上界） `<? extends T>`：表示类型是 `T` 或 `T` 的子类。
+- 有界通配符（上界）`<? extends T>`：表示类型是 `T` 或 `T` 的子类。
 
 ```java
 public static void printNumbers(List<? extends Number> list) {
@@ -1021,7 +1025,7 @@ public static void printNumbers(List<? extends Number> list) {
 }
 ```
 
-- 有界通配符（下界） `<? super T>`：表示类型是 `T` 或 `T` 的父类。
+- 有界通配符（下界）`<? super T>`：表示类型是 `T` 或 `T` 的父类。
 
 ```java
 public static void addNumbers(List<? super Integer> list) {
@@ -1035,6 +1039,7 @@ public static void addNumbers(List<? super Integer> list) {
 Java 的泛型在编译时会进行类型擦除，这意味着在运行时，所有的类型参数都会被替换为它们的上界（如果没有指定上界，则替换为 `Object`）。因此，无法在运行时获取泛型的实际类型参数。
 
 ## 反射
+
 Java 的反射机制允许在运行时检查和操作类、方法、字段和构造器等。这使得程序能够在运行时动态地发现和使用类的成员。反射主要用于框架、工具、库等需要动态加载和操作类的场景。以下是 Java 反射的一些关键概念和用法：
 
 ### 获取类对象
@@ -1454,6 +1459,7 @@ public class AccessPrivateMethod {
 ```
 
 ## 异常处理
+
 在 Java 中，异常处理是确保程序在运行时能够正确处理错误和异常情况的重要机制。通过使用异常处理，可以在错误发生时提供适当的反馈和采取相应的措施，而不是让程序崩溃。
 
 ### 异常处理的基本概念
@@ -1555,4 +1561,3 @@ public class ThrowsExample {
     }
 }
 ```
-

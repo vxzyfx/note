@@ -2,54 +2,60 @@
 title: AES(Advanced Encryption Standard)
 ---
 
-## AES简介
+## AES 简介
 
 **AES（Advanced Encryption Standard，先进加密标准）** 是一种对称密钥加密算法，广泛用于保护敏感数据。它由比利时密码学家 Joan Daemen 和 Vincent Rijmen 设计，1997 年作为 Rijndael 算法被选中，并在 2001 年被美国国家标准与技术研究院（NIST）采用为新的联邦信息处理标准（FIPS 197），取代了老旧的 DES 算法。
 
-## AES的主要特点
+## AES 的主要特点
 
 - **对称加密**：AES 使用相同的密钥进行加密和解密，密钥必须保密。
 - **块加密**：AES 以固定长度的块（128 位，即 16 字节）处理数据。
 - **可变密钥长度**：AES 支持三种密钥长度：128 位、192 位和 256 位，分别称为 AES-128、AES-192 和 AES-256。
 
-## AES的工作原理
+## AES 的工作原理
 
 AES 采用了 **Substitution-Permutation Network（SPN）** 结构，通过多个轮次（rounds）的操作对数据进行加密。具体步骤如下：
 
 ### 1. **密钥扩展**
+
 AES 的密钥扩展算法将初始密钥扩展为多个轮密钥（round keys），这些密钥用于每一轮的加密操作。轮数取决于密钥的长度：
+
 - **AES-128**：10 轮
 - **AES-192**：12 轮
 - **AES-256**：14 轮
 
 ### 2. **初始轮**
+
 - **AddRoundKey**：将数据块与第一个轮密钥进行异或操作。
 
 ### 3. **主要轮（每轮包括四个步骤）**
+
 - **SubBytes**：使用一个固定的 S-Box 对数据块中的每个字节进行替换，这是一种非线性替换操作。
 - **ShiftRows**：对数据块中的字节进行行位移操作，各行字节按照不同的偏移量循环移位。
 - **MixColumns**：对数据块的列进行线性混合，将列视为多项式，并在有限域上进行乘法操作（AES 最后的轮次不执行此步骤）。
 - **AddRoundKey**：将当前数据块与当前轮密钥进行异或操作。
 
 ### 4. **最后一轮**
+
 最后一轮与前几轮类似，但不包括 **MixColumns** 操作。
 
-## AES的优势
+## AES 的优势
 
-- **安全性高**：AES 目前被认为是安全的，使用的密钥长度和轮次使得暴力破解几乎不可能。
+- **安全性高**：AES 是 NIST FIPS 197 标准化的分组密码，支持 128、192、256 位密钥；在正确选择模式、随机数/IV 和密钥管理的前提下，穷举密钥空间在现实中不可行。
 - **速度快**：AES 在硬件和软件中都能实现高效的加密操作，适用于广泛的应用场景。
 - **灵活性强**：支持多种密钥长度，适应不同的安全需求。
 
-## AES的使用场景
+## AES 的使用场景
 
 AES 被广泛应用于各种安全应用和协议中，例如：
+
 - **VPN**：虚拟专用网络使用 AES 保护通信数据。
-- **TLS/SSL**：用于保护网络通信中的 HTTPS 协议。
+- **TLS**：可作为现代 TLS 密码套件中的对称加密算法，用于保护 HTTPS 等网络通信。
 - **磁盘加密**：如 BitLocker 和 FileVault 使用 AES 加密存储设备上的数据。
 - **无线通信**：WPA2 安全协议使用 AES 加密无线网络通信。
 
+## AES128 示例
 
-## AES128示例
 ```c
 #include <stdio.h>
 #include <string.h>
@@ -479,8 +485,8 @@ int main() {
 
 ```
 
+## AES192 示例
 
-## AES192示例
 ```c
 #include <stdio.h>
 #include <string.h>
@@ -901,7 +907,8 @@ int main() {
 
 ```
 
-## AES256示例
+## AES256 示例
+
 ```c
 #include <stdio.h>
 #include <string.h>
@@ -1323,3 +1330,8 @@ int main() {
 }
 
 ```
+
+## 参考资料
+
+1. [NIST FIPS 197: Advanced Encryption Standard (AES)](https://csrc.nist.gov/publications/detail/fips/197/final)（访问日期：2026-05-31）
+2. [RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3](https://datatracker.ietf.org/doc/html/rfc8446)（访问日期：2026-05-31）

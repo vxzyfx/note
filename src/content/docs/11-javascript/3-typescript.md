@@ -6,36 +6,36 @@ TypeScript 增加了一些 JavaScript 没有的语法特性，以提高代码的
 
 ## 基本类型
 
-
-| 类型             | 描述                                                        | 示例代码                                         |
-|------------------|-------------------------------------------------------------|--------------------------------------------------|
-| `boolean`        | 布尔值类型，只有 `true` 和 `false`                          | `let isDone: boolean = false;`                   |
-| `number`         | 数值类型，包括整数和浮点数                                    | `let count: number = 10;`                        |
-| `string`         | 字符串类型                                                  | `let name: string = "John";`                     |
-| `Array`          | 数组类型，可以指定元素类型                                   | `let list: number[] = [1, 2, 3];`                |
-| `Tuple`          | 元组类型，表示固定数量和类型的数组                           | `let tuple: [string, number] = ["hello", 10];`   |
-| `Enum`           | 枚举类型，用于定义一组命名常量                               | `enum Color { Red, Green, Blue }`                |
-| `any`            | 任意类型，可用于绕过类型检查                                 | `let notSure: any = 4; notSure = "maybe a string";` |
-| `void`           | 无返回值类型，通常用于函数的返回值类型                        | `function warnUser(): void { console.log("Warning!"); }` |
-| `null`           | 表示值为 `null`                                              | `let n: null = null;`                            |
-| `undefined`      | 表示值为 `undefined`                                         | `let u: undefined = undefined;`                  |
-| `never`          | 表示不会出现的值类型，通常用于抛出异常或无限循环的函数        | `function error(message: string): never { throw new Error(message); }` |
-| `object`         | 非原始类型，包括对象、数组、函数等                            | `let obj: object = { name: "John" };`            |
-| `unknown`        | 未知类型，需要进行类型检查后才能使用                          | `let notSure: unknown = 4; if (typeof notSure === "number") { let value: number = notSure; }` |
-| `Function`       | 函数类型，用于定义函数的参数和返回值类型                      | `let myAdd: (x: number, y: number) => number = function(x, y) { return x + y; };` |
-| `Interface`      | 接口类型，用于定义对象的结构                                   | `interface Person { firstName: string; lastName: string; }` |
-| `Type Alias`     | 类型别名，用于给类型起一个新名字                              | `type Name = string;`                            |
-| `Union`          | 联合类型，表示可以是多种类型之一                              | `let value: string | number; value = "hello"; value = 42;` |
-| `Intersection`   | 交叉类型，将多个类型合并为一个类型                             | `type Pet = Bird & Fish;`                        |
-| `Literal`        | 字面量类型，使用具体的值作为类型                               | `let literal: "hello" | "world"; literal = "hello";` |
-| `Type Assertion` | 类型断言，用于手动指定一个值的类型                             | `let someValue: any = "this is a string"; let strLength: number = (someValue as string).length;` |
-| `Generics`       | 泛型，允许定义时不指定具体类型，而在使用时再指定               | `function identity<T>(arg: T): T { return arg; }` |
-| `Readonly`       | 只读属性，用于防止属性被修改                                  | `interface Person { readonly id: number; name: string; }` |
-| `Optional`       | 可选属性，用于定义可选的属性                                   | `interface Person { firstName: string; lastName?: string; }` |
-| `Namespace`      | 命名空间，用于组织代码，避免命名冲突                          | `namespace Validation { export function validate() { /* ... */ } }` |
-| `Module`         | 模块，用于将代码分割成独立的文件和块                          | `import { add } from "./math";`                  |
+|类型|描述|示例代码|
+|---|---|---|
+|`boolean`|布尔值类型，只有 `true` 和 `false`|`let isDone: boolean = false;`|
+|`number`|数值类型，包括整数和浮点数|`let count: number = 10;`|
+|`string`|字符串类型|`let name: string = "John";`|
+|`Array`|数组类型，可以指定元素类型|`let list: number[] = [1, 2, 3];`|
+|`Tuple`|元组类型，表示固定数量和类型的数组|`let tuple: [string, number] = ["hello", 10];`|
+|`Enum`|枚举类型，用于定义一组命名常量|`enum Color { Red, Green, Blue }`|
+|`any`|任意类型，可用于绕过类型检查|`let notSure: any = 4; notSure = "maybe a string";`|
+|`void`|无返回值类型，通常用于函数的返回值类型|`function warnUser(): void { console.log("Warning!"); }`|
+|`null`|表示值为 `null`|`let n: null = null;`|
+|`undefined`|表示值为 `undefined`|`let u: undefined = undefined;`|
+|`never`|表示不会出现的值类型，通常用于抛出异常或无限循环的函数|`function error(message: string): never { throw new Error(message); }`|
+|`object`|非原始类型，包括对象、数组、函数等|`let obj: object = { name: "John" };`|
+|`unknown`|未知类型，需要进行类型检查后才能使用|`let notSure: unknown = 4; if (typeof notSure === "number") { let value: number = notSure; }`|
+|`Function`|函数类型，用于定义函数的参数和返回值类型|`let myAdd: (x: number, y: number) => number = function(x, y) { return x + y; };`|
+|`Interface`|接口类型，用于定义对象的结构|`interface Person { firstName: string; lastName: string; }`|
+|`Type Alias`|类型别名，用于给类型起一个新名字|`type Name = string;`|
+|`Union`|联合类型，表示可以是多种类型之一|`let value: string number; value = "hello"; value = 42;`|
+|`Intersection`|交叉类型，将多个类型合并为一个类型|`type Pet = Bird & Fish;`|
+|`Literal`|字面量类型，使用具体的值作为类型|`let literal: "hello" "world"; literal = "hello";`|
+|`Type Assertion`|类型断言，用于手动指定一个值的类型|`let someValue: any = "this is a string"; let strLength: number = (someValue as string).length;`|
+|`Generics`|泛型，允许定义时不指定具体类型，而在使用时再指定|`function identity<T>(arg: T): T { return arg; }`|
+|`Readonly`|只读属性，用于防止属性被修改|`interface Person { readonly id: number; name: string; }`|
+|`Optional`|可选属性，用于定义可选的属性|`interface Person { firstName: string; lastName?: string; }`|
+|`Namespace`|命名空间，用于组织代码，避免命名冲突|`namespace Validation { export function validate() { /* ... */ } }`|
+|`Module`|模块，用于将代码分割成独立的文件和块|`import { add } from "./math";`|
 
 ## 空安全
+
 在 TypeScript 中，空安全（null safety）是一种用于处理 `null` 和 `undefined` 值的机制，确保代码在运行时不会因为访问 `null` 或 `undefined` 值而抛出错误。TypeScript 提供了多种方法来处理可能为空的值，包括可选链、空值合并运算符、类型守卫等。
 
 ### 可选属性
@@ -152,7 +152,7 @@ interface User {
 function printUserInfo(user: User) {
   console.log(`User ID: ${user.id}`);
   console.log(`User Name: ${user.name}`);
-  
+
   // 使用可选链访问 address 属性
   console.log(`User Street: ${user.address?.street ?? "N/A"}`);
   console.log(`User City: ${user.address?.city ?? "N/A"}`);
@@ -748,6 +748,7 @@ console.log(subtract(5, 3)); // 输出: 2
 函数的参数可以是可选的，也可以有默认值。
 
 #### 可选参数
+
 使用 `?` 表示参数是可选的。
 
 ```typescript
@@ -760,6 +761,7 @@ console.log(buildName("John", "Doe")); // 输出: John Doe
 ```
 
 #### 默认参数
+
 给参数提供默认值，如果调用时未提供该参数，则使用默认值。
 
 ```typescript
@@ -976,7 +978,7 @@ type DogMessageContents = MessageOf<Dog>; // never
 映射类型允许将一个类型的属性转换为另一个类型的属性：
 
 ```typescript
-type Readonly<T> = {
+type MyReadonly<T> = {
   readonly [P in keyof T]: T[P];
 };
 
@@ -985,7 +987,7 @@ interface Todo {
   description: string;
 }
 
-const todo: Readonly<Todo> = {
+const todo: MyReadonly<Todo> = {
   title: "Learn TypeScript",
   description: "Understand generics"
 };
@@ -1147,7 +1149,6 @@ console.log(square.sideLength); // 输出: 5
 - **模块**：适用于将代码组织到独立的文件中，促进代码的可维护性和重用性。模块是 ES6 的标准，在现代 JavaScript 项目中更为推荐使用。
 - **命名空间**：适用于在一个全局作用域下组织代码，主要用于大型项目中的逻辑分组。命名空间更类似于传统的编程语言中的包或库，但在现代 TypeScript 开发中，建议尽量使用模块代替命名空间。
 
-
 ## 类型别名
 
 类型别名（Type Aliases）是 TypeScript 中一种方便的方式，用于为复杂类型赋予一个简单的名称。类型别名可以用于基本类型、对象类型、联合类型、交叉类型等。类型别名使用 `type` 关键字来定义。
@@ -1261,8 +1262,7 @@ console.log(myArray[0]); // 输出: Hello
 
 类型别名和接口在某些情况下可以互换使用，但也有一些不同之处：
 
-1. **接口扩展**：
-   接口可以通过 `extends` 关键字扩展其他接口或类型别名，而类型别名需要通过交叉类型来实现扩展。
+1. **接口扩展**：接口可以通过 `extends` 关键字扩展其他接口或类型别名，而类型别名需要通过交叉类型来实现扩展。
 
    ```typescript
    interface Name {
@@ -1283,8 +1283,7 @@ console.log(myArray[0]); // 输出: Hello
    };
    ```
 
-2. **实现类**：
-   类可以实现接口，但不能实现类型别名。
+2. **实现类**：类可以实现接口，但不能实现类型别名。
 
    ```typescript
    interface Greetable {
@@ -1298,8 +1297,7 @@ console.log(myArray[0]); // 输出: Hello
    }
    ```
 
-3. **联合类型和交叉类型**：
-   类型别名可以定义联合类型和交叉类型，而接口不能直接定义这些类型。
+3. **联合类型和交叉类型**：类型别名可以定义联合类型和交叉类型，而接口不能直接定义这些类型。
 
 ## 交叉类型与联合类型
 
@@ -1483,13 +1481,14 @@ if (isFish(pet)) {
 ### 1. `Partial<T>`
 
 将类型 `T` 的所有属性变为可选。
+
 ```typescript
-type Partial<T> = {
+type MyPartial<T> = {
     [P in keyof T]?: T[P];
 };
 ```
 
-- `type Partial<T>`：这是在定义一个泛型类型 `Partial`，它接受一个类型参数 `T`。
+- `type Partial<T>`：这是在定义一个示例泛型类型 `MyPartial`，它接受一个类型参数 `T`。
 - `{ [P in keyof T]?: T[P]; }`：这是一个映射类型，用于将 `T` 的所有属性变为可选属性。
   - `keyof T`：提取类型 `T` 的所有键，返回一个联合类型。
   - `[P in keyof T]`：通过遍历 `T` 的所有键 `P`，构建一个新的类型。
@@ -1503,7 +1502,7 @@ interface User {
   age: number;
 }
 
-type PartialUser = Partial<User>;
+type PartialUser = MyPartial<User>;
 
 let user: PartialUser = { id: 1 }; // 合法
 ```
@@ -1513,11 +1512,12 @@ let user: PartialUser = { id: 1 }; // 合法
 将类型 `T` 的所有属性变为必选。
 
 ```typescript
-type Required<T> = {
+type MyRequired<T> = {
     [P in keyof T]-?: T[P];
 };
 ```
-- `type Required<T>`：这是在定义一个泛型类型 `Required`，它接受一个类型参数 `T`。
+
+- `type Required<T>`：这是在定义一个示例泛型类型 `MyRequired`，它接受一个类型参数 `T`。
 - `{ [P in keyof T]-?: T[P]; }`：这是一个映射类型，用于将 `T` 的所有属性变为必选属性。
   - `keyof T`：提取类型 `T` 的所有键，返回一个联合类型。
   - `[P in keyof T]`：通过遍历 `T` 的所有键 `P`，构建一个新的类型。
@@ -1531,7 +1531,7 @@ interface User {
   age?: number;
 }
 
-type RequiredUser = Required<User>;
+type RequiredUser = MyRequired<User>;
 
 let user: RequiredUser = { id: 1, name: "Alice", age: 30 }; // 合法
 ```
@@ -1539,12 +1539,14 @@ let user: RequiredUser = { id: 1, name: "Alice", age: 30 }; // 合法
 ### 3. `Readonly<T>`
 
 将类型 `T` 的所有属性变为只读。
+
 ```typescript
-type Readonly<T> = {
+type MyReadonly<T> = {
     readonly [P in keyof T]: T[P];
 };
 ```
-- `type Readonly<T>`：这是在定义一个泛型类型 `Readonly`，它接受一个类型参数 `T`。
+
+- `type Readonly<T>`：这是在定义一个示例泛型类型 `MyReadonly`，它接受一个类型参数 `T`。
 - `{ readonly [P in keyof T]: T[P]; }`：这是一个映射类型，用于将 `T` 的所有属性变为只读属性。
   - `keyof T`：提取类型 `T` 的所有键，返回一个联合类型。
   - `[P in keyof T]`：通过遍历 `T` 的所有键 `P`，构建一个新的类型。
@@ -1557,7 +1559,7 @@ interface User {
   name: string;
 }
 
-type ReadonlyUser = Readonly<User>;
+type ReadonlyUser = MyReadonly<User>;
 
 let user: ReadonlyUser = { id: 1, name: "Alice" };
 // user.id = 2; // 错误: id 是只读属性
@@ -1566,12 +1568,14 @@ let user: ReadonlyUser = { id: 1, name: "Alice" };
 ### 4. `Record<K, T>`
 
 将类型 `K` 的所有属性的值变为类型 `T`。
+
 ```typescript
-type Record<K extends keyof any, T> = {
+type MyRecord<K extends keyof any, T> = {
     [P in K]: T;
 };
 ```
-- `type Record<K extends keyof any, T>`：这是在定义一个泛型类型 `Record`，它接受两个类型参数 `K` 和 `T`。
+
+- `type Record<K extends keyof any, T>`：这是在定义一个示例泛型类型 `MyRecord`，它接受两个类型参数 `K` 和 `T`。
   - `K` 代表对象的键的类型。
   - `T` 代表对象的值的类型。
   - `K extends keyof any` 约束 `K` 必须是 `string`、`number` 或 `symbol` 类型，因为对象的键只能是这三种类型之一。
@@ -1582,7 +1586,7 @@ type Record<K extends keyof any, T> = {
 ```typescript
 type UserRoles = "admin" | "user" | "guest";
 
-type UserRoleMap = Record<UserRoles, string>;
+type UserRoleMap = MyRecord<UserRoles, string>;
 
 let roles: UserRoleMap = {
   admin: "Administrator",
@@ -1594,12 +1598,14 @@ let roles: UserRoleMap = {
 ### 5. `Pick<T, K>`
 
 从类型 `T` 中选择一组属性 `K`。
+
 ```typescript
-type Pick<T, K extends keyof T> = {
+type MyPick<T, K extends keyof T> = {
     [P in K]: T[P];
 };
 ```
-- `type Pick<T, K extends keyof T>`：这是在定义一个泛型类型 `Pick`，它接受两个类型参数 `T` 和 `K`。
+
+- `type Pick<T, K extends keyof T>`：这是在定义一个示例泛型类型 `MyPick`，它接受两个类型参数 `T` 和 `K`。
   - `T` 代表源类型。
   - `K` 代表从 `T` 中选择的一组属性。
   - `K extends keyof T` 确保 `K` 是 `T` 中属性键的联合类型。
@@ -1615,7 +1621,7 @@ interface User {
   email: string;
 }
 
-type UserInfo = Pick<User, "id" | "name">;
+type UserInfo = MyPick<User, "id" | "name">;
 
 let user: UserInfo = { id: 1, name: "Alice" };
 ```
@@ -1623,17 +1629,19 @@ let user: UserInfo = { id: 1, name: "Alice" };
 ### 6. `Omit<T, K>`
 
 从类型 `T` 中剔除一组属性 `K`。
+
 ```typescript
-type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
+type MyOmit<T, K extends keyof any> = MyPick<T, MyExclude<keyof T, K>>;
 ```
-- `type Omit<T, K extends keyof any>`：这是在定义一个泛型类型 `Omit`，它接受两个类型参数 `T` 和 `K`。
+
+- `type Omit<T, K extends keyof any>`：这是在定义一个示例泛型类型 `MyOmit`，它接受两个类型参数 `T` 和 `K`。
   - `T` 代表源类型。
   - `K` 代表要剔除的一组属性。
   - `K extends keyof any` 确保 `K` 是可以作为键的类型，即 `string`、`number` 或 `symbol`。
-- `Pick<T, Exclude<keyof T, K>>`：这是类型构造的一部分，它通过以下步骤构建出新的类型：
+- `MyPick<T, MyExclude<keyof T, K>>`：这是类型构造的一部分，它通过以下步骤构建出新的类型：
   - `keyof T`：提取类型 `T` 的所有键，形成一个联合类型。
-  - `Exclude<keyof T, K>`：从 `keyof T` 中剔除类型 `K`，得到剩下的键的联合类型。
-  - `Pick<T, Exclude<keyof T, K>>`：从类型 `T` 中选择剩下的键，构建一个新的类型。
+  - `MyExclude<keyof T, K>`：从 `keyof T` 中剔除类型 `K`，得到剩下的键的联合类型。
+  - `MyPick<T, MyExclude<keyof T, K>>`：从类型 `T` 中选择剩下的键，构建一个新的类型。
 
 ```typescript
 interface User {
@@ -1643,7 +1651,7 @@ interface User {
   email: string;
 }
 
-type UserContactInfo = Omit<User, "age" | "email">;
+type UserContactInfo = MyOmit<User, "age" | "email">;
 
 let user: UserContactInfo = { id: 1, name: "Alice" };
 ```
@@ -1653,9 +1661,10 @@ let user: UserContactInfo = { id: 1, name: "Alice" };
 从类型 `T` 中剔除可以赋值给类型 `U` 的类型。
 
 ```typescript
-type Exclude<T, U> = T extends U ? never : T;
+type MyExclude<T, U> = T extends U ? never : T;
 ```
-- `type Exclude<T, U>`：这是在定义一个泛型类型 `Exclude`，它接受两个类型参数 `T` 和 `U`。
+
+- `type Exclude<T, U>`：这是在定义一个示例泛型类型 `MyExclude`，它接受两个类型参数 `T` 和 `U`。
   - `T` 代表源类型。
   - `U` 代表要剔除的类型。
 - `T extends U ? never : T`：这是一个条件类型，用于剔除 `T` 中可以赋值给 `U` 的类型。
@@ -1665,7 +1674,7 @@ type Exclude<T, U> = T extends U ? never : T;
 
 ```typescript
 type T = string | number | boolean;
-type U = Exclude<T, boolean>;
+type U = MyExclude<T, boolean>;
 
 let value: U = "hello"; // 合法
 value = 42; // 合法
@@ -1677,9 +1686,10 @@ value = 42; // 合法
 从类型 `T` 中提取可以赋值给类型 `U` 的类型。
 
 ```typescript
-type Extract<T, U> = T extends U ? T : never;
+type MyExtract<T, U> = T extends U ? T : never;
 ```
-- `type Extract<T, U>`：这是在定义一个泛型类型 `Extract`，它接受两个类型参数 `T` 和 `U`。
+
+- `type Extract<T, U>`：这是在定义一个示例泛型类型 `MyExtract`，它接受两个类型参数 `T` 和 `U`。
   - `T` 代表源类型。
   - `U` 代表要提取的类型。
 - `T extends U ? T : never`：这是一个条件类型，用于提取 `T` 中可以赋值给 `U` 的类型。
@@ -1688,7 +1698,7 @@ type Extract<T, U> = T extends U ? T : never;
 
 ```typescript
 type T = string | number | boolean;
-type U = Extract<T, boolean | number>;
+type U = MyExtract<T, boolean | number>;
 
 let value: U = 42; // 合法
 value = true; // 合法
@@ -1703,6 +1713,7 @@ value = true; // 合法
 type NonNullable<T> = T & {}; // 新版
 type NonNullable<T> = T extends null | undefined ? never : T;
 ```
+
 - `type NonNullable<T>`：这是在定义一个泛型类型 `NonNullable`，它接受一个类型参数 `T`。
 - `T extends null | undefined ? never : T`：这是一个条件类型，用于剔除 `T` 中的 `null` 和 `undefined` 类型。
   - `T extends null | undefined`：如果 `T` 是 `null` 或 `undefined`，则结果为 `never`。
@@ -1721,9 +1732,11 @@ value = 42; // 合法
 ### 10. `Parameters<T>`
 
 获取函数类型 `T` 的参数类型组成的元组类型。
+
 ```typescript
 type Parameters<T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never;
 ```
+
 - `type Parameters<T extends (...args: any) => any>`：这是在定义一个泛型类型 `Parameters`，它接受一个类型参数 `T`，并且约束 `T` 必须是一个函数类型。
   - `T extends (...args: any) => any`：确保 `T` 是一个函数类型，接受任意参数并返回任意类型的值。
 - `T extends (...args: infer P) => any ? P : never`：这是一个条件类型，用于提取 `T` 的参数类型。
@@ -1741,9 +1754,11 @@ let args: Params = ["hello", 42]; // 合法
 ### 11. `ConstructorParameters<T>`
 
 获取构造函数类型 `T` 的参数类型组成的元组类型。
+
 ```typescript
 type ConstructorParameters<T extends abstract new (...args: any) => any> = T extends abstract new (...args: infer P) => any ? P : never;
 ```
+
 - `type ConstructorParameters<T extends abstract new (...args: any) => any>`：这是在定义一个泛型类型 `ConstructorParameters`，它接受一个类型参数 `T`，并且约束 `T` 必须是一个构造函数类型。
   - `T extends abstract new (...args: any) => any`：确保 `T` 是一个构造函数类型，接受任意参数并返回任意类型的实例。
 - `T extends abstract new (...args: infer P) => any ? P : never`：这是一个条件类型，用于提取 `T` 的参数类型。
@@ -1764,6 +1779,7 @@ let args: UserConstructorParams = ["Alice", 30]; // 合法
 ### 12. `ReturnType<T>`
 
 获取函数类型 `T` 的返回值类型。
+
 ```typescript
 type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any;
 ```
@@ -1784,9 +1800,11 @@ let value: Return = "hello"; // 合法
 ### 13. `InstanceType<T>`
 
 获取构造函数类型 `T` 的实例类型。
+
 ```typescript
 type InstanceType<T extends abstract new (...args: any) => any> = T extends abstract new (...args: any) => infer R ? R : any;
 ```
+
 - `type InstanceType<T extends abstract new (...args: any) => any>`：这是在定义一个泛型类型 `InstanceType`，它接受一个类型参数 `T`，并且约束 `T` 必须是一个构造函数类型。
   - `T extends abstract new (...args: any) => any`：确保 `T` 是一个构造函数类型，接受任意参数并返回任意类型的实例。
 - `T extends abstract new (...args: any) => infer R ? R : any`：这是一个条件类型，用于提取构造函数 `T` 的实例类型。
@@ -1810,9 +1828,11 @@ let user: UserInstance = new User("Alice");
 ### 14. `ThisType<T>`
 
 用于指定上下文对象的类型。
+
 ```typescript
 interface ThisType<T> {}
 ```
+
 - `interface ThisType<T>`：定义了一个泛型接口 `ThisType`，它接受一个类型参数 `T`。
 - `{}`：这个接口没有任何具体的结构或成员。
 
@@ -1867,23 +1887,25 @@ type Uncapitalize<S extends string> = intrinsic;
 获取 Promise 的解析值类型的工具类型
 
 ```typescript
-type Awaited<T> = T extends null | undefined ? T : 
-    T extends object & { then(onfulfilled: infer F, ...args: infer _): any; } ? 
-        F extends ((value: infer V, ...args: infer _) => any) ? 
-            Awaited<V> :
-        never : 
+type MyAwaited<T> = T extends null | undefined ? T :
+    T extends object & { then(onfulfilled: infer F, ...args: infer _): any; } ?
+        F extends ((value: infer V, ...args: infer _) => any) ?
+            MyAwaited<V> :
+        never :
     T;
 ```
+
 - `T extends null | undefined ? T`：处理 `null` 和 `undefined` 类型。如果 `T` 是 `null` 或 `undefined`，则返回 `T`。
 - `T extends object & { then(onfulfilled: infer F, ...args: infer _): any; }`：检查 `T` 是否是一个对象，并且具有一个 `then` 方法。`then` 方法用于表示 thenable 对象，如 `Promise`。
   - `F extends ((value: infer V, ...args: infer _) => any)`：提取 `then` 方法的第一个参数类型 `F`，并检查 `F` 是否是一个接受参数 `V` 的函数。
-    - `Awaited<V>`：递归地解包 `V`，即如果 `V` 本身也是一个 `Promise` 或 thenable 对象，继续解包。
+    - `MyAwaited<V>`：递归地解包 `V`，即如果 `V` 本身也是一个 `Promise` 或 thenable 对象，继续解包。
   - `never`：如果 `then` 方法的第一个参数不是一个可调用函数，返回 `never`。
 - `T`：如果 `T` 既不是 `null` 或 `undefined`，也不是一个 thenable 对象，则返回 `T`。
 
 ## 关键字
 
 ### infer
+
 在 TypeScript 中，`infer` 关键字用于在条件类型中推断类型变量。它允许我们在条件类型中提取和使用某个类型的部分信息，是一个非常强大的特性。
 
 #### `infer` 的用法
@@ -1943,15 +1965,15 @@ type NumberArrayElement = ElementType<NumberArray>;
 我们可以创建一个工具类型 `Awaited`，用于提取 `Promise` 的解析类型：
 
 ```typescript
-type Awaited<T> = T extends Promise<infer U> ? U : T;
+type MyAwaited<T> = T extends Promise<infer U> ? U : T;
 
 type StringPromise = Promise<string>;
 type NumberPromise = Promise<number>;
 
-type StringPromiseResult = Awaited<StringPromise>;
+type StringPromiseResult = MyAwaited<StringPromise>;
 // StringPromiseResult 类型为 string
 
-type NumberPromiseResult = Awaited<NumberPromise>;
+type NumberPromiseResult = MyAwaited<NumberPromise>;
 // NumberPromiseResult 类型为 number
 ```
 
@@ -2165,6 +2187,7 @@ let stringContainer: Container<string> = { value: "Hello" };
 ```
 
 对于交叉类型或联合类型的泛型参数
+
 ```typescript
 // 直接将交叉类型看作一个类型
 type A1 = Readonly<{a: string } & { b: number}>
@@ -2210,4 +2233,3 @@ type B = IsString<number>; // "no"
 ```
 
 ## 常用技巧
-

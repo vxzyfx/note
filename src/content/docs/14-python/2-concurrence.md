@@ -4,7 +4,7 @@ title: Python并发编程
 
 ## 多进程
 
-Python多进程编程是指通过使用多个进程来并行执行任务，从而提高程序的执行效率和性能。Python的`multiprocessing`模块提供了一种创建和管理进程的便捷方法。以下是一个简单的多进程编程示例和一些常见的使用模式。
+Python 多进程编程是指通过使用多个进程来并行执行任务，从而提高程序的执行效率和性能。Python 的 `multiprocessing` 模块提供了一种创建和管理进程的便捷方法。以下是一个简单的多进程编程示例和一些常见的使用模式。
 
 ### 基本示例
 
@@ -29,9 +29,9 @@ if __name__ == '__main__':
     print("All processes have finished.")
 ```
 
-### 使用`Pool`进行进程池管理
+### 使用 `Pool` 进行进程池管理
 
-`Pool`对象可以管理一个进程池，通过`apply`, `map`, `starmap`等方法来分配任务。以下是一个使用`Pool`的示例：
+`Pool` 对象可以管理一个进程池，通过 `apply` , `map` , `starmap` 等方法来分配任务。以下是一个使用 `Pool` 的示例：
 
 ```python
 from multiprocessing import Pool
@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
 ### 共享内存
 
-在多进程编程中，进程之间不能直接共享全局变量，但是可以通过`Value`或`Array`来共享内存。以下是一个示例：
+在多进程编程中，进程之间不能直接共享全局变量，但是可以通过 `Value` 或 `Array` 来共享内存。以下是一个示例：
 
 ```python
 from multiprocessing import Process, Value, Array
@@ -76,7 +76,7 @@ if __name__ == '__main__':
 
 ### 进程间通信
 
-可以使用`Queue`, `Pipe`等方法进行进程间通信。以下是一个使用`Queue`进行进程间通信的示例：
+可以使用 `Queue` , `Pipe` 等方法进行进程间通信。以下是一个使用 `Queue` 进行进程间通信的示例：
 
 ```python
 from multiprocessing import Process, Queue
@@ -106,7 +106,7 @@ if __name__ == '__main__':
 
 ## 多线程
 
-Python的多线程编程使用`threading`模块来创建和管理线程。与多进程不同，线程共享相同的内存空间，因此可以更轻量级地并发执行任务。以下是一些使用`threading`模块进行多线程编程的常见模式和示例。
+Python 的多线程编程使用 `threading` 模块来创建和管理线程。与多进程不同，线程共享相同的内存空间，因此可以更轻量级地并发执行任务。以下是一些使用 `threading` 模块进行多线程编程的常见模式和示例。
 
 ### 基本示例
 
@@ -131,7 +131,7 @@ print("All threads have finished.")
 
 ### 使用线程池
 
-Python 3.2+ 提供了`concurrent.futures`模块，其中包含`ThreadPoolExecutor`，可以更方便地管理线程池。以下是一个示例：
+Python 3.2+ 提供了 `concurrent.futures` 模块，其中包含 `ThreadPoolExecutor`，可以更方便地管理线程池。以下是一个示例：
 
 ```python
 from concurrent.futures import ThreadPoolExecutor
@@ -146,7 +146,7 @@ with ThreadPoolExecutor(max_workers=4) as executor:
 
 ### 线程同步
 
-由于线程共享全局变量，多个线程同时访问或修改同一个变量可能会导致数据竞争问题。可以使用`Lock`对象来确保线程安全。以下是一个示例：
+由于线程共享全局变量，多个线程同时访问或修改同一个变量可能会导致数据竞争问题。可以使用 `Lock` 对象来确保线程安全。以下是一个示例：
 
 ```python
 import threading
@@ -175,7 +175,7 @@ print("Final counter value:", counter)
 
 ### 线程间通信
 
-可以使用`Queue`模块来实现线程间通信。以下是一个示例：
+可以使用 `Queue` 模块来实现线程间通信。以下是一个示例：
 
 ```python
 import threading
@@ -207,9 +207,9 @@ for t in threads:
     t.join()
 ```
 
-### 使用`Thread`子类
+### 使用 `Thread` 子类
 
-可以通过继承`threading.Thread`类来创建线程，并重载其`run`方法。以下是一个示例：
+可以通过继承 `threading.Thread` 类来创建线程，并重载其 `run` 方法。以下是一个示例：
 
 ```python
 import threading
@@ -236,7 +236,7 @@ print("All threads have finished.")
 
 ## 异步编程
 
-Python异步编程使用`asyncio`模块，可以在单线程中实现并发，尤其适用于I/O密集型任务。通过`async`和`await`关键字，可以定义和调用异步函数。以下是一些使用`asyncio`模块进行异步编程的基本示例和常见模式。
+Python 异步编程使用 `asyncio` 模块，可以在单线程中实现并发，尤其适用于 I/O 密集型任务。通过 `async` 和 `await` 关键字，可以定义和调用异步函数。以下是一些使用 `asyncio` 模块进行异步编程的基本示例和常见模式。
 
 ### 基本示例
 
@@ -258,9 +258,9 @@ async def main():
 asyncio.run(main())
 ```
 
-### 异步I/O操作
+### 异步 I/O 操作
 
-异步编程特别适用于I/O密集型操作，例如网络请求。以下是一个示例，展示如何使用`asyncio`进行异步I/O操作：
+异步编程特别适用于 I/O 密集型操作，例如网络请求。以下是一个示例，展示如何使用 `asyncio` 进行异步 I/O 操作：
 
 ```python
 import asyncio
@@ -287,7 +287,7 @@ asyncio.run(main())
 
 ### 异步队列
 
-可以使用`asyncio.Queue`来实现生产者-消费者模式。以下是一个示例：
+可以使用 `asyncio.Queue` 来实现生产者 - 消费者模式。以下是一个示例：
 
 ```python
 import asyncio
@@ -318,7 +318,7 @@ asyncio.run(main())
 
 ### 限制并发数
 
-可以使用`asyncio.Semaphore`来限制并发任务的数量。以下是一个示例：
+可以使用 `asyncio.Semaphore` 来限制并发任务的数量。以下是一个示例：
 
 ```python
 import asyncio
@@ -337,9 +337,9 @@ async def main():
 asyncio.run(main())
 ```
 
-### 使用`async`和`await`定义异步函数
+### 使用 `async` 和 `await` 定义异步函数
 
-以下是如何使用`async`和`await`关键字定义和调用异步函数的示例：
+以下是如何使用 `async` 和 `await` 关键字定义和调用异步函数的示例：
 
 ```python
 import asyncio

@@ -1,103 +1,87 @@
 ---
 title: kubeadm安装k8s
+description: 使用 kubeadm 安装 Kubernetes 控制平面前的前置检查、运行时准备和高风险命令说明。
 ---
 
 ## 安装要求
 
-- 基于Debian或Red Hat的Linux发行版
-- 至少2G内存
-- 至少2核CPU
-- 集群中所有计算机之间可以通信
-- 每个节点有唯一的主机名，MAC地址，product_uuid
-- 使用的端口是打开的
+本文示例按 Kubernetes 官方当前稳定文档核验，包仓库示例使用 `pkgs.k8s.io`。如果要安装其他 Kubernetes 小版本，需要把仓库 URL 中的 minor version 改为目标版本，并阅读对应版本的官方文档。
 
-1. 检查主机名
+- 兼容的 Linux 主机。
+- 控制平面节点至少 2 GiB 内存、2 核 CPU。
+- 集群中所有机器之间网络可达。
+- 每个节点有唯一的主机名、MAC 地址和 `product_uuid`。
+- Kubernetes 组件和网络插件所需端口已开放。
+
+### 检查主机标识
 
 ```bash
 hostname
-```
-
-2. 检查MAC地址
-
-```bash
 ip link
+sudo cat /sys/class/dmi/id/product_uuid
 ```
 
-3. 检查product_uuid
+### 需要开放的端口
 
-```bash
-cat /sys/class/dmi/id/product_uuid
-```
+控制平面节点：
 
-4. 需要打开的端口
-
-Master
 | 协议 | 端口范围 | 介绍 | 使用者 |
-|------|----------|------|--------|
-| TCP | 6443 | kube-apiserver | 所有与集群的通信 |
-| TCP | 2379 | etcd服务端与客户端通信 | kube-apiserver |
-| TCP | 2380 | etcd服务端间通信 | ectd |
-| TCP | 10250 | kubelet API | 本机，或其他Master |
+| --- | --- | --- | --- |
+| TCP | 6443 | kube API Server | 所有与集群的通信 |
+| TCP | 2379 | etcd 服务端与客户端通信 | kube API Server |
+| TCP | 2380 | etcd 服务端间通信 | etcd |
+| TCP | 10250 | kubelet API | 本机或其他控制平面节点 |
 | TCP | 10257 | kube-controller-manager | 本机 |
 | TCP | 10259 | kube-scheduler | 本机 |
 
-工作节点Node
+工作节点：
+
 | 协议 | 端口范围 | 介绍 | 使用者 |
-|------|----------|------|--------|
-| TCP | 10250 | kubelet API | 本机或控制节点 |
+| --- | --- | --- | --- |
+| TCP | 10250 | kubelet API | 本机或控制平面节点 |
 | TCP | 10256 | kube-proxy | 本机或负载均衡器 |
-| TCP | 30000-32767 | NodePort | 所有 |
+| TCP | 30000-32767 | NodePort | 需要访问 NodePort 的客户端 |
 
-5. 关闭swap
+### Swap 配置
 
-默认情况下kubelet会检查swap,当启用了swap时，kubelet将无法启动，可以通过修改kubeet的配置文件`failSwapOn: false`运行kubelet启动，但是swap不会被使用，通过修改`swapBehavior`可以定义swap的不同行为。
+默认情况下，kubelet 检测到 swap 会启动失败。可以关闭 swap，或在 kubelet 配置中设置 `failSwapOn: false` 并按官方 `swapBehavior` 说明配置工作负载是否可用 swap。
 
-[swapBehavior的介绍](https://kubernetes.io/docs/concepts/architecture/nodes/#swap-memory)
-
-关闭swap
+> 警告：`swapoff -a` 会立即关闭当前系统的 swap，可能增加内存压力并触发进程 OOM。执行前确认节点内存充足；永久关闭还需要检查 `/etc/fstab`、`systemd.swap` 或发行版使用的 swap 管理方式。
 
 ```bash
-swapoff -a
+sudo swapoff -a
 ```
-
-要永久关闭swap还需修改`/etc/fstab`或`systemd-swap`
 
 ## 安装容器运行时
 
-开启IPv4包转发
+Kubernetes 通过 CRI 使用容器运行时。未指定运行时时，kubeadm 会尝试自动检测已知端点；如果检测到多个或没有检测到运行时，需要显式指定。
+
+### 开启 IPv4 包转发
+
+> 警告：下面命令会写入 `/etc/sysctl.d/k8s.conf` 并重新加载 sysctl 配置，影响本机网络转发行为。执行前确认该节点用于 Kubernetes，并保留已有自定义 sysctl 配置。
 
 ```bash
 cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
 net.ipv4.ip_forward = 1
 EOF
-```
-
-```bash
 sudo sysctl --system
 ```
 
-容器运行是安装一种即可
+### containerd 示例
 
-### containerd
+> 待核验：以下 containerd、runc、CNI 插件手动安装版本是示例值。生产环境应按目标 Kubernetes 版本、CPU 架构和发行版包管理策略选择版本，并校验下载文件来源。
 
-[containerd](https://github.com/containerd/containerd)
-
-1. 下载
+下载并安装 containerd：
 
 ```bash
 wget https://github.com/containerd/containerd/releases/download/v2.0.1/containerd-2.0.1-linux-amd64.tar.gz
+sudo tar Cxzvf /usr/local containerd-2.0.1-linux-amd64.tar.gz
 ```
 
-2. 安装
+> 警告：下面命令会创建 systemd 服务文件并启用系统服务。不要覆盖发行版包管理器已经安装的 `containerd.service`，否则可能导致升级和排障混乱。
 
 ```bash
-tar Cxzvf /usr/local containerd-2.0.1-linux-amd64.tar.gz
-```
-
-3. 设置systemd服务
-
-```bash
-cat <<EOF > /lib/systemd/system/containerd.service
+cat <<EOF | sudo tee /lib/systemd/system/containerd.service
 [Unit]
 Description=containerd container runtime
 Documentation=https://containerd.io
@@ -106,16 +90,13 @@ After=network.target local-fs.target dbus.service
 [Service]
 ExecStartPre=-/sbin/modprobe overlay
 ExecStart=/usr/local/bin/containerd
-
 Type=notify
 Delegate=yes
 KillMode=process
 Restart=always
 RestartSec=5
-
 LimitNPROC=infinity
 LimitCORE=infinity
-
 TasksMax=infinity
 OOMScoreAdjust=-999
 
@@ -124,93 +105,93 @@ WantedBy=multi-user.target
 EOF
 ```
 
-4. 开启SystemdCgroup
+生成配置：
 
 ```bash
-mkdir /etc/containerd
-containerd config default > /etc/containerd/config.toml
+sudo mkdir -p /etc/containerd
+containerd config default | sudo tee /etc/containerd/config.toml
 ```
 
-5. 安装runc
-
-[runc](https://github.com/opencontainers/runc)
+安装 runc 和 CNI 插件：
 
 ```bash
 wget https://github.com/opencontainers/runc/releases/download/v1.2.3/runc.amd64
-install -m 755 runc.amd64 /usr/local/sbin/runc
-```
-
-6. 安装cri
-
-[cri](https://github.com/containernetworking/plugins)
-
-```bash
+sudo install -m 755 runc.amd64 /usr/local/sbin/runc
 wget https://github.com/containernetworking/plugins/releases/download/v1.6.1/cni-plugins-linux-amd64-v1.6.1.tgz
-mkdir -p /opt/cni/bin
-tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.6.1.tgz
+sudo mkdir -p /opt/cni/bin
+sudo tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.6.1.tgz
 ```
 
-7. 开启containerd
+启动 containerd：
 
 ```bash
-systemctl daemon-reload
-systemctl enable --now containerd
+sudo systemctl daemon-reload
+sudo systemctl enable --now containerd
 ```
 
-## 安装kubeadm
+## 安装 kubeadm
+
+> 警告：以下命令会新增 Kubernetes APT 仓库、安装 `kubelet`、`kubeadm`、`kubectl`，并用 `apt-mark hold` 阻止它们随系统升级自动升级。升级 Kubernetes 需要按官方升级流程单独处理。
 
 ```bash
 sudo apt-get update
 sudo apt-get install -y apt-transport-https ca-certificates curl gpg
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
-
+sudo install -d -m 0755 /etc/apt/keyrings
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.36/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.36/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
-
 sudo systemctl enable --now kubelet
 ```
 
+## 创建集群
+
 ### 命令行创建
 
+> 警告：`kubeadm init` 会在本机初始化控制平面、生成证书和 kubeconfig，并改变节点状态。先运行预检、确认容器运行时、网络 CIDR、API Server 地址和证书 SAN 后再执行；不要在已有集群节点上重复初始化。
+
 ```bash
-kubeadm init
+sudo kubeadm init
 ```
 
-命令行参数
+常用命令行参数：
 
-- --apiserver-advertise-address 字符串 API 服务器将公布其正在监听的 IP 地址。如果未设置，则将使用默认网络接口。
-- --apiserver-bind-port int32 API 服务器绑定到的端口。（默认值为 6443）
-- --apiserver-cert-extra-sans 字符串用于 API 服务器服务证书的可选额外主题备用名称 (SAN)。可以是 IP 地址和 DNS 名称。
-- --cert-dir 字符串保存和存储证书的路径。（默认值为“/etc/kubernetes/pki”）
-- --certificate-key 字符串用于加密 kubeadm-certs Secret 中的控制平面证书的密钥。证书密钥是一个十六进制编码的字符串，是大小为 32 字节的 AES 密钥。
-- --config 字符串 kubeadm 配置文件的路径。
-- --control-plane-endpoint 字符串为控制平面指定一个稳定的 IP 地址或 DNS 名称。
-- --cri-socket 字符串 要连接的 CRI 套接字的路径。如果为空，kubeadm 将尝试自动检测此值；仅当您安装了多个 CRI 或拥有非标准 CRI 套接字时才使用此选项。
-- --dry-run 不应用任何更改；仅输出将执行的操作。
-- --feature-gates 字符串 一组键=值对，用于描述各种功能的功能门控。
-- --ignore-preflight-errors 字符串 将显示为警告的检查列表。示例：“IsPrivilegedUser,Swap”。值“all”将忽略所有检查的错误。
-- --image-repository 字符串 选择要从中提取控制平面映像的容器注册表（默认“registry.k8s.io”）
-- --kubernetes-version 字符串 为控制平面选择特定的 Kubernetes 版本。 （默认“stable-1”）
-- --node-name 字符串 指定节点名称。
-- --patches 字符串 包含名为“target[suffix][+patchtype].extension”的文件的目录的路径。例如，“kube-apiserver0+merge.yaml”或只是“etcd.json”。 “target”可以是“kube-apiserver”、“kube-controller-manager”、“kube-scheduler”、“etcd”、“kubeletconfiguration”、“corednsdeployment”之一。 “patchtype”可以是“strategic”、“merge”或“json”之一，它们与 kubectl 支持的补丁格式匹配。默认的“patchtype”是“strategic”。 “extension”必须是“json”或“yaml”。 “suffix”是一个可选字符串，可用于确定首先应用哪些补丁（按字母数字顺序）。
-- --pod-network-cidr 字符串 指定 pod 网络的 IP 地址范围。如果设置，控制平面将自动为每个节点分配 CIDR。
-- --service-cidr 字符串 使用服务 VIP 的备用 IP 地址范围。（默认值为“10.96.0.0/12”）
-- --service-dns-domain 字符串 使用服务的备用域，例如“myorg.internal”。（默认值为“cluster.local”）
-- --skip-certificate-key-print 不打印用于加密控制平面证书的密钥。
-- --skip-phases 字符串 要跳过的阶段列表
-- --skip-token-print 跳过打印“kubeadm init”生成的默认引导令牌。
-- --token 字符串 用于在节点和控制平面节点之间建立双向信任的令牌。格式为 [a-z0-9]{6}\.[a-z0-9]{16} - 例如abcdef.0123456789abcdef
-- --token-ttl duration 令牌自动删除前的持续时间（例如 1s、2m、3h）。如果设置为“0”，则令牌永不过期（默认 24h0m0s）
-- --upload-certs 将控制平面证书上传到 kubeadm-certs Secret。
+- `--apiserver-advertise-address`：API Server 公布的监听 IP；未设置时使用默认网络接口。
+- `--apiserver-bind-port`：API Server 绑定端口，默认 `6443`。
+- `--apiserver-cert-extra-sans`：API Server 证书额外 SAN，可为 IP 或 DNS 名称。
+- `--cert-dir`：保存证书的路径，默认 `/etc/kubernetes/pki`。
+- `--certificate-key`：用于加密 `kubeadm-certs` Secret 中控制平面证书的 32 字节 AES 密钥，十六进制编码。
+- `--config`：kubeadm 配置文件路径。
+- `--control-plane-endpoint`：为控制平面指定稳定 IP 或 DNS 名称。
+- `--cri-socket`：CRI 套接字路径；仅在多个运行时或非标准套接字时显式指定。
+- `--dry-run`：只输出将执行的操作，不应用更改。
+- `--ignore-preflight-errors`：忽略指定预检错误；不要用 `all` 掩盖未知环境问题。
+- `--image-repository`：控制平面镜像仓库，默认 `registry.k8s.io`。
+- `--kubernetes-version`：控制平面 Kubernetes 版本。
+- `--node-name`：指定节点名称。
+- `--pod-network-cidr`：Pod 网络 CIDR；是否需要设置取决于网络插件。
+- `--service-cidr`：Service VIP 网段，默认 `10.96.0.0/12`。
+- `--skip-certificate-key-print`：不打印控制平面证书密钥。
+- `--skip-token-print`：不打印默认引导令牌。
+- `--token`：节点和控制平面建立双向信任的令牌，格式为 `[a-z0-9]{6}.[a-z0-9]{16}`。
+- `--token-ttl`：令牌自动删除前的持续时间；`0` 表示永不过期，默认 `24h0m0s`。
+- `--upload-certs`：上传控制平面证书到 `kubeadm-certs` Secret。
 
 ### 配置文件创建
 
-```bash
-kubeadm config print init-defaults > kubeadm.yaml
-```
+> 警告：配置文件会影响证书、网络、镜像仓库和组件参数。生成默认配置后先审阅和提交到安全位置，再执行初始化。
 
 ```bash
-kubeadm init --config=kubeadm.yaml
+kubeadm config print init-defaults > kubeadm.yaml
+sudo kubeadm init --config=kubeadm.yaml
 ```
+
+## 参考资料
+
+1. [Installing kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)（访问日期：2026-05-31）
+2. [Creating a cluster with kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)（访问日期：2026-05-31）
+3. [kubeadm init reference](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/)（访问日期：2026-05-31）
+4. [Kubernetes Nodes documentation](https://kubernetes.io/docs/concepts/architecture/nodes/)（访问日期：2026-05-31）
+5. [containerd Getting started](https://github.com/containerd/containerd/blob/main/docs/getting-started.md)（访问日期：2026-05-31）
+6. [Open Container Initiative runc releases](https://github.com/opencontainers/runc/releases)（访问日期：2026-05-31）

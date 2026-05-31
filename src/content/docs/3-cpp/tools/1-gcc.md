@@ -3,15 +3,16 @@ title: GCC
 ---
 
 ## 介绍
-GCC，全称GNU Compiler Collection，是GNU项目开发的编译器系统，支持多种编程语言。它是开源软件，由自由软件基金会（FSF）维护和发布。GCC最初是为C语言设计的，但现已扩展支持C++、Fortran、Ada、Go等多种语言。以下是GCC的一些主要特点和功能介绍：
+
+GCC，全称 GNU Compiler Collection，是 GNU 项目开发的编译器系统，支持多种编程语言。它是开源软件，由自由软件基金会（FSF）维护和发布。GCC 最初是为 C 语言设计的，但现已扩展支持 C++、Fortran、Ada、Go 等多种语言。以下是 GCC 的一些主要特点和功能介绍：
 
 ### 主要特点
 
-1. **多语言支持**：GCC支持C、C++、Fortran、Ada、Go和D语言等，能够编译多种不同的编程语言。
-2. **跨平台**：GCC可以在多种操作系统和硬件平台上运行，包括Linux、Windows、macOS等。
-3. **优化**：GCC提供多种优化选项，可以在编译时优化代码的性能和大小。
-4. **开放源代码**：GCC是开源软件，任何人都可以查看、修改和分发其源代码。
-5. **扩展性**：由于其模块化设计，GCC易于扩展，可以添加新的语言前端和优化后端。
+1. **多语言支持**：GCC 支持 C、C++、Fortran、Ada、Go 和 D 语言等，能够编译多种不同的编程语言。
+2. **跨平台**：GCC 可以在多种操作系统和硬件平台上运行，包括 Linux、Windows、macOS 等。
+3. **优化**：GCC 提供多种优化选项，可以在编译时优化代码的性能和大小。
+4. **开放源代码**：GCC 是开源软件，任何人都可以查看、修改和分发其源代码。
+5. **扩展性**：由于其模块化设计，GCC 易于扩展，可以添加新的语言前端和优化后端。
 
 ### 主要组件
 
@@ -22,7 +23,7 @@ GCC，全称GNU Compiler Collection，是GNU项目开发的编译器系统，支
 
 ### 使用示例
 
-编译一个简单的C程序：
+编译一个简单的 C 程序：
 
 ```c
 #include <stdio.h>
@@ -39,7 +40,7 @@ int main() {
 gcc -o hello hello.c
 ```
 
-生成的可执行文件`hello`可以通过以下命令运行：
+生成的可执行文件 `hello` 可以通过以下命令运行：
 
 ```sh
 ./hello
@@ -49,82 +50,83 @@ gcc -o hello hello.c
 
 - `-o <filename>`：指定输出文件名。
 - `-Wall`：启用所有常见的警告。
-- `-O[level]`：设置优化级别，`-O2`通常是一个常见的优化级别。
+- `-O[level]`：设置优化级别，`-O2` 通常是一个常见的优化级别。
 - `-g`：生成调试信息，便于使用调试器调试程序。
 
 ### 扩展和插件
 
-GCC支持插件，可以通过插件扩展其功能。例如，可以编写插件来添加新的优化、检查代码质量或集成其他工具。
+GCC 支持插件，可以通过插件扩展其功能。例如，可以编写插件来添加新的优化、检查代码质量或集成其他工具。
 
 ## 常用选项
 
-| 选项            | 描述                                                                                                                                              |
-|-----------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
-| `-o <filename>` | 指定输出文件名。例如：`gcc -o myprogram myprogram.c`。                                                                                            |
-| `-c`            | 只编译，不链接。生成目标文件（.o文件）。例如：`gcc -c myprogram.c`。                                                                              |
-| `-Wall`         | 启用所有常见的警告信息。                                                                                                                          |
-| `-Werror`       | 将所有警告视为错误。                                                                                                                              |
-| `-O`            | 启用优化。没有级别时，等价于`-O1`。                                                                                                               |
-| `-O0`           | 不进行优化（默认）。                                                                                                                              |
-| `-O1`           | 启用基本优化。                                                                                                                                    |
-| `-O2`           | 启用大多数优化，不会增加编译时间。                                                                                                                |
-| `-O3`           | 启用所有优化，包括一些可能会增加编译时间的优化。                                                                                                  |
-| `-Og`           | 为调试生成优化。                                                                                                                                  |
-| `-g`            | 生成调试信息。                                                                                                                                    |
-| `-I <dir>`      | 添加头文件搜索路径。例如：`gcc -I /path/to/include myprogram.c`。                                                                                  |
-| `-L <dir>`      | 添加库文件搜索路径。例如：`gcc -L /path/to/lib myprogram.c`。                                                                                      |
-| `-l <library>`  | 链接库文件。例如：`gcc -o myprogram myprogram.o -lm`（链接math库）。                                                                               |
-| `-shared`       | 生成共享库。                                                                                                                                      |
-| `-fPIC`         | 生成位置无关代码，用于创建共享库。                                                                                                                |
-| `-std=<standard>` | 指定C/C++标准，例如`-std=c99`或`-std=c++11`。                                                                                                     |
-| `-D <macro>`    | 定义预处理宏。例如：`gcc -DDEBUG myprogram.c`。                                                                                                   |
-| `-E`            | 只运行预处理器，不编译。                                                                                                                          |
-| `-S`            | 将源代码编译为汇编代码，不进行汇编。                                                                                                              |
-| `-fopenmp`      | 启用OpenMP支持，用于并行编程。                                                                                                                    |
-| `-pthread`      | 启用POSIX线程支持。                                                                                                                               |
-| `-Wextra`       | 启用额外的警告信息。                                                                                                                              |
-| `-Wpedantic`    | 启用严格的标准符合性警告。                                                                                                                        |
-| `-v`            | 输出编译器的详细信息。                                                                                                                            |
-| `--version`     | 显示GCC版本信息。                                                                                                                                |
-| `--help`        | 显示GCC的帮助信息。                                                                                                                              |
+|选项|描述|
+|---|---|
+|`-o <filename>`|指定输出文件名。例如：`gcc -o myprogram myprogram.c`。|
+|`-c`|只编译，不链接。生成目标文件（.o 文件）。例如：`gcc -c myprogram.c`。|
+|`-Wall`|启用所有常见的警告信息。|
+|`-Werror`|将所有警告视为错误。|
+|`-O`|启用优化。没有级别时，等价于 `-O1`。|
+|`-O0`|不进行优化（默认）。|
+|`-O1`|启用基本优化。|
+|`-O2`|启用大多数优化；优化分析可能增加编译时间。|
+|`-O3`|启用所有优化，包括一些可能会增加编译时间的优化。|
+|`-Og`|为调试生成优化。|
+|`-g`|生成调试信息。|
+|`-I <dir>`|添加头文件搜索路径。例如：`gcc -I /path/to/include myprogram.c`。|
+|`-L <dir>`|添加库文件搜索路径。例如：`gcc -L /path/to/lib myprogram.c`。|
+|`-l <library>`|链接库文件。例如：`gcc -o myprogram myprogram.o -lm`（链接 math 库）。|
+|`-shared`|生成共享库。|
+|`-fPIC`|生成位置无关代码，用于创建共享库。|
+|`-std=<standard>`|指定 C/C++标准，例如 `-std=c99` 或 `-std=c++11`。|
+|`-D <macro>`|定义预处理宏。例如：`gcc -DDEBUG myprogram.c`。|
+|`-E`|只运行预处理器，不编译。|
+|`-S`|将源代码编译为汇编代码，不进行汇编。|
+|`-fopenmp`|启用 OpenMP 支持，用于并行编程。|
+|`-pthread`|启用 POSIX 线程支持。|
+|`-Wextra`|启用额外的警告信息。|
+|`-Wpedantic`|启用严格的标准符合性警告。|
+|`-v`|输出编译器的详细信息。|
+|`--version`|显示 GCC 版本信息。|
+|`--help`|显示 GCC 的帮助信息。|
 
-## GCC组件
+## GCC 组件
 
-| 类别       | 软件组件             | 描述                                                                  |
-|------------|----------------------|-----------------------------------------------------------------------|
-| 编译器前端 | `gcc`                | C语言编译器                                                           |
-| 编译器前端 | `g++`                | C++语言编译器                                                         |
-| 编译器前端 | `gfortran`           | Fortran语言编译器                                                     |
-| 编译器前端 | `gccgo`              | Go语言编译器                                                          |
-| 编译器前端 | `gnat`               | Ada语言编译器                                                         |
-| 编译器前端 | `gcc-d`              | D语言编译器（有些版本中可能包含）                                     |
-| 库         | `libgcc`             | GCC运行时库，提供基本的低级别支持功能                                |
-| 库         | `libstdc++`          | C++标准库，实现了C++标准库的功能                                     |
-| 库         | `libgfortran`        | Fortran运行时库，提供Fortran程序运行所需的支持                        |
-| 库         | `libgo`              | Go语言运行时库                                                        |
-| 库         | `libgnat`            | Ada语言运行时库                                                       |
-| 工具       | `cpp`                | C预处理器，用于宏替换、文件包含和条件编译                            |
-| 工具       | `as`                 | 汇编器，将汇编语言代码转换为目标代码                                  |
-| 工具       | `ld`                 | 链接器，将目标文件和库文件链接成可执行文件                            |
-| 工具       | `ar`                 | 归档工具，用于创建、修改和提取静态库（.a文件）                       |
-| 工具       | `nm`                 | 列出目标文件的符号表                                                  |
-| 工具       | `strip`              | 去除目标文件和可执行文件中的符号表和调试信息                          |
-| 工具       | `objdump`            | 显示目标文件的详细信息                                                |
-| 工具       | `ranlib`             | 生成静态库的索引                                                      |
-| 工具       | `addr2line`          | 将地址转换为源代码文件名和行号                                        |
-| 工具       | `c++filt`            | 用于解码被编译器“修饰”的C++符号名称                                  |
-| 工具       | `gcov`               | 代码覆盖率分析工具                                                    |
-| 工具       | `gprof`              | 性能分析工具，用于生成程序的性能分析报告                              |
-| 支持文件   | `specs文件`          | 配置文件，用于指定编译器的默认行为和选项                              |
-| 支持文件   | `配置脚本`           | 用于定制和编译GCC时的配置                                             |
+|类别|软件组件|描述|
+|---|---|---|
+|编译器前端|`gcc`|C 语言编译器|
+|编译器前端|`g++`|C++语言编译器|
+|编译器前端|`gfortran`|Fortran 语言编译器|
+|编译器前端|`gccgo`|Go 语言编译器|
+|编译器前端|`gnat`|Ada 语言编译器|
+|编译器前端|`gcc-d`|D 语言编译器（有些版本中可能包含）|
+|库|`libgcc`|GCC 运行时库，提供基本的低级别支持功能|
+|库|`libstdc++`|C++标准库，实现了 C++标准库的功能|
+|库|`libgfortran`|Fortran 运行时库，提供 Fortran 程序运行所需的支持|
+|库|`libgo`|Go 语言运行时库|
+|库|`libgnat`|Ada 语言运行时库|
+|工具|`cpp`|C 预处理器，用于宏替换、文件包含和条件编译|
+|工具|`as`|汇编器，将汇编语言代码转换为目标代码|
+|工具|`ld`|链接器，将目标文件和库文件链接成可执行文件|
+|工具|`ar`|归档工具，用于创建、修改和提取静态库（.a 文件）|
+|工具|`nm`|列出目标文件的符号表|
+|工具|`strip`|去除目标文件和可执行文件中的符号表和调试信息|
+|工具|`objdump`|显示目标文件的详细信息|
+|工具|`ranlib`|生成静态库的索引|
+|工具|`addr2line`|将地址转换为源代码文件名和行号|
+|工具|`c++filt`|用于解码被编译器“修饰”的 C++符号名称|
+|工具|`gcov`|代码覆盖率分析工具|
+|工具|`gprof`|性能分析工具，用于生成程序的性能分析报告|
+|支持文件|`specs文件`|配置文件，用于指定编译器的默认行为和选项|
+|支持文件|`配置脚本`|用于定制和编译 GCC 时的配置|
 
-## 拓展c语言
+## 拓展 c 语言
 
-GCC在C语言的基础上提供了一些扩展和增强功能，这些扩展有助于提高编程的灵活性、性能和代码可读性。以下是一些常见的GCC C语言扩展：
+GCC 在 C 语言的基础上提供了一些扩展和增强功能，这些扩展有助于提高编程的灵活性、性能和代码可读性。以下是一些常见的 GCC C 语言扩展：
 
 ### 语法扩展
 
 1. **嵌套函数（Nested Functions）**
+
 ```c
 void func() {
     void nested_func(int x) {
@@ -134,7 +136,8 @@ void func() {
 }
 ```
 
-2. **变量声明在语句之间（Mixed Declarations and Code）**
+1. **变量声明在语句之间（Mixed Declarations and Code）**
+
 ```c
 int main() {
     int x = 10;
@@ -145,7 +148,8 @@ int main() {
 }
 ```
 
-3. **数组大小灵活初始化（Flexible Array Members）**
+1. **数组大小灵活初始化（Flexible Array Members）**
+
 ```c
 struct flexible_array {
     int size;
@@ -153,7 +157,8 @@ struct flexible_array {
 };
 ```
 
-4. **语句表达式（Statement Expressions）**
+1. **语句表达式（Statement Expressions）**
+
 ```c
 #define square(x) ({ int _x = (x); _x * _x; })
 ```
@@ -161,11 +166,13 @@ struct flexible_array {
 ### 预处理器扩展
 
 1. **宏变量参数（Variadic Macros）**
+
 ```c
 #define debug(format, ...) printf(format, ##__VA_ARGS__)
 ```
 
-2. **宏嵌套（Macro Nesting）**
+1. **宏嵌套（Macro Nesting）**
+
 ```c
 #define XSTR(x) STR(x)
 #define STR(x) #x
@@ -174,11 +181,13 @@ struct flexible_array {
 ### 关键字扩展
 
 1. **`__attribute__`**
+
 ```c
 void my_function() __attribute__((noreturn));
 ```
 
-2. **`__builtin`**
+1. **`__builtin`**
+
 ```c
 int count = __builtin_popcount(0xF0F0);
 ```
@@ -204,11 +213,13 @@ __atomic_add_fetch(&val, 1, __ATOMIC_SEQ_CST);
 ### 内存模型和对齐（Memory Model and Alignment）
 
 1. **对齐指定**
+
 ```c
 int x __attribute__((aligned(16)));
 ```
 
-2. **内存屏障**
+1. **内存屏障**
+
 ```c
 __sync_synchronize();
 ```
@@ -216,13 +227,15 @@ __sync_synchronize();
 ### 内存分配控制
 
 1. **栈保护（Stack Protection）**
+
 ```c
 int __attribute__((stack_protect)) secure_function(int x) {
     // Function implementation
 }
 ```
 
-2. **栈大小调整**
+1. **栈大小调整**
+
 ```c
 int large_array[10000] __attribute__((section(".large_stack")));
 ```
@@ -230,6 +243,7 @@ int large_array[10000] __attribute__((section(".large_stack")));
 ### 诊断控制
 
 1. **控制警告和错误**
+
 ```c
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
@@ -239,57 +253,56 @@ int unused_variable;
 
 ## 内联汇编
 
-GCC内联汇编（Inline Assembly）是一个强大的功能，允许在C/C++代码中嵌入汇编指令，从而实现对硬件的细粒度控制、优化性能和执行一些标准C/C++无法完成的操作。下面是对GCC内联汇编的详细解释：
+GCC 内联汇编（Inline Assembly）是一个强大的功能，允许在 C/C++代码中嵌入汇编指令，从而实现对硬件的细粒度控制、优化性能和执行一些标准 C/C++无法完成的操作。下面是对 GCC 内联汇编的详细解释：
 
 ### 基本语法
 
-GCC内联汇编的基本语法如下：
+GCC 内联汇编的基本语法如下：
 
 ```c
 asm ("assembly code" : output operands : input operands : clobbered registers);
 ```
 
-- **assembly code**: 汇编指令字符串，可以包含占位符。
-- **output operands**: 输出操作数，指定汇编指令的输出。
-- **input operands**: 输入操作数，指定汇编指令的输入。
-- **clobbered registers**: 被破坏的寄存器，指定哪些寄存器在汇编指令执行后被修改。
+- **assembly code** : 汇编指令字符串，可以包含占位符。
+- **output operands** : 输出操作数，指定汇编指令的输出。
+- **input operands** : 输入操作数，指定汇编指令的输入。
+- **clobbered registers** : 被破坏的寄存器，指定哪些寄存器在汇编指令执行后被修改。
 
 ### 操作数约束
 
 操作数约束用于描述汇编指令中操作数的类型。常见的约束符包括：
 
-- **`r`**: 通用寄存器
-- **`m`**: 内存位置
-- **`i`**: 立即数
-- **`a`**: `eax`寄存器
-- **`b`**: `ebx`寄存器
-- **`c`**: `ecx`寄存器
-- **`d`**: `edx`寄存器
-- **`S`**: `esi`寄存器
-- **`D`**: `edi`寄存器
-- **`+`**: 既作为输入也作为输出使用
-- **`=`**: 仅写操作数
+- `r`：通用寄存器
+- `m`：内存位置
+- `i`：立即数
+- `a`：`eax` 寄存器
+- `b`：`ebx` 寄存器
+- `c`：`ecx` 寄存器
+- `d`：`edx` 寄存器
+- `S`：`esi` 寄存器
+- `D`：`edi` 寄存器
+- `+`：既作为输入也作为输出使用
+- `=`：仅写操作数
 
-没有`+`和`=`的约束经作为输入
+没有 `+` 和 `=` 的约束经作为输入
 
-### 常见的Clobbered Registers
+### 常见的 Clobbered Registers
 
 1. **通用寄存器**
-   - `"eax"`, `"ebx"`, `"ecx"`, `"edx"`, `"esi"`, `"edi"`, `"esp"`, `"ebp"`等
+   - `"eax"` , `"ebx"` , `"ecx"` , `"edx"` , `"esi"` , `"edi"` , `"esp"` , `"ebp"` 等
    - 例如：`"eax"`
 
 2. **条件码寄存器**
-   - `"cc"`表示条件码寄存器（condition codes）被修改
+   - `"cc"` 表示条件码寄存器（condition codes）被修改
    - 例如：`"cc"`
 
 3. **内存**
-   - `"memory"`表示内存可能被修改，这对于涉及内存操作的汇编代码尤其重要
+   - `"memory"` 表示内存可能被修改，这对于涉及内存操作的汇编代码尤其重要
    - 例如：`"memory"`
-
 
 ### 基本示例
 
-#### 示例1: 基本加法操作
+#### 示例 1: 基本加法操作
 
 ```c
 #include <stdio.h>
@@ -303,11 +316,12 @@ int main() {
 ```
 
 在这个示例中：
-- `"addl %1, %0"`: `addl`指令将`b`（`%1`）加到`a`（`%0`）中，并将结果存储在`result`中。
-- `=r` (result): `result`是输出操作数，使用通用寄存器。
-- `r` (b), "0" (a): `b`和`a`是输入操作数，使用通用寄存器。
 
-#### 示例2: 移动立即数到寄存器
+- `"addl %1, %0"` : `addl` 指令将 `b`（`%1`）加到 `a`（`%0`）中，并将结果存储在 `result` 中。
+- `=r` (result): `result` 是输出操作数，使用通用寄存器。
+- `r` (b), "0" (a): `b` 和 `a` 是输入操作数，使用通用寄存器。
+
+#### 示例 2: 移动立即数到寄存器
 
 ```c
 #include <stdio.h>
@@ -321,8 +335,9 @@ int main() {
 ```
 
 在这个示例中：
-- `"movl $42, %0"`: 将立即数42移动到`result`中。
-- `=r` (result): `result`是输出操作数，使用通用寄存器。
+
+- `"movl $42, %0"` : 将立即数 42 移动到 `result` 中。
+- `=r` (result): `result` 是输出操作数，使用通用寄存器。
 
 ### 详细示例
 
@@ -341,9 +356,10 @@ int main() {
 ```
 
 在这个示例中：
-- `"bsfl %1, %0"`: `bsfl`指令查找`a`中最低位的1的索引，并将结果存储在`result`中。
-- `=r` (result): `result`是输出操作数，使用通用寄存器。
-- `r` (a): `a`是输入操作数，使用通用寄存器。
+
+- `"bsfl %1, %0"` : `bsfl` 指令查找 `a` 中最低位的 1 的索引，并将结果存储在 `result` 中。
+- `=r` (result): `result` 是输出操作数，使用通用寄存器。
+- `r` (a): `a` 是输入操作数，使用通用寄存器。
 
 #### 原子操作
 
@@ -355,7 +371,7 @@ int main() {
     int increment = 3;
     asm volatile ("lock; xaddl %0, %1"
                   : "+r" (increment), "+m" (value)
-                  : 
+                  :
                   : "memory");
     printf("Value: %d, Increment: %d\n", value, increment);
     return 0;
@@ -363,10 +379,11 @@ int main() {
 ```
 
 在这个示例中：
-- `"lock; xaddl %0, %1"`: `xadd`指令执行一个原子加操作，将`increment`的值加到`value`中，并将原始的`value`值存储在`increment`中。
-- `+r` (increment): `increment`是输入输出操作数，使用通用寄存器。
-- `+m` (value): `value`是输入输出操作数，使用内存位置。
-- `"memory"`: 声明内存可能被修改。
+
+- `"lock; xaddl %0, %1"` : `xadd` 指令执行一个原子加操作，将 `increment` 的值加到 `value` 中，并将原始的 `value` 值存储在 `increment` 中。
+- `+r` (increment): `increment` 是输入输出操作数，使用通用寄存器。
+- `+m` (value): `value` 是输入输出操作数，使用内存位置。
+- `"memory"` : 声明内存可能被修改。
 
 ### 内联汇编中使用内存约束
 
@@ -388,13 +405,14 @@ int main() {
 ```
 
 在这个示例中：
-- `movl (%1,%2,4), %0`: 将数组`array`中第`index`个元素的值移动到`result`中。
-- `=r` (result): `result`是输出操作数，使用通用寄存器。
-- `r` (array), `r` (index): `array`和`index`是输入操作数，使用通用寄存器。
+
+- `movl (%1,%2,4), %0` : 将数组 `array` 中第 `index` 个元素的值移动到 `result` 中。
+- `=r` (result): `result` 是输出操作数，使用通用寄存器。
+- `r` (array), `r` (index): `array` 和 `index` 是输入操作数，使用通用寄存器。
 
 ### Volatile 关键字
 
-使用`volatile`关键字可以防止编译器对内联汇编代码进行优化。例如：
+使用 `volatile` 关键字可以防止编译器对内联汇编代码进行优化。例如：
 
 ```c
 #include <stdio.h>
@@ -408,34 +426,37 @@ int main() {
 ```
 
 在这个示例中：
-- `"nop"`: `nop`指令不执行任何操作，但`volatile`关键字防止编译器优化掉这条指令。
+
+- `"nop"` : `nop` 指令不执行任何操作，但 `volatile` 关键字防止编译器优化掉这条指令。
 
 ## g++
 
-`g++` 和 `gcc` 是 GCC（GNU Compiler Collection）中用于编译不同语言的两个不同命令。尽管它们都属于GCC家族，但它们的主要区别在于默认的编译行为和处理方式。以下是详细的区别和用法：
+`g++` 和 `gcc` 是 GCC（GNU Compiler Collection）中用于编译不同语言的两个不同命令。尽管它们都属于 GCC 家族，但它们的主要区别在于默认的编译行为和处理方式。以下是详细的区别和用法：
 
 ### 主要区别
 
 #### 1. 默认语言
 
-- **gcc**: `gcc` 默认用于编译 C 语言代码。当处理 .c 文件时，`gcc` 会将其作为 C 语言文件进行编译。
+- **gcc** : `gcc` 默认用于编译 C 语言代码。当处理 .c 文件时，`gcc` 会将其作为 C 语言文件进行编译。
 - **g++**: `g++` 默认用于编译 C++ 语言代码。当处理 .cpp 文件时，`g++` 会将其作为 C++ 语言文件进行编译。
 
 #### 2. 链接器行为
 
-- **gcc**: `gcc` 在链接阶段不自动链接 C++ 标准库（如 `libstdc++`）。如果需要链接 C++ 标准库，则需要显式指定。
+- **gcc** : `gcc` 在链接阶段不自动链接 C++ 标准库（如 `libstdc++`）。如果需要链接 C++ 标准库，则需要显式指定。
+
   ```sh
   gcc -o myprogram myprogram.o -lstdc++
   ```
 
 - **g++**: `g++` 在链接阶段会自动链接 C++ 标准库。使用 `g++` 编译和链接 C++ 程序时，不需要手动指定链接 C++ 标准库。
+
   ```sh
   g++ -o myprogram myprogram.o
   ```
 
 #### 3. 预处理器定义
 
-- **gcc**: 使用 `gcc` 编译 C 代码时，预处理器会定义 `__GNUC__` 和 `__STDC__` 等宏。
+- **gcc** : 使用 `gcc` 编译 C 代码时，预处理器会定义 `__GNUC__` 和 `__STDC__` 等宏。
 - **g++**: 使用 `g++` 编译 C++ 代码时，预处理器会定义 `__GNUC__` 和 `__cplusplus` 等宏。
 
 ### 示例
@@ -452,12 +473,14 @@ int main() {
 ```
 
 - 使用 `gcc` 编译：
+
   ```sh
   gcc -o hello_c hello.c
   ./hello_c  # 输出：Hello, C!
   ```
 
 - 使用 `g++` 编译（不推荐）：
+
   ```sh
   g++ -o hello_c hello.c
   ./hello_c  # 输出：Hello, C!
@@ -475,12 +498,14 @@ int main() {
 ```
 
 - 使用 `g++` 编译：
+
   ```sh
   g++ -o hello_cpp hello.cpp
   ./hello_cpp  # 输出：Hello, C++!
   ```
 
 - 使用 `gcc` 编译（需要显式链接 C++ 标准库）：
+
   ```sh
   gcc -o hello_cpp hello.cpp -lstdc++
   ./hello_cpp  # 输出：Hello, C++!
@@ -676,15 +701,15 @@ cpp $CPPFLAGS example.c -o example.i
 
 ## as
 
-GNU Assembler（简称`as`）是GNU Binutils的一部分，用于将汇编语言代码转换为目标文件（通常是`.o`文件）。`as`是一个功能强大且灵活的汇编器，支持多种处理器架构。
+GNU Assembler（简称 `as`）是 GNU Binutils 的一部分，用于将汇编语言代码转换为目标文件（通常是 `.o` 文件）。`as` 是一个功能强大且灵活的汇编器，支持多种处理器架构。
 
-以下是一些使用`as`的基本方法和示例：
+以下是一些使用 `as` 的基本方法和示例：
 
 ### 基本使用
 
 #### 汇编代码示例
 
-假设我们有一个简单的汇编代码文件`hello.s`：
+假设我们有一个简单的汇编代码文件 `hello.s`：
 
 ```asm
 .section .data
@@ -710,21 +735,21 @@ _start:
 
 ### 编译和链接
 
-1. **使用`as`编译汇编代码**
+1. **使用 `as` 编译汇编代码**
 
    ```sh
    as -o hello.o hello.s
    ```
 
-   这将生成目标文件`hello.o`。
+   这将生成目标文件 `hello.o`。
 
-2. **使用`ld`链接目标文件**
+2. **使用 `ld` 链接目标文件**
 
    ```sh
    ld -o hello hello.o
    ```
 
-   这将生成可执行文件`hello`。
+   这将生成可执行文件 `hello`。
 
 3. **运行生成的可执行文件**
 
@@ -742,8 +767,8 @@ _start:
 
 - `-o <file>`：指定输出文件名。
 - `-g`：生成调试信息。
-- `--32`：生成32位代码（适用于x86架构）。
-- `--64`：生成64位代码（适用于x86_64架构）。
+- `--32`：生成 32 位代码（适用于 x86 架构）。
+- `--64`：生成 64 位代码（适用于 x86_64 架构）。
 - `-a`：生成汇编代码的列表文件。
 
 ### 示例：带调试信息的编译
@@ -756,7 +781,7 @@ as -g -o hello.o hello.s
 
 #### 使用宏
 
-`as`支持宏定义和使用，下面是一个简单的示例：
+`as` 支持宏定义和使用，下面是一个简单的示例：
 
 ```asm
 .macro PRINT str
@@ -781,11 +806,11 @@ _start:
     int $0x80
 ```
 
-在这个示例中，我们定义了一个宏`PRINT`，用于打印字符串。
+在这个示例中，我们定义了一个宏 `PRINT`，用于打印字符串。
 
 #### 使用条件汇编
 
-`as`支持条件汇编，可以根据条件编译不同的代码段：
+`as` 支持条件汇编，可以根据条件编译不同的代码段：
 
 ```asm
 #ifdef DEBUG
@@ -796,17 +821,17 @@ _start:
 
 #### 包含其他文件
 
-你可以使用`.include`指令来包含其他文件：
+你可以使用 `.include` 指令来包含其他文件：
 
 ```asm
 .include "other.s"
 ```
 
-### 示例：汇编和C代码混合使用
+### 示例：汇编和 C 代码混合使用
 
-有时我们需要将汇编代码与C代码混合使用。下面是一个简单的示例，展示如何在C程序中调用汇编代码。
+有时我们需要将汇编代码与 C 代码混合使用。下面是一个简单的示例，展示如何在 C 程序中调用汇编代码。
 
-1. **汇编代码文件`func.s`**
+1. **汇编代码文件 `func.s`**
 
 ```asm
 .section .text
@@ -817,7 +842,7 @@ my_func:
     ret
 ```
 
-2. **C代码文件`main.c`**
+1. **C 代码文件 `main.c`**
 
 ```c
 #include <stdio.h>
@@ -831,14 +856,14 @@ int main() {
 }
 ```
 
-3. **编译和链接**
+1. **编译和链接**
 
 ```sh
 as -o func.o func.s
 gcc -o main main.c func.o
 ```
 
-4. **运行程序**
+1. **运行程序**
 
 ```sh
 ./main
@@ -846,11 +871,12 @@ gcc -o main main.c func.o
 
 输出将是：
 
-```
+```text
 Result from assembly: 42
 ```
 
 ## ld
+
 `ld` 是 GNU 链接器，用于将多个目标文件和库文件链接成一个可执行文件、共享库或静态库。`ld` 是 GNU Binutils 工具集的一部分，功能强大且灵活。以下是对 `ld` 使用的详细介绍和一些常见示例。
 
 ### 基本使用
@@ -961,7 +987,9 @@ GCC（GNU Compiler Collection）支持使用链接脚本来自定义链接器行
 以下是一些基本的链接脚本语法和示例：
 
 ### 链接脚本基本语法
+
 链接脚本主要包含以下几部分：
+
 1. **MEMORY**：定义内存区域。
 2. **SECTIONS**：定义输出文件中的各个段及其属性。
 3. **ENTRY**：指定程序的入口点。
@@ -969,10 +997,11 @@ GCC（GNU Compiler Collection）支持使用链接脚本来自定义链接器行
 
 ### 示例链接脚本
 
-#### 示例1：简单链接脚本
+#### 示例 1：简单链接脚本
+
 这是一个简单的链接脚本，将代码段放在地址 `0x10000`，数据段紧随其后。
 
-```
+```text
 ENTRY(_start)
 
 SECTIONS
@@ -993,10 +1022,11 @@ SECTIONS
 }
 ```
 
-#### 示例2：使用 MEMORY 定义内存布局
+#### 示例 2：使用 MEMORY 定义内存布局
+
 使用 MEMORY 指令定义内存区域，然后在 SECTIONS 中引用这些内存区域。
 
-```
+```text
 ENTRY(_start)
 
 MEMORY
@@ -1030,6 +1060,7 @@ gcc -o output.elf -T linker.ld source.c
 ```
 
 在这个命令中：
+
 - `-o output.elf`：指定输出文件名。
 - `-T linker.ld`：指定链接脚本文件。
 
@@ -1306,7 +1337,7 @@ nm example.o
 
 输出将类似于：
 
-```
+```text
 0000000000000000 T func1
 0000000000000010 T func2
 0000000000000020 T main
@@ -1314,6 +1345,7 @@ nm example.o
 ```
 
 在这个输出中：
+
 - `T` 表示符号在代码段（text section）中定义。
 - `U` 表示符号是未定义的（引用了外部符号，例如 `printf`）。
 
@@ -1371,7 +1403,7 @@ nm -l example.o
 以下是 `nm` 输出中的一些常见符号类型：
 
 - `A`：绝对符号。
-- `B` 或 `b`：BSS段符号（未初始化数据）。
+- `B` 或 `b`：BSS 段符号（未初始化数据）。
 - `D` 或 `d`：数据段符号（已初始化数据）。
 - `T` 或 `t`：代码段符号（文本段）。
 - `U`：未定义符号。
@@ -1582,7 +1614,7 @@ objdump -f example.o
 
 输出示例：
 
-```
+```text
 example.o:     file format elf64-x86-64
 architecture: i386:x86-64, flags 0x00000011:
 HAS_RELOC, HAS_SYMS
@@ -1597,7 +1629,7 @@ objdump -h example.o
 
 输出示例：
 
-```
+```text
 Sections:
 Idx Name          Size      VMA               LMA               File off  Algn
   0 .text         00000016  0000000000000000  0000000000000000  00000040  2**4
@@ -1616,7 +1648,7 @@ objdump -d example.o
 
 输出示例：
 
-```
+```text
 example.o:     file format elf64-x86-64
 
 
@@ -1624,11 +1656,11 @@ Disassembly of section .text:
 
 0000000000000000 <func1>:
    0:   b8 01 00 00 00          mov    $0x1,%eax
-   5:   c3                      retq   
+   5:   c3                      retq
 
 0000000000000006 <func2>:
    6:   b8 02 00 00 00          mov    $0x2,%eax
-   b:   c3                      retq   
+   b:   c3                      retq
 ```
 
 #### 示例 4: 显示符号表
@@ -1639,7 +1671,7 @@ objdump -t example.o
 
 输出示例：
 
-```
+```text
 SYMBOL TABLE:
 0000000000000000 l    df *ABS*  0000000000000000 example.c
 0000000000000000 g     F .text  0000000000000006 func1
@@ -1654,9 +1686,9 @@ objdump -r example.o
 
 输出示例：
 
-```
+```text
 RELOCATION RECORDS FOR [.text]:
-OFFSET           TYPE              VALUE 
+OFFSET           TYPE              VALUE
 0000000000000001 R_X86_64_32       .data
 0000000000000007 R_X86_64_32       .data
 ```
@@ -1669,7 +1701,7 @@ objdump -s example.o
 
 输出示例：
 
-```
+```text
 Contents of section .text:
  0000 b8010000 00c3b802 000000c3                 ............
 Contents of section .data:
@@ -1768,7 +1800,7 @@ ranlib -v libmylib.a
 
 输出示例：
 
-```
+```text
 libmylib.a: creating index
 ```
 
@@ -1784,7 +1816,7 @@ ranlib -t libmylib.a
 
 ### 集成到构建系统
 
-在一些构建系统（如Makefile）中，可以集成 `ranlib` 以确保静态库索引始终是最新的。例如：
+在一些构建系统（如 Makefile）中，可以集成 `ranlib` 以确保静态库索引始终是最新的。例如：
 
 ```makefile
 # Makefile example
@@ -1813,7 +1845,7 @@ addr2line [options] address...
 - `-e <filename>`：指定要解析地址的可执行文件或目标文件。
 - `-f`：显示函数名。
 - `-C`：将函数名解码为人类可读的格式（C++函数名解码）。
-- `-s`：禁用函数名显示（与`-f`相反）。
+- `-s`：禁用函数名显示（与 `-f` 相反）。
 - `-i`：显示内联函数信息。
 - `-p`：生成更详细的输出，包含文件名、函数名和行号。
 - `-a`：显示地址。
@@ -1852,7 +1884,7 @@ addr2line -e example 0x40052d
 
 输出示例：
 
-```
+```text
 /path/to/example.c:4
 ```
 
@@ -1868,7 +1900,7 @@ addr2line -e example -f 0x40052d
 
 输出示例：
 
-```
+```text
 func
 /path/to/example.c:4
 ```
@@ -1904,7 +1936,7 @@ addr2line -e example_cpp -C -f 0x40060d
 
 输出示例：
 
-```
+```text
 foo()
 /path/to/example.cpp:4
 ```
@@ -1919,7 +1951,7 @@ addr2line -e example_cpp -C -f 0x40060d 0x400620
 
 输出示例：
 
-```
+```text
 foo()
 /path/to/example.cpp:4
 main
@@ -1936,7 +1968,7 @@ addr2line -e example_cpp -C -f -p 0x40060d
 
 输出示例：
 
-```
+```text
 foo() at /path/to/example.cpp:4
 ```
 
@@ -1973,7 +2005,7 @@ done
 
 ## c++filt
 
-`c++filt` 是 GNU Binutils 工具集的一部分，用于将被编译器“修饰”的（mangled）C++符号名称解码为人类可读的格式。这在调试和分析C++程序时非常有用，因为编译器在编译C++代码时会对函数和变量名称进行修饰，以支持函数重载和其他C++特性。
+`c++filt` 是 GNU Binutils 工具集的一部分，用于将被编译器“修饰”的（mangled）C++符号名称解码为人类可读的格式。这在调试和分析 C++程序时非常有用，因为编译器在编译 C++代码时会对函数和变量名称进行修饰，以支持函数重载和其他 C++特性。
 
 ### 基本使用
 
@@ -1992,7 +2024,7 @@ c++filt [options] [mangled_names...]
 - `-t`：仅显示类型信息。
 - `-p`：解码并解析函数参数。
 - `-i`：交互模式，从标准输入读取被修饰的名称。
-- `-j`：以C++中修饰名称的格式输出。
+- `-j`：以 C++中修饰名称的格式输出。
 
 ### 示例
 
@@ -2006,7 +2038,7 @@ c++filt _Z3fooi
 
 输出示例：
 
-```
+```text
 foo(int)
 ```
 
@@ -2020,7 +2052,7 @@ c++filt _Z3fooi _Z3barv
 
 输出示例：
 
-```
+```text
 foo(int)
 bar()
 ```
@@ -2035,7 +2067,7 @@ echo "_Z3fooi" | c++filt -i
 
 输出示例：
 
-```
+```text
 foo(int)
 ```
 
@@ -2067,7 +2099,7 @@ c++filt -p _Z3fooi
 
 输出示例：
 
-```
+```text
 foo(int)
 ```
 
@@ -2081,7 +2113,7 @@ c++filt -t _Z3fooi
 
 输出示例：
 
-```
+```text
 int foo(int)
 ```
 
@@ -2091,7 +2123,7 @@ int foo(int)
 
 假设我们有一个文件 `mangled_names.txt`，内容如下：
 
-```
+```text
 _Z3fooi
 _Z3barv
 ```
@@ -2104,7 +2136,7 @@ cat mangled_names.txt | c++filt
 
 输出示例：
 
-```
+```text
 foo(int)
 bar()
 ```
@@ -2200,7 +2232,7 @@ gcov example.c
 
 运行上述命令后，生成的 `example.c.gcov` 文件可能如下所示：
 
-```
+```text
         -:    0:Source:example.c
         -:    0:Graph:example.gcno
         -:    0:Data:example.gcda
@@ -2223,6 +2255,7 @@ gcov example.c
 ```
 
 在这个输出中：
+
 - 数字表示该行代码被执行的次数。
 - `#####` 表示该行代码从未执行过。
 
@@ -2267,7 +2300,7 @@ gcov example.c
 
 ### 与 lcov 配合使用
 
-`lcov` 是一个更高级的覆盖率工具，可以生成HTML格式的覆盖率报告。
+`lcov` 是一个更高级的覆盖率工具，可以生成 HTML 格式的覆盖率报告。
 
 #### 安装 lcov
 
@@ -2379,14 +2412,14 @@ gprof example gmon.out > analysis.txt
 
 平面分析报告的示例：
 
-```
+```text
 Flat profile:
 
 Each sample counts as 0.01 seconds.
  no time accumulated
 
-  %   cumulative   self              self     total           
- time   seconds   seconds    calls  Ts/call  Ts/call  name    
+  %   cumulative   self              self     total
+ time   seconds   seconds    calls  Ts/call  Ts/call  name
   0.00      0.00     0.00        1     0.00     0.00  main
   0.00      0.00     0.00        1     0.00     0.00  func1
   0.00      0.00     0.00        1     0.00     0.00  func2
@@ -2396,7 +2429,7 @@ Each sample counts as 0.01 seconds.
 
 调用图报告的示例：
 
-```
+```text
 Call graph
 
 granularity: each sample hit covers 2 byte(s) for 0.01% of 0.00 seconds

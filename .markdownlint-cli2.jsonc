@@ -1,0 +1,29 @@
+{
+  // Keep standard markdownlint rules, but account for Starlight frontmatter,
+  // generated route docs, math/code-heavy notes, and Chinese headings.
+  "frontMatter": "^---\\s*(\\r?\\n|\\r)[\\s\\S]*?(\\r?\\n|\\r)---\\s*(\\r?\\n|\\r|$)",
+  "gitignore": true,
+  "ignores": [
+    "node_modules/**",
+    "dist/**",
+    ".astro/**",
+    ".opencode/**"
+  ],
+  "config": {
+    "default": true,
+    "MD001": false,
+    "MD003": { "style": "atx" },
+    "MD013": false,
+    "MD026": { "punctuation": ".,;:!。，；：！" },
+    "MD024": false,
+    "MD033": false,
+    "MD034": false,
+    "MD036": false,
+    "MD040": false,
+    "MD041": false,
+    "MD046": false,
+    "MD049": { "style": "asterisk" },
+    "MD050": { "style": "asterisk" },
+    "MD060": false
+  }
+}

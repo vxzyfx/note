@@ -311,7 +311,7 @@ int main() {
 
 ### 使用场景
 
-#### 1. 函数返回多个值
+#### 1. 函数返回多个值（结构化绑定需要 C++17）
 
 `std::tuple` 常用于函数需要返回多个值的场景。
 
@@ -921,7 +921,7 @@ int main() {
 - `std::is_function<T>`：如果 `T` 是函数类型，则为 `true`。
 - `std::is_enum<T>`：如果 `T` 是枚举类型，则为 `true`。
 
-#### 示例
+#### 复合类型特征示例
 
 ```cpp
 #include <iostream>
@@ -947,7 +947,7 @@ int main() {
 - `std::is_volatile<T>`：如果 `T` 是 `volatile` 限定的，则为 `true`。
 - `std::is_trivially_copyable<T>`：如果 `T` 是平凡可复制的，则为 `true`。
 
-#### 示例
+#### 资格修饰符特征示例
 
 ```cpp
 #include <iostream>
@@ -969,7 +969,7 @@ int main() {
 - `std::is_base_of<Base, Derived>`：如果 `Base` 是 `Derived` 的基类，则为 `true`。
 - `std::is_convertible<From, To>`：如果 `From` 类型的值可以隐式转换为 `To` 类型，则为 `true`。
 
-#### 示例
+#### 类型关系特征示例
 
 ```cpp
 #include <iostream>
@@ -1238,4 +1238,3 @@ int main() {
     return 0;
 }
 ```
-

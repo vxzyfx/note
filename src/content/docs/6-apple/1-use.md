@@ -3,14 +3,16 @@ title: 苹果使用
 ---
 
 ## MAC 路由
-持久路由设置命令`networksetup`
+
+持久路由设置命令 `networksetup`
 
 查看网络连接方式
+
 ```bash
 networksetup -listallnetworkservices
 ```
 
-查看某个网络连接方式的路由, 如查看Wi-Fi的路由
+查看某个网络连接方式的路由, 如查看 Wi-Fi 的路由
 
 ```bash
 networksetup -getadditionalroutes Wi-Fi

@@ -1,101 +1,121 @@
 ---
 title: mysql
+description: MySQL 8.4 安装、账号和常用 SQL 操作笔记
 ---
 
-> 本文档使用Mysql8
+> 本文档以 MySQL 8.4 官方文档为准。
 
-## 1. 安装mysql
+## 1. 安装 mysql
 
-### debian12
-denian9 开始debian官方库不再有Mysql, 只有MariaDB(Mysql的代替)
+### Debian 12
 
-下载[apt库安装包](https://dev.mysql.com/downloads/repo/apt/), 并安装
+Debian 官方仓库默认不提供 Oracle MySQL Server, 安装时请使用 MySQL APT Repository。
+
+下载 [apt 库安装包](https://dev.mysql.com/downloads/repo/apt/), 并安装
 
 ```shell
-sudo dpkg -i mysql-apt-config_0.8.29-1_all.deb
+sudo dpkg -i /PATH/mysql-apt-config_0.8.39-1_all.deb
 ```
+
 根据弹出的配置选项安装
 
-安装Mysql
+安装 MySQL
+
 ``` shell
-sudo apt update
-sudo apt install mysql-server
+sudo apt-get update
+sudo apt-get install mysql-server
 ```
 
-在安装时会提示输入root密码
+在安装时会提示输入 root 密码
 
-### centos9
-denian9 开始debian官方库不再有Mysql, 只有MariaDB(Mysql的代替)
+### RHEL / CentOS 9
 
-下载[yum库安装包](https://dev.mysql.com/downloads/repo/yum/), 并安装
+RHEL 9 系列请使用 MySQL Yum Repository，`dnf` 是当前命令行工具。
+
+下载 [yum 库安装包](https://dev.mysql.com/downloads/repo/yum/), 并安装
 
 ```shell
-sudo yum localinstall mysql80-community-release-el9-5.noarch.rpm
-```
-安装Mysql
-``` shell
-sudo yum install mysql-community-server
+sudo dnf install /PATH/mysql84-community-release-el9-4.noarch.rpm
 ```
 
-启动Mysql
+安装 MySQL
+
+``` shell
+sudo dnf install mysql-community-server
+```
+
+启动 MySQL
+
 ``` shell
 sudo systemctl start mysqld
 ```
 
 查看初始密码
+
 ``` shell
 sudo grep 'temporary password' /var/log/mysqld.log
 ```
 
 ### 修改密码初始
 
-登陆Mysql
+登录 MySQL
 
 ``` shell
-mysql -uroot -p
+mysql
 ```
 
 修改密码
+
 ```sql
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass4!';
 ```
 
 ## 2. 忘记密码
-修改Mysql配置文件`/etc/my.cnf`,跳过认证
+
+修改 MySQL 配置文件 `/etc/my.cnf` ,跳过认证
 
 ```toml [/etc/my.cnf]
 [mysqld]
 skip-grant-tables
 ```
-连接Mysql
+
+连接 MySQL
+
 ``` shell
-mysql -uroot -p
+mysql
 ```
-清空密码
+
+重新载入权限表
+
 ```sql
-UPDATE mysql.user SET authentication_string='' WHERE User='root' AND Host='localhost';
+FLUSH PRIVILEGES;
 ```
-修改Mysql配置文件`/etc/my.cnf`, 删除`skip-grant-tables`, 重启Mysql, 再连接Mysql将没有密码
+
+修改 MySQL 配置文件 `/etc/my.cnf` , 删除 `skip-grant-tables` , 重启 MySQL。
+
 ``` shell
 mysql -uroot -p
 ```
+
 设置新密码
+
 ```sql
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass4!';
 ```
 
 ## 3. 数据库操作
 
-### SQL分类
+### SQL 分类
 
 | 类型 | 描述 | 关键字 |
 | :--- | :--- | :--- |
-| DDL | 数据库定义语言, 创建和管理数据库或数据表| CREATE, ALTER, DROP |
-| DML | 数据库操作语言, 操作数据| INSERT, UPDATE, DELETE |
-| DQL | 数据库查询语言, 查询数据| SELECT |
-| DCL | 数据库控制语言, 权限和事务控制| GRANT, REVOKE,  COMMIT, ROLLBACK |
+| DDL | 数据库定义语言, 创建和管理数据库或数据表 | CREATE, ALTER, DROP |
+| DML | 数据库操作语言, 操作数据 | INSERT, UPDATE, DELETE |
+| DQL | 数据库查询语言, 查询数据 | SELECT |
+| DCL | 数据库控制语言, 权限和事务控制 | GRANT, REVOKE, COMMIT, ROLLBACK |
 
 ### 数据库
+
 ```sql
 SELECT database(); -- 查看当前数据库
 USE db3; -- 修改当前数据库
@@ -119,16 +139,16 @@ SHOW ENGINES; -- 查看数据库引擎
 
 | 引擎 | 支持 | 描述 | 事务 | 分布事务 | 保存点 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| FEDERATED | NO | 能访问远程的MySQL数据库, 本地只保存表的结构数据, 远程保存了表的结构和数据 | null | null | null |
-| BLACKHOLE | YES | 写入的数据将被丢弃 | NO | NO | NO |
-| XENGINE | NO | 阿里自研的引擎 | null | null | null |
-| MEMORY | YES | 基于hash存储在内存 | NO | NO | NO |
-| InnoDB | DEFAULT | 支持事务, 行锁和外键 | YES | YES | YES |
+| FEDERATED | NO | 能访问远程的 MySQL 数据库, 本地只保存表的结构数据, 远程保存了表的结构和数据 | null | null | null |
+| `BLACKHOLE` | YES | 写入的数据将被丢弃 | NO | NO | NO |
+| `XENGINE` | NO | 阿里自研的引擎 | null | null | null |
+| MEMORY | YES | 基于 hash 存储在内存 | NO | NO | NO |
+| `InnoDB` | DEFAULT | 支持事务, 行锁和外键 | YES | YES | YES |
 | PERFORMANCE\_SCHEMA | YES | 性能表 | NO | NO | NO |
 | Sequence | YES | 序列引擎 | NO | NO | NO |
-| MyISAM | YES | 5.5版本之前的默认引擎, 支持表锁 | NO | NO | NO |
-| MRG\_MYISAM | YES | 将多个MyISAM引擎的表聚合成一个表 | NO | NO | NO |
-| CSV | YES | 数据将存储到CSV文件中 | NO | NO | NO |
+| `MyISAM` | YES | 5.5 版本之前的默认引擎, 支持表锁 | NO | NO | NO |
+| `MRG_MYISAM` | YES | 将多个 `MyISAM` 引擎的表聚合成一个表 | NO | NO | NO |
+| CSV | YES | 数据将存储到 CSV 文件中 | NO | NO | NO |
 | ARCHIVE | YES | 存储大量没有索引的数据 | NO | NO | NO |
 
 ### 表操作
@@ -177,6 +197,7 @@ CREATE TABLE `t2` (
 );
 
 ```
+
 外键
 
 ```sql
@@ -190,6 +211,7 @@ CREATE TABLE `users` (
 ); -- 将users的leader字段关联到leader表的id字段
 
 ```
+
 ```sql
 CREATE TABLE `leader` (
   `id` int PRIMARY KEY AUTO_INCREMENT
@@ -220,46 +242,48 @@ CREATE TABLE `users` (
 
 | 类型 | 大小 | 有符号范围 | 无符号范围 |
 | :--- | :--- | :--- | :--- |
-| tinyint | 1 Byte | \[-2^7, 2^7-1\] | \[0, 2^8-1\] |
-| smallint | 2 Byte | \[-2^15, 2^15-1\] | \[0, 2^16-1\] |
-| mediumint | 3 Byte | \[-2^23, 2^23-1\] | \[0, 2^24-1\] |
+| `tinyint` | 1 Byte | \[-2^7, 2^7-1\] | \[0, 2^8-1\] |
+| `smallint` | 2 Byte | \[-2^15, 2^15-1\] | \[0, 2^16-1\] |
+| `mediumint` | 3 Byte | \[-2^23, 2^23-1\] | \[0, 2^24-1\] |
 | int | 4 Byte | \[-2^31, 2^31-1\] | \[0, 2^32-1\] |
 | bigint | 8 Byte | \[-2^63, 2^63-1\] | \[0, 2^64-1\] |
 
 浮点数
 > 浮点数由符号,尾数(m), 基数(2)和指数(n)组成
-
-> 浮点数大小 = 符号 * 尾数 * 2^指数
-
-> 单精度(32位) = 符号位(1) + 指数(8) + 尾数(23)
-
-> 双精度(64位) = 符号位(1) + 指数(11) + 尾数(52)
+> 浮点数大小 = 符号 × 尾数 × 2^指数
+> 单精度(32 位) = 符号位(1) + 指数(8) + 尾数(23)
+> 双精度(64 位) = 符号位(1) + 指数(11) + 尾数(52)
 
 | 类型 | 大小 | 有符号范围 | 无符号范围 |
 | :--- | :--- | :--- | :--- |
-| float | 4 Byte (float(m,d), m是总的数字个数, d是小数后的数字个数, m最大255, d最大30) | \[-3.402 823 466^38, -1.175 494 351^-38\], 0, \[1.175 494 351^-38, 3.402 823 466^38\] | 0, [1.175 494 351^-38, 3.402 823 466^38\] |
-| double | 8 Byte (double(m,d), m最大255, d最大30) | \[-1.797 693 134 862 315^308, -2.225 073 858 507 201^-308\], 0, \[2.225 073 858 507 201^-308, 1.797 693 134 862 315^308\] | 0, \[2.225 073 858 507 201^-308, 1.797 693 134 862 315^308\] |
-| decimal | decimal(m, n), m最大65, n最大30 |  |  |
+| float | 4 Byte (float(m,d), m 是总的数字个数, d 是小数后的数字个数, m 最大 255, d 最大 30) | \[-3.402 823 466^38, -1.175 494 351^-38\], 0, \[1.175 494 351^-38, 3.402 823 466^38\] | 0, [1.175 494 351^-38, 3.402 823 466^38\] |
+| double | 8 Byte (double(m,d), m 最大 255, d 最大 30) | \[-1.797 693 134 862 315^308, -2.225 073 858 507 201^-308\], 0, \[2.225 073 858 507 201^-308, 1.797 693 134 862 315^308\] | 0, \[2.225 073 858 507 201^-308, 1.797 693 134 862 315^308\] |
+| decimal | decimal(m, n), m 最大 65, n 最大 30 | 无 | 无 |
 
 字符串
 
-***一行记录最大65535个字节***
-+ char(定长字符串) 最长255
-> char(10) 最多存10个字符, 超过10个字符将报错, 如果不足10个字符使用空格填充(如果数据后面有空格, 获取数据时将会被丢弃)
+***一行记录最大 65535 个字节***
 
-+ varchar(变长字符串) 最长65535个字节, varchar(n) n的最大值会根据编码不同而变化
-> varcher(10) 最多存10个字符,超过10个字符将报错, 如果不足10个字符不会补空格
+- char(定长字符串) 最长 255
+
+> char(10) 最多存 10 个字符, 超过 10 个字符将报错, 如果不足 10 个字符使用空格填充(如果数据后面有空格, 获取数据时将会被丢弃)
+
+- `varchar` (变长字符串) 最长 65535 个字节, `varchar` (n) n 的最大值会根据编码不同而变化
+
+> `varchar` (10) 最多存 10 个字符,超过 10 个字符将报错, 如果不足 10 个字符不会补空格
 
 时间类型
-| 类型 | 大小 | 
+
+| 类型 | 大小 |
 | :--- | :--- |
 | year | 年 |
 | date | 年月日 |
 | time | 时分秒 |
-| datetime | 年月日时分秒(1000年-9999年) |
-| timestamp | 年月日时分秒(1970年-2038年) |
+| datetime | 年月日时分秒(1000 年 -9999 年) |
+| timestamp | 年月日时分秒(1970 年 -2038 年) |
 
 枚举类型
+
 ```sql
 CREATE TABLE `users` (
     gender enum('male', 'female', 'other') -- 创建枚举
@@ -277,6 +301,7 @@ CREATE TABLE `users` (
 ## 5. 记录操作
 
 创建操作表
+
 ```sql
 CREATE TABLE t1(
     `id` int,
@@ -291,7 +316,9 @@ CREATE TABLE t1(
     PRIMARY KEY (`id`)
 ); -- 设置主键
 ```
+
 记录操作
+
 ```sql
 -- 插入
 INSERT INTO t1 VALUE ( 1, 'one', 20); -- 插入数据
@@ -309,6 +336,7 @@ SELECT * FROM t1; -- 查找所有字段
 SELECT `id`, `name` FROM t1; -- 查找id和name字段
 
 ```
+
 查询测试表
 
 ```sql
@@ -525,14 +553,15 @@ DROP USER 'test'@'%';
 ```
 
 权限
-+ ALL/ALL PRIVILEGES(所有权限)
-+ INSERT(插入权限)
-+ DELETE(删除权限)
-+ UPDATE(更新权限)
-+ SELECT(查询权限)
-+ CREATE(创建数据库或表)
-+ DROP(删除数据库, 表或视图)
-+ ALTER(修改字段或表)
+
+- ALL/ALL PRIVILEGES(所有权限)
+- INSERT(插入权限)
+- DELETE(删除权限)
+- UPDATE(更新权限)
+- SELECT(查询权限)
+- CREATE(创建数据库或表)
+- DROP(删除数据库, 表或视图)
+- ALTER(修改字段或表)
 
 ```sql
 -- 查询用户权限
@@ -549,7 +578,7 @@ FLUSH PRIVILEGES; -- 刷新权限
 
 ## 7. 事务
 
-> 保证一组sql语句执行, 保存这一组sql开始执行的状态, 在提交完成之前, 可以回滚到开始执行的状态
+> 保证一组 sql 语句执行, 保存这一组 sql 开始执行的状态, 在提交完成之前, 可以回滚到开始执行的状态
 
 ```sql
 CREATE TABLE `account` (
@@ -579,14 +608,14 @@ ROLLBACK;
 
 ### 并发事务中的问题
 
-+ 脏读
+- 脏读
 一个事务未提交的事务被另一个事务读取到
-+ 不可重复读
+- 不可重复读
 一个事务两次读取数据不一样
-+ 幻读
+- 幻读
 一个事务查询一条记录不存在, 但在插入记录时, 由发现这一条记录
 
-| 隔离级别 | 读未提交(READ-Uncommited) | 读已提交(Read-Commited) | 可重复读(REPEATABLE-READ) | 串行(SERIALIZABLE) |
+| 隔离级别 | 读未提交(READ-Uncommitted) | 读已提交(Read-Committed) | 可重复读(REPEATABLE-READ) | 串行(SERIALIZABLE) |
 | :----- | :-- | :-- | :-- | :-- |
 | 脏读 | Y | N | N | N |
 | 不可重复读 | Y | Y | N | N |
@@ -596,30 +625,30 @@ ROLLBACK;
 -- 查询事务隔离级别
 SELECT @@TRANSACTION_ISOLATION;
 
-SET SESSION TRANSACTION ISOLATION LEVEL READ-Uncommited; -- 设置会话级别的READ-Uncommited
-SET GLOBAL TRANSACTION ISOLATION LEVEL Read-Commited; -- 设置全局级别的Read-Commited
+SET SESSION TRANSACTION ISOLATION LEVEL READ-Uncommitted; -- 设置会话级别的READ-Uncommitted
+SET GLOBAL TRANSACTION ISOLATION LEVEL Read-Committed; -- 设置全局级别的Read-Committed
 ```
 
 ## 8. 索引
-> 索引是一种有序的数据结构, 在MySQL中索引用于加速查找数据(在加快查找的同时,会降低增删改的速度)
+>
+> 索引是一种有序的数据结构, 在 MySQL 中索引用于加速查找数据(在加快查找的同时,会降低增删改的速度)
 
-+ 聚集索引
+- 聚集索引
 
 存放行数据
 
-+ 二级索引
+- 二级索引
 
-存放的是主键id
+存放的是主键 ID
 
-> 使用二级索引查找数据时, 先通过二级索引查找到主键id, 再通过主键id查询聚集索引找到数据, 这个过程称为回表查询
+> 使用二级索引查找数据时, 先通过二级索引查找到主键 id, 再通过主键 id 查询聚集索引找到数据, 这个过程称为回表查询
 
-|分类| 描述|
+| 分类 | 描述 |
 | :-- | :-- |
-| 主键索引  |
-| 唯一索引 |
-| 常规索引 |
-| 全文索引 |
-
+| 主键索引 | 主键唯一且非空 |
+| 唯一索引 | 列值唯一 |
+| 常规索引 | 普通索引 |
+| 全文索引 | 用于全文检索 |
 
 ```sql
 -- 查询索引
@@ -693,7 +722,8 @@ EXPLAIN SELECT * FROM account;
 
 ### 索引失效
 
-+ 最左前缀原则(对于联合索引)
+- 最左前缀原则(对于联合索引)
+
 > 查询时索引最左列的必须存在, 并且不能跳过中间的索引列, 否则后面的索引将失效
 
 ```sql
@@ -718,21 +748,25 @@ EXPLAIN SELECT * FROM left_lay WHERE name='name1' AND age=1;
 EXPLAIN SELECT * FROM left_lay WHERE name='name1' AND age>0 AND salary=100;
 ```
 
-+ 索引上进行运算操作
+- 索引上进行运算操作
+
 ```sql
 EXPLAIN SELECT * FROM left_lay WHERE SUBSTRING(name, 5, 1)='1';
 ```
+
 前面模糊匹配
+
 ```sql
 EXPLAIN SELECT * FROM left_lay WHERE name LIKE '%1';
 -- 后面模糊, 索引不会失效
 EXPLAIN SELECT * FROM left_lay WHERE name LIKE 'name1%';
 ```
 
-+ OR条件有一侧没有索引
-+ 数据分布影响(通过索引比全表扫描慢时, mysql自动选择全表扫描)
+- OR 条件有一侧没有索引
+- 数据分布影响(通过索引比全表扫描慢时, mysql 自动选择全表扫描)
 
-### sql提示
+### sql 提示
+
 手动选择索引
 
 ```sql
@@ -746,8 +780,11 @@ EXPLAIN SELECT * FROM left_lay IGNORE INDEX (idx_left_lay_age) WHERE age=1;
 -- 强制使用idx_left_lay索引
 EXPLAIN SELECT * FROM left_lay FORCE INDEX (idx_left_lay) WHERE age=1;
 ```
+
 ### 覆盖索引
+
 查询的时候使用了索引, 查询的列在索引中全部能找到, 就不需要回表查询
+
 ```sql
 -- id是主键, 包含在索引里面
 EXPLAIN SELECT id FROM left_lay WHERE age=1;
@@ -762,37 +799,42 @@ CREATE INDEX idx_left_lay_name ON `left_lay`(name(12));
 
 ## 10. 优化
 
-+ INSERT优化
-    - 批量插入
+- INSERT 优化
+  - 批量插入
+
     ```sql
     INSERT INTO left_lay(name, age, salary) VALUES ('name1', 1, 100), ('name2', 2, 200),  ('name3', 3, 300),  ('name4', 4, 400);
     -- 如果多于1000条分成多个INSERT语句
     ```
-    - 手动提交事务
+
+  - 手动提交事务
+
     ```sql
     BEGIN;
     INSERT INTO left_lay(name, age, salary) VALUES ('name1', 1, 100), ('name2', 2, 200),  ('name3', 3, 300),  ('name4', 4, 400);
     INSERT INTO left_lay(name, age, salary) VALUES ('name1', 1, 100), ('name2', 2, 200),  ('name3', 3, 300),  ('name4', 4, 400);
     COMMIT;
     ```
-    - 大量数据
-    使用load导入文件
-    - 主键顺序插入
 
-+ 主键优化
-    - 数据的组织方式
+  - 大量数据
+    使用 load 导入文件
+  - 主键顺序插入
+
+- 主键优化
+  - 数据的组织方式
     根据主键的顺序存放
 
-+ GROUP BY优化
-+ ORDER BY优化
-    - 通过有序索引排序, 效率高
-    - 通过索引或者全表扫描, 在排序缓冲区排序, 效率慢
-+ LIMIT 优化
-+ count 优化
-+ update 优化
-    - 根据有索引的字段更新, 不然会出现表锁
+- GROUP BY 优化
+- ORDER BY 优化
+  - 通过有序索引排序, 效率高
+  - 通过索引或者全表扫描, 在排序缓冲区排序, 效率慢
+- LIMIT 优化
+- count 优化
+- update 优化
+  - 根据有索引的字段更新, 不然会出现表锁
 
 ## 11. 视图
+
 一种虚拟的表, 保存查询逻辑, 不保存查询数据
 
 ```sql
@@ -819,9 +861,12 @@ ALTER VIEW view_1 AS SELECT id, name, salary FROM view_table WHERE id < 2;
 -- 插入数据(实际插入了基表view_table中)
 INSERT INTO view_1(name, salary) VALUES ('view1', 10);
 ```
+
 ### 视图更新
+>
 > 视图中的行与基表中的行一一对应
 如果有以下情况, 视图将不更新
+
 1. 聚合函数或窗口函数
 2. DISTINCT 去除
 3. GROUP BY 分组
@@ -829,3 +874,10 @@ INSERT INTO view_1(name, salary) VALUES ('view1', 10);
 5. UNION
 
 ### 窗口函数
+
+## 参考资料
+
+1. [MySQL 8.4 Reference Manual, Installing MySQL on Linux Using the MySQL APT Repository](https://dev.mysql.com/doc/refman/8.4/en/linux-installation-apt-repo.html)（访问日期：2026-05-31）
+2. [MySQL 8.4 Reference Manual, Installing MySQL on Linux Using the MySQL Yum Repository](https://dev.mysql.com/doc/refman/8.4/en/linux-installation-yum-repo.html)（访问日期：2026-05-31）
+3. [MySQL 8.4 Reference Manual, How to Reset the Root Password](https://dev.mysql.com/doc/refman/8.4/en/resetting-permissions.html)（访问日期：2026-05-31）
+4. [MySQL 8.4 Reference Manual, Assigning Account Passwords](https://dev.mysql.com/doc/refman/8.4/en/assigning-passwords.html)（访问日期：2026-05-31）

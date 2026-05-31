@@ -30,7 +30,6 @@ Spring Boot 是由 Pivotal 团队开发的一个基于 Spring 框架的框架，
 8. **简化的测试支持**：
    - Spring Boot 集成了 JUnit 和其他测试框架，提供了简单的注解和工具来快速编写和运行测试。通过 `@SpringBootTest` 注解，你可以轻松启动一个 Spring 应用的完整上下文进行测试。
 
-
 ```java
 // @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class}) 排除配置类
 @SpringBootApplication
@@ -45,7 +44,7 @@ public class BootmvcApplication {
 
 ## 使用
 
-### 自定义banner
+### 自定义 banner
 
 1. `banner.txt`
 变量:
@@ -53,43 +52,45 @@ public class BootmvcApplication {
 | 变量 | 介绍 |
 |----|----|
 | `${application.version}` | 应用程序的版本号 |
-| `${application.formatted-version}` | 应用程序的版本号，在MANIFEST.MF中声明并格式化为显示（用方括号括起来并以v为前缀） |
+| `${application.formatted-version}` | 应用程序的版本号，在 MANIFEST.MF 中声明并格式化为显示（用方括号括起来并以 v 为前缀） |
 | `${spring-boot.version}` | 您正在使用的 Spring Boot 版本 |
-| `${spring-boot.formatted-version}` | 您正在使用的 Spring Boot 版本，已格式化以供显示（用方括号括起来并以v为前缀） |
-| `${Ansi.NAME}` (or `${AnsiColor.NAME}`, `${AnsiBackground.NAME}`, `${AnsiStyle.NAME}`) | 其中NAME是 ANSI 转义码的名称 |
+| `${spring-boot.formatted-version}` | 您正在使用的 Spring Boot 版本，已格式化以供显示（用方括号括起来并以 v 为前缀） |
+| `${Ansi.NAME}` (or `${AnsiColor.NAME}` , `${AnsiBackground.NAME}` , `${AnsiStyle.NAME}` ) | 其中 NAME 是 ANSI 转义码的名称 |
 | `${application.title}` | 应用程序的标题 |
 
-2. `SpringApplication.setBanner`
-实现`org.springframework.boot.Banner`编程设置Banner.
+1. `SpringApplication.setBanner`
+实现 `org.springframework.boot.Banner` 编程设置 Banner.
 
 ### 加载外部属性
 
-`@Value`可以直接注入字符串, 通过 Spring 的Environment抽象访问，或者通过@ConfigurationProperties.
+`@Value` 可以直接注入字符串, 通过 Spring 的 Environment 抽象访问，或者通过@ConfigurationProperties.
 
 获取数据的顺序:
-1. 默认属性（通过设置指定 `SpringApplication.setDefaultProperties` ）
-2. `@Configuration`类上的`@PropertySource`注释。请注意，在刷新应用程序上下文之前，此类属性源不会添加到`Environment`中
-3. 配置数据（例如`application.properties`文件）
-4. 仅在`random.*`中具有属性的`RandomValuePropertySource`
+
+1. 默认属性（通过设置指定 `SpringApplication.setDefaultProperties`）
+2. `@Configuration` 类上的 `@PropertySource` 注释。请注意，在刷新应用程序上下文之前，此类属性源不会添加到 `Environment` 中
+3. 配置数据（例如 `application.properties` 文件）
+4. 仅在 `random.*` 中具有属性的 `RandomValuePropertySource`
 5. 操作系统环境变量
 6. Java 系统属性 ( `System.getProperties()` )
-7. 来自`java:comp/env JNDI` 属性
-8. `ServletContext`初始化参数
-9. `ServletConfig`初始化参数
-10. 来自`SPRING_APPLICATION_JSON`的属性
+7. 来自 `java:comp/env JNDI` 属性
+8. `ServletContext` 初始化参数
+9. `ServletConfig` 初始化参数
+10. 来自 `SPRING_APPLICATION_JSON` 的属性
 11. 命令行参数
-12. 测试中的`properties`属性
-13. 测试中的`@DynamicPropertySource`注释
-14. 测试上的`@TestPropertySource`注释
-15. 当 devtools 处于活动状态时`$HOME/.config/spring-boot`目录中的Devtools 全局设置属性
+12. 测试中的 `properties` 属性
+13. 测试中的 `@DynamicPropertySource` 注释
+14. 测试上的 `@TestPropertySource` 注释
+15. 当 devtools 处于活动状态时 `$HOME/.config/spring-boot` 目录中的 Devtools 全局设置属性
 
 配置数据文件按以下顺序考虑:
-1. 打包在 jar 内的应用程序属性（ `application.properties`和 YAML 变体）
-2. 打包在 jar 内的特定于配置文件的应用程序属性(`application-{profile}.properties` 和 YAML 变体)
-3. 打包的 jar 之外的应用程序属性（ `application.properties`和 YAML 变体）
+
+1. 打包在 jar 内的应用程序属性（`application.properties` 和 YAML 变体）
+2. 打包在 jar 内的特定于配置文件的应用程序属性( `application-{profile}.properties` 和 YAML 变体)
+3. 打包的 jar 之外的应用程序属性（`application.properties` 和 YAML 变体）
 4. 打包的 jar 之外的特定于配置文件的应用程序属性( `application-{profile}.properties` 和 YAML 变体)
 
-`@ConfigurationProperties`配置
+`@ConfigurationProperties` 配置
 
 ```java
 @ConfigurationProperties(prefix = "app")
@@ -117,13 +118,14 @@ app:
   timeout: 30
 ```
 
-可以直接注入`AppProperties`的Bean
+可以直接注入 `AppProperties` 的 Bean
 
 ### 国际化
 
-当配置的资源包的默认属性文件可用时（默认为`messages.properties` ），自动配置将适用。如果您的资源包仅包含特定于语言的属性文件，则需要添加默认值。如果没有找到与任何配置的基本名称匹配的属性文件，则不会有自动配置的`MessageSource` 。
+当配置的资源包的默认属性文件可用时（默认为 `messages.properties`），自动配置将适用。如果您的资源包仅包含特定于语言的属性文件，则需要添加默认值。如果没有找到与任何配置的基本名称匹配的属性文件，则不会有自动配置的 `MessageSource`。
 
 自定义国际化文件
+
 ```yaml
 spring:
   messages:
@@ -133,24 +135,22 @@ spring:
 
 ### 面向切面
 
-默认情况下，Spring Boot 的自动配置将 Spring AOP 配置为使用 CGLib 代理。要改用 JDK 代理，请设置 `configprop:spring.aop.proxy-target-class` 为`false` 。
-如果 AspectJ 在类路径上，Spring Boot 的自动配置将自动启用 AspectJ 自动代理，这样就不需要`@EnableAspectJAutoProxy`。
+默认情况下，Spring Boot 的自动配置将 Spring AOP 配置为使用 CGLib 代理。要改用 JDK 代理，请设置 `configprop:spring.aop.proxy-target-class` 为 `false`。如果 AspectJ 在类路径上，Spring Boot 的自动配置将自动启用 AspectJ 自动代理，这样就不需要 `@EnableAspectJAutoProxy`。
 
 ### Json
 
-Spring Boot 提供与三个 JSON 映射库的集成: `Gson`, `Jackson`和`JSON-B`。Jackson 是首选和默认库。
-Jackson 是`spring-boot-starter-json`的一部分。当 Jackson 位于类路径上时，会自动配置ObjectMapper bean。
+Spring Boot 提供与三个 JSON 映射库的集成: `Gson` , `Jackson` 和 `JSON-B`。Jackson 是首选和默认库。Jackson 是 `spring-boot-starter-json` 的一部分。当 Jackson 位于类路径上时，会自动配置 ObjectMapper bean。
 
 ### 调度
 
-如果上下文中缺少`Executor` bean，Spring Boot 会自动配置`AsyncTaskExecutor` 。当启用虚拟线程时（使用 Java 21+ 和 `spring.threads.virtual.enabled` 设置为true ）这将是一个使用虚拟线程的`SimpleAsyncTaskExecutor` 。否则，它将是一个具有合理默认值的`ThreadPoolTaskExecutor` 。在任何一种情况下，自动配置的执行器将自动用于:
+如果上下文中缺少 `Executor` bean，Spring Boot 会自动配置 `AsyncTaskExecutor`。当启用虚拟线程时（使用 Java 21+ 和 `spring.threads.virtual.enabled` 设置为 true）这将是一个使用虚拟线程的 `SimpleAsyncTaskExecutor`。否则，它将是一个具有合理默认值的 `ThreadPoolTaskExecutor`。在任何一种情况下，自动配置的执行器将自动用于:
 
-1. 异步任务执行（ `@EnableAsync` ）
-2. `Spring for GraphQL` 对来自控制器方法的Callable返回值的异步处理
-3. `Spring MVC`的异步请求处理
+1. 异步任务执行（`@EnableAsync`）
+2. `Spring for GraphQL` 对来自控制器方法的 Callable 返回值的异步处理
+3. `Spring MVC` 的异步请求处理
 4. `Spring WebFlux` 的阻塞执行支持
 
-配置默认的`ThreadPoolTaskExecutor`
+配置默认的 `ThreadPoolTaskExecutor`
 
 ```yaml
 spring:
@@ -161,21 +161,19 @@ spring:
         queue-capacity: 100
         keep-alive: "10s"
 ```
-这会将线程池更改为使用有界队列，以便当队列已满（100 个任务）时，线程池会增加到最多 16 个线程。池的收缩更加积极，因为线程空闲 10 秒（而不是默认情况下 60 秒）时就会被回收。
 
+这会将线程池更改为使用有界队列，以便当队列已满（100 个任务）时，线程池会增加到最多 16 个线程。池的收缩更加积极，因为线程空闲 10 秒（而不是默认情况下 60 秒）时就会被回收。
 
 ## 模块
 
 ### `spring-boot-devtools`
 
-依赖`developmentOnly("org.springframework.boot:spring-boot-devtools")`
+依赖 `developmentOnly("org.springframework.boot:spring-boot-devtools")`
 
 作用: 开启热启动.
 
 ### `spring-boot-starter-actuator`
 
-依赖`implementation("org.springframework.boot:spring-boot-starter-actuator")`
+依赖 `implementation("org.springframework.boot:spring-boot-starter-actuator")`
 
 作用: 监控和管理应用程序。它提供了许多端点，如检查应用健康状态、收集性能指标、查看环境属性等.
-
-

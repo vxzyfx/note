@@ -1,0 +1,12 @@
+{
+  "recurse": true,
+  "cleanUrls": true,
+  "checkFragments": true,
+  "retry": true,
+  "retryErrors": true,
+  "retryErrorsCount": 3,
+  "retryErrorsJitter": 1000,
+  "timeout": 20000,
+  "redirects": "allow",
+  "requireHttps": "off"
+}
